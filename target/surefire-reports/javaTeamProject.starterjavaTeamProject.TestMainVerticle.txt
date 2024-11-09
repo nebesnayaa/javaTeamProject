@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: javaTeamProject.starterjavaTeamProject.TestMainVerticle
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.861 s - in javaTeamProject.starterjavaTeamProject.TestMainVerticle
