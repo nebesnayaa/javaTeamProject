@@ -4,7 +4,7 @@ import { validateEmail, validatePassword } from '../validation';
 
 interface LoginFormProps {
   onSuccess: () => void;
-}
+} 
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const [email, setEmail] = useState<string>('');

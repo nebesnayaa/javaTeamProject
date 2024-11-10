@@ -3,6 +3,7 @@ import { useState } from "react";
 import Login from "./components/Login";
 import Navbar from "./components/Navbar";
 import RegistrationForm from "./components/Registration";
+import UserList from "./components/UserList";
 import Main from "./components/Main";
 
 const App = () => {
@@ -24,7 +25,8 @@ const App = () => {
           <Route path="/" element={<Main/>} />
           <Route path="/Register" element={<RegistrationForm onSuccess={handleLoginSuccess} />} />
           <Route path="/Login" element={<Login onSuccess={handleLoginSuccess} />} />
-        </Routes>
+          <Route path="/Users" element={<UserList/>} />
+        </Routes> 
       </BrowserRouter>
     </>
   );

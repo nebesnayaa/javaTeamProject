@@ -17,7 +17,10 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, onLogout }) => {
           <Link to="/login">Авторизация</Link>
         </>
       ) : (
-        <button onClick={onLogout}>Logout</button>
+        <>
+          <Link to="/users">Все пользователи</Link>
+          <button onClick={onLogout}>Logout</button>
+        </>
       )}
     </nav>
   );
