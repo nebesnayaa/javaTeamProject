@@ -1,15 +1,12 @@
-// src/components/RegistrationForm.tsx
 import React, { useState } from 'react';
-import './RegistrationForm.css';
+import './Style/RegistrationForm.css';
 import { validateEmail, validatePassword } from '../validation';
 
-interface User {
-  username: string;
-  email: string;
-  password: string;
+interface RegistrationFormProps {
+  onSuccess: () => void;
 }
 
-const RegistrationForm: React.FC = () => {
+const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess }) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [username, setUsername] = useState<string>('');
@@ -31,8 +28,9 @@ const RegistrationForm: React.FC = () => {
       return;
     }
 
-    const newUser: User = { username, email, password };
+    const newUser = { username, email, password };
     setMessage(`Привет, ${newUser.username}!`);
+    onSuccess(); // Вызываем onSuccess после успешной регистрации
   };
 
   return (

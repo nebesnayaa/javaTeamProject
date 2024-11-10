@@ -1,14 +1,33 @@
-// src/App.tsx
-import React from 'react';
-import './App.css';
-import RegistrationForm from './components/registarion';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
+import Login from "./components/Login";
+import Navbar from "./components/Navbar";
+import RegistrationForm from "./components/Registration";
+import Main from "./components/Main";
 
-function App() {
+const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  const handleLogout = () => {
+    setIsAuthenticated(false); // Логика выхода
+  };
+
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true); // Логика успешного входа
+  };
+
   return (
-    <div className="App">
-      <RegistrationForm />
-    </div>
+    <>
+      <BrowserRouter>
+        <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
+        <Routes>
+          <Route path="/" element={<Main/>} />
+          <Route path="/Register" element={<RegistrationForm onSuccess={handleLoginSuccess} />} />
+          <Route path="/Login" element={<Login onSuccess={handleLoginSuccess} />} />
+        </Routes>
+      </BrowserRouter>
+    </>
   );
-}
+};
 
 export default App;
