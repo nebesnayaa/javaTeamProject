@@ -1,0 +1,33 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
+import Login from "./components/Login";
+import Navbar from "./components/Navbar";
+import RegistrationForm from "./components/Registration";
+import Main from "./components/Main";
+
+const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  const handleLogout = () => {
+    setIsAuthenticated(false); // Логика выхода
+  };
+
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true); // Логика успешного входа
+  };
+
+  return (
+    <>
+      <BrowserRouter>
+        <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
+        <Routes>
+          <Route path="/" element={<Main/>} />
+          <Route path="/Register" element={<RegistrationForm onSuccess={handleLoginSuccess} />} />
+          <Route path="/Login" element={<Login onSuccess={handleLoginSuccess} />} />
+        </Routes>
+      </BrowserRouter>
+    </>
+  );
+};
+
+export default App;
