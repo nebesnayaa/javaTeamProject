@@ -16,6 +16,19 @@ public class MainVerticle extends AbstractVerticle {
 	public void start(Promise<Void> startPromise) throws Exception {
 		Router router = Router.router(vertx);
 
+		  router.route().handler(ctx -> {
+		        ctx.response().putHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+		        ctx.response().putHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+		        ctx.response().putHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+		        ctx.response().putHeader("Access-Control-Allow-Credentials", "true"); // Allow credentials if needed
+
+		        if (ctx.request().method().name().equals("OPTIONS")) {
+		            ctx.response().setStatusCode(204).end(); // Immediately respond to OPTIONS preflight requests
+		        } else {
+		            ctx.next(); // Pass to the next handler for other requests
+		        }
+		    });
+		  
 		router.route().handler(BodyHandler.create());
 
 		// router.get("/").handler(this::handleRoot);
