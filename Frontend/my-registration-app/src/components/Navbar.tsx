@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './Style/Navbar.css'
+import './Style/Navbar.css';
 
 interface NavbarProps {
   isAuthenticated: boolean;
   onLogout: () => void;
-} 
+}
 
 const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, onLogout }) => {
   return (
@@ -19,7 +19,8 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, onLogout }) => {
       ) : (
         <>
           <Link to="/users">Все пользователи</Link>
-          <button onClick={onLogout}>Logout</button>
+          <Link to="/resume">Резюме</Link>
+          <button onClick={onLogout}>Выйти</button>
         </>
       )}
     </nav>

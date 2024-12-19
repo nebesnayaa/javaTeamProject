@@ -1,16 +1,28 @@
-.main-container{
+/* Общие стили для всего контента */
+body {
+  font-family: Arial, sans-serif; /* Задать шрифт по умолчанию */
+}
+
+.main-container {
   margin: 8% auto;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center; /* Центрирование по вертикали */
+  text-align: center; /* Центрирование текста */
 }
-.main-container h1{
+
+.main-container h1 {
   color: #eee;
+  font-size: 2rem; /* Увеличиваем размер заголовка для лучшего восприятия */
 }
-.main-container p{
+
+.main-container p {
   color: #bbb6b6;
+  font-size: 1.1rem;
 }
-.main-container a{
+
+.main-container a, .main-container button {
   display: inline-block;
   padding: 10px;
   margin-top: 10px;
@@ -19,14 +31,12 @@
   background-color: #e6b333;
   border: 2px solid #22272d;
   color: #fff;
-  /* border: none; */
   border-radius: 5px;
   cursor: pointer;
-  width: auto; /* Ширина кнопок будет зависеть от контента */
-  min-width: 100px; /* Устанавливаем минимальную ширину для кнопок */
-  max-width: 200px; /* Можно задать максимальную ширину, чтобы кнопки не растягивались слишком сильно */
+  min-width: 100px;
+  max-width: 200px;
+  width: auto;
 }
-
 
 .main-container a:hover,
 .main-container button:hover {
@@ -36,4 +46,69 @@
 .main-container a:active,
 .main-container button:active {
   background-color: #b08819;
+}
+
+/* Стили для точек (.swing) */
+.swing div {
+  border-radius: 50%;
+  float: left;
+  height: 1em;
+  width: 1em;
+  
+}
+
+/* Восстановлены оригинальные градиенты для точек */
+.swing div:nth-of-type(1) {
+  background: linear-gradient(to right, #385c78 0%, #325774 100%); /* Синий градиент */
+}
+
+.swing div:nth-of-type(2) {
+  background: linear-gradient(to right, #325774 0%, #47536a 100%); /* Тёмно-синий градиент */
+}
+
+.swing div:nth-of-type(3) {
+  background: linear-gradient(to right, #4a5369 0%, #6b4d59 100%); /* Серовато-красный градиент */
+}
+
+.swing div:nth-of-type(4) {
+  background: linear-gradient(to right, #744c55 0%, #954646 100%); /* Красно-коричневый градиент */
+}
+
+.swing div:nth-of-type(5) {
+  background: linear-gradient(to right, #9c4543 0%, #bb4034 100%); /* Ярко-красный градиент */
+}
+
+.swing div:nth-of-type(6) {
+  background: linear-gradient(to right, #c33f31 0%, #d83b27 100%); /* Красный градиент */
+}
+
+.swing div:nth-of-type(7) {
+  background: linear-gradient(to right, #da3b26 0%, #db412c 100%); /* Оранжево-красный градиент */
+}
+
+/* Анимации для элементов */
+@keyframes ball-l {
+  0%, 50% {
+    transform: rotate(0) translate(0);
+  }
+  100% {
+    transform: rotate(50deg) translateX(-2.5em);
+  }
+}
+
+@keyframes ball-r {
+  0% {
+    transform: rotate(-50deg) translateX(2.5em);
+  }
+  50%, 100% {
+    transform: rotate(0) translateX(0);
+  }
+}
+
+.swing-l {
+  animation: ball-l 0.425s ease-in-out infinite alternate;
+}
+
+.swing-r {
+  animation: ball-r 0.425s ease-in-out infinite alternate;
 }

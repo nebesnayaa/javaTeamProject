@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import RegistrationForm from "./components/Registration";
 import UserList from "./components/UserList";
 import Main from "./components/Main";
+import ResumeForm from './components/create-resume/Resume_Builder';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -26,6 +27,7 @@ const App = () => {
           <Route path="/Register" element={<RegistrationForm onSuccess={handleLoginSuccess} />} />
           <Route path="/Login" element={<Login onSuccess={handleLoginSuccess} />} />
           <Route path="/Users" element={<UserList/>} />
+          <Route path="/resume" element={<ResumeForm />} /> 
         </Routes> 
       </BrowserRouter>
     </>
