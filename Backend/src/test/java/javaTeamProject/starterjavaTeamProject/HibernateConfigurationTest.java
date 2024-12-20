@@ -102,6 +102,25 @@ class HibernateConfigurationTest {
 			});
 		});
 	}
+	
+	@Test 
+	void removeResumeTest(Vertx vertx, VertxTestContext context){
+		ResumeDTO resumeDto = new ResumeDTO(null, 1, "some content", 1, LocalDateTime.now(),LocalDateTime.now());
+		context.verify(()->{
+			resumeRepository.createResume(resumeDto)
+			.compose(r -> {
+				Assertions.assertEquals(1, r.id());
+				return resumeRepository.removeResume(r.id());
+			})
+			.compose(r -> resumeRepository.findResumeById(1))
+			.onFailure(err -> context.failNow(err))
+			.onSuccess(r ->{
+					Assertions.assertTrue(r.isEmpty());
+					context.completeNow();
+				}			
+			);
+		});
+	}
 
 }
 

@@ -7,6 +7,10 @@ import org.hibernate.reactive.stage.Stage;
 
 import interfaces.IResumeRepository;
 import io.vertx.core.Future;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import javaTeamProject.model.Resume;
 import javaTeamProject.model.ResumeDTO;
 import javaTeamProject.model.ResumeDtoMapper;
@@ -38,8 +42,15 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
 
 	@Override
 	public Future<Void> removeResume(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
+		CriteriaDelete<Resume> criteriaDelete = criteriaBuilder.createCriteriaDelete(Resume.class);
+		Root<Resume> root = criteriaDelete.from(Resume.class);
+		Predicate predicate = criteriaBuilder.equal(root.get("id"), id); //id == [id]
+		criteriaDelete.where(predicate);
+		
+		CompletionStage<Integer> result = sessionFactory.withTransaction((s,t) -> s.createQuery(criteriaDelete).executeUpdate());
+		Future<Void> future = Future.fromCompletionStage(result).compose(r -> Future.succeededFuture());
+		return future;
 	}
 
 	@Override
