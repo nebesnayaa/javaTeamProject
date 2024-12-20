@@ -1,7 +1,10 @@
 package javaTeamProject.repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 import org.hibernate.reactive.stage.Stage;
 
@@ -9,6 +12,8 @@ import interfaces.IResumeRepository;
 import io.vertx.core.Future;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import javaTeamProject.model.Resume;
@@ -36,8 +41,19 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
 
 	@Override
 	public Future<ResumeDTO> updateResume(ResumeDTO resume) {
-		// TODO Auto-generated method stub
-		return null;
+		CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
+		CriteriaUpdate<Resume> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(Resume.class);
+		Root<Resume> root = criteriaUpdate.from(Resume.class);
+		Predicate predicate = criteriaBuilder.equal(root.get("id"), resume.id());
+		
+		criteriaUpdate.set("content", resume.content());
+		criteriaUpdate.set("updatedAt", LocalDateTime.now());
+		
+		criteriaUpdate.where(predicate);
+		
+		CompletionStage<Integer> result = sessionFactory.withTransaction((s,t) -> s.createQuery(criteriaUpdate).executeUpdate());
+		Future<ResumeDTO> future = Future.fromCompletionStage(result).map(r -> resume);
+		return future;
 	}
 
 	@Override
@@ -65,8 +81,16 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
 
 	@Override
 	public Future<ResumesList> findResumeByUserId(Integer userId) {
-		// TODO Auto-generated method stub
-		return null;
+		ResumeDtoMapper dtoMapper = new ResumeDtoMapper();
+		CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
+		CriteriaQuery<Resume> criteriaQuery = criteriaBuilder.createQuery(Resume.class);
+		Root<Resume> root = criteriaQuery.from(Resume.class);
+		Predicate predicate = criteriaBuilder.equal(root.get("userId"), userId);
+		criteriaQuery.where(predicate);
+		CompletionStage<List<Resume>> result = sessionFactory().withTransaction((s,t)-> s.createQuery(criteriaQuery).getResultList());
+		Future<ResumesList> future = Future.fromCompletionStage(result).map(list -> list.stream().map(dtoMapper).collect(Collectors.toList()))
+				.map(list -> new ResumesList(list));
+		return future;
 	}
 
 }

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
@@ -119,6 +120,55 @@ class HibernateConfigurationTest {
 					context.completeNow();
 				}			
 			);
+		});
+	}
+	
+	@Test 
+	void updateResumeTest(Vertx vertx, VertxTestContext context){
+		ResumeDTO resumeDto = new ResumeDTO(null, 1, "some content", 1, LocalDateTime.now(),LocalDateTime.now());
+		context.verify(()-> {
+			resumeRepository.createResume(resumeDto)
+			.compose(r->{
+				Assertions.assertEquals(1, r.id());
+				ResumeDTO updatedResume = new ResumeDTO(1, resumeDto.userId(), 
+						"new content", resumeDto.templateId() ,resumeDto.createdAt(), resumeDto.updatedAt());
+				return resumeRepository.updateResume(updatedResume);
+			}).compose(r -> {
+				Assertions.assertEquals("new content",r.content());
+				return resumeRepository.findResumeById(r.id());
+			})
+			.onFailure(err -> context.failNow(err))
+			.onSuccess(r -> {
+				Assertions.assertTrue(r.isPresent());
+				ResumeDTO result = r.get();
+				Assertions.assertEquals("new content",result.content());
+				context.completeNow();
+			});
+		});
+	}
+	
+	@Test 
+	void findResumeByUserId(Vertx vertx, VertxTestContext context) {
+		ResumeDTO resume1 = new ResumeDTO(null, 1, "some 1 content", 1, LocalDateTime.now(),LocalDateTime.now());
+		ResumeDTO resume2 = new ResumeDTO(null, 1, "some 2 content", 1, LocalDateTime.now(),LocalDateTime.now());
+		ResumeDTO resume3 = new ResumeDTO(null, 2, "some 3 content", 1, LocalDateTime.now(),LocalDateTime.now());
+		CompositeFuture createResumes = CompositeFuture.join(resumeRepository.createResume(resume1),
+															resumeRepository.createResume(resume2),
+															resumeRepository.createResume(resume3));
+		context.verify(()->{
+			createResumes.compose(r->{
+				Assertions.assertTrue(r.succeeded());
+				Assertions.assertTrue(r.isComplete());
+				System.out.println(r.list().get(0));
+				System.out.println(r.list().get(1));
+				System.out.println(r.list().get(2));
+				return resumeRepository.findResumeByUserId(1);
+			})
+			.onFailure(err -> context.failNow(err))
+			.onSuccess(r-> {
+				Assertions.assertEquals(2, r.resumes().size());
+				context.completeNow();
+			});
 		});
 	}
 

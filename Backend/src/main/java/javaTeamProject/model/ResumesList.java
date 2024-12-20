@@ -2,6 +2,6 @@ package javaTeamProject.model;
 
 import java.util.List;
 
-public record ResumesList (List<UserDTO> users) {
+public record ResumesList (List<ResumeDTO> resumes) {
 
 }
