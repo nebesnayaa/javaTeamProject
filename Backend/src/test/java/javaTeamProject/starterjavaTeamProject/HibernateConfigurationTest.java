@@ -74,6 +74,34 @@ class HibernateConfigurationTest {
 			});
 		});
 	}
+	
+	@Test
+	void findResumeByIdDoesNotExistTest(Vertx vertx, VertxTestContext context) {
+		context.verify(()-> {
+			resumeRepository.findResumeById(1)
+			.onSuccess(r -> {
+				Assertions.assertTrue(r.isEmpty());
+				context.completeNow();
+			})
+			.onFailure(err -> {
+				context.failNow(err);
+			});
+		});
+	}
+	
+	@Test
+	void findResumeByIdExistsTest(Vertx vertx, VertxTestContext context) {
+		ResumeDTO resumeDto = new ResumeDTO(null, 1, "some content", 1, LocalDateTime.now(),LocalDateTime.now());
+		context.verify(()->{
+			resumeRepository.createResume(resumeDto)
+			.compose(r -> resumeRepository.findResumeById(r.id()))
+			.onFailure(err -> context.failNow(err))
+			.onSuccess(result -> {
+				Assertions.assertTrue(result.isPresent());
+				context.completeNow();
+			});
+		});
+	}
 
 }
 

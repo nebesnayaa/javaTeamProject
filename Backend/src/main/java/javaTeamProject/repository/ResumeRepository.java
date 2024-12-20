@@ -44,8 +44,12 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
 
 	@Override
 	public Future<Optional<ResumeDTO>> findResumeById(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		ResumeDtoMapper dtoMapper = new ResumeDtoMapper();
+		CompletionStage<Resume> result = sessionFactory().withTransaction((s,t) -> s.find(Resume.class, id));
+		Future<Optional<ResumeDTO>> future = Future.fromCompletionStage(result)									
+												.map(r -> Optional.ofNullable(r))
+												.map(r -> r.map(dtoMapper));
+		return future;
 	}
 
 	@Override
