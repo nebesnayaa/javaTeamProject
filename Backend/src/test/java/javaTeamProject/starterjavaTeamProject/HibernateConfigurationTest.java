@@ -22,7 +22,9 @@ import io.vertx.junit5.VertxTestContext;
 import javaTeamProject.model.Resume;
 import javaTeamProject.model.ResumeDTO;
 import javaTeamProject.model.User;
+import javaTeamProject.model.UserDTO;
 import javaTeamProject.repository.ResumeRepository;
+import javaTeamProject.repository.UserRepository;
 
 @ExtendWith(VertxExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -36,6 +38,7 @@ class HibernateConfigurationTest {
 	
 	
 	ResumeRepository resumeRepository;
+	UserRepository userRepository;
 	
 	@BeforeEach
 	void setup(Vertx vertx, VertxTestContext context) {
@@ -58,6 +61,7 @@ class HibernateConfigurationTest {
 		ServiceRegistry serviceRegistry = new ReactiveServiceRegistryBuilder().applySettings(hibernateConfiguration.getProperties()).build();
 		Stage.SessionFactory sessionFactory = hibernateConfiguration.buildSessionFactory(serviceRegistry).unwrap(Stage.SessionFactory.class);
 		resumeRepository = new ResumeRepository(sessionFactory);
+		userRepository = new UserRepository(sessionFactory);
 		context.completeNow();
 	}
 	
@@ -152,7 +156,7 @@ class HibernateConfigurationTest {
 		ResumeDTO resume1 = new ResumeDTO(null, 1, "some 1 content", 1, LocalDateTime.now(),LocalDateTime.now());
 		ResumeDTO resume2 = new ResumeDTO(null, 1, "some 2 content", 1, LocalDateTime.now(),LocalDateTime.now());
 		ResumeDTO resume3 = new ResumeDTO(null, 2, "some 3 content", 1, LocalDateTime.now(),LocalDateTime.now());
-		CompositeFuture createResumes = CompositeFuture.join(resumeRepository.createResume(resume1),
+		CompositeFuture createResumes = CompositeFuture. join(resumeRepository.createResume(resume1),
 															resumeRepository.createResume(resume2),
 															resumeRepository.createResume(resume3));
 		context.verify(()->{
@@ -167,6 +171,70 @@ class HibernateConfigurationTest {
 			.onFailure(err -> context.failNow(err))
 			.onSuccess(r-> {
 				Assertions.assertEquals(2, r.resumes().size());
+				context.completeNow();
+			});
+		});
+	}
+	
+	@Test
+	void createUserTest(Vertx vertx, VertxTestContext context) {
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		context.verify(()->{
+			userRepository.createUser(userDto).
+			onFailure(err -> context.failNow(err))
+			.onSuccess(r->{
+				Assertions.assertNotNull(r);
+				Assertions.assertNotNull(r.id());
+				Assertions.assertEquals(1, r.id());
+				context.completeNow();
+			});
+		});
+	}
+	
+	@Test
+	void findUserByIdDoesNotExist(Vertx vertx, VertxTestContext context) {
+		context.verify(()-> {
+			userRepository.findUserById(1)
+			.onSuccess(r -> {
+				Assertions.assertTrue(r.isEmpty());
+				context.completeNow();
+			})
+			.onFailure(err -> {
+				context.failNow(err);
+			});
+		});
+	}
+	
+	@Test
+	void findUserByIdDoesExistTest(Vertx vertx, VertxTestContext context) {
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		context.verify(()->{
+			userRepository.createUser(userDto)
+			.compose(u->{
+				return userRepository.findUserById(u.id());
+			})
+			.onFailure(err -> context.failNow(err))
+			.onSuccess(result->{
+				Assertions.assertTrue(result.isPresent());
+				context.completeNow();
+			});
+		});
+	}
+	
+	@Test
+	void removeUserTest(Vertx vertx, VertxTestContext context) {
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		context.verify(()->{
+			userRepository.createUser(userDto)
+			.compose(u -> {
+				Assertions.assertEquals(1, u.id());
+				return userRepository.removeUser(u.id());
+			})
+			.compose(u -> userRepository.findUserById(1)
+			)
+			.onFailure(err -> context.failNow(err))
+			.onSuccess(u ->{
+				Assertions.assertTrue(u.isEmpty());
 				context.completeNow();
 			});
 		});
