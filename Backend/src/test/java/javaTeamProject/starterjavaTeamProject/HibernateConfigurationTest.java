@@ -239,6 +239,30 @@ class HibernateConfigurationTest {
 			});
 		});
 	}
+	
+	@Test 
+	void updateUserTest(Vertx vertx, VertxTestContext context){
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		context.verify(()-> {
+				userRepository.createUser(userDto).compose( u-> {
+				UserDTO updatedResume = new UserDTO(1, "newUserEmail@gmail.com", 
+						"newUserPassword",userDto.createdAt(), userDto.updatedAt());
+				return userRepository.updateUser(updatedResume);
+			}).compose(r -> {
+				Assertions.assertEquals("newUserEmail@gmail.com",r.email());
+				Assertions.assertEquals("newUserPassword",r.password());
+				return userRepository.findUserById(r.id());
+			})
+			.onFailure(err -> context.failNow(err))
+			.onSuccess(r -> {
+				Assertions.assertTrue(r.isPresent());
+				UserDTO result = r.get();
+				Assertions.assertEquals("newUserEmail@gmail.com",result.email());
+				Assertions.assertEquals("newUserPassword",result.password());
+				context.completeNow();
+			});
+		});
+	}
 
 }
 

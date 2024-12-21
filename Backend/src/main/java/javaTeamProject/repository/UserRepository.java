@@ -1,5 +1,6 @@
 package javaTeamProject.repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
@@ -9,8 +10,11 @@ import interfaces.IUserRepository;
 import io.vertx.core.Future;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import javaTeamProject.model.Resume;
+import javaTeamProject.model.ResumeDTO;
 import javaTeamProject.model.User;
 import javaTeamProject.model.UserDTO;
 import javaTeamProject.model.UserDtoMapper;
@@ -31,8 +35,19 @@ public record UserRepository(SessionFactory sessionFactory) implements IUserRepo
 
 	@Override
 	public Future<UserDTO> updateUser(UserDTO user) {
-		// TODO Auto-generated method stub
-		return null;
+		CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
+		CriteriaUpdate<User> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(User.class);
+		Root<User> root = criteriaUpdate.from(User.class);
+		Predicate predicate = criteriaBuilder.equal(root.get("id"), user.id());
+		
+		criteriaUpdate.set("email", user.email());
+		criteriaUpdate.set("password", user.password());
+		criteriaUpdate.set("updatedAt", LocalDateTime.now());
+		
+		criteriaUpdate.where(predicate);
+		CompletionStage<Integer> result = sessionFactory.withTransaction((s,t) -> s.createQuery(criteriaUpdate).executeUpdate());
+		Future<UserDTO> future = Future.fromCompletionStage(result).map(r -> user);
+		return future;
 	}
 
 	@Override
