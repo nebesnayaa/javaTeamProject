@@ -1,8 +1,11 @@
 package javaTeamProject.starterjavaTeamProject;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.hibernate.cfg.Configuration;
 import org.hibernate.reactive.provider.ReactiveServiceRegistryBuilder;
@@ -66,117 +69,6 @@ class HibernateConfigurationTest {
 	}
 	
 	@Test
-	void createResumeTest(Vertx vertx, VertxTestContext context) {
-		ResumeDTO resumeDto = new ResumeDTO(null, 1, "some content", 1, LocalDateTime.now(),LocalDateTime.now());
-		context.verify(()->{
-			resumeRepository.createResume(resumeDto)
-			.onFailure(err -> context.failNow(err))
-			.onSuccess(result -> {
-				Assertions.assertNotNull(result);
-				Assertions.assertNotNull(result.id());
-				Assertions.assertEquals(1, result.id());
-				context.completeNow();
-			});
-		});
-	}
-	
-	@Test
-	void findResumeByIdDoesNotExistTest(Vertx vertx, VertxTestContext context) {
-		context.verify(()-> {
-			resumeRepository.findResumeById(1)
-			.onSuccess(r -> {
-				Assertions.assertTrue(r.isEmpty());
-				context.completeNow();
-			})
-			.onFailure(err -> {
-				context.failNow(err);
-			});
-		});
-	}
-	
-	@Test
-	void findResumeByIdExistsTest(Vertx vertx, VertxTestContext context) {
-		ResumeDTO resumeDto = new ResumeDTO(null, 1, "some content", 1, LocalDateTime.now(),LocalDateTime.now());
-		context.verify(()->{
-			resumeRepository.createResume(resumeDto)
-			.compose(r -> resumeRepository.findResumeById(r.id()))
-			.onFailure(err -> context.failNow(err))
-			.onSuccess(result -> {
-				Assertions.assertTrue(result.isPresent());
-				context.completeNow();
-			});
-		});
-	}
-	
-	@Test 
-	void removeResumeTest(Vertx vertx, VertxTestContext context){
-		ResumeDTO resumeDto = new ResumeDTO(null, 1, "some content", 1, LocalDateTime.now(),LocalDateTime.now());
-		context.verify(()->{
-			resumeRepository.createResume(resumeDto)
-			.compose(r -> {
-				Assertions.assertEquals(1, r.id());
-				return resumeRepository.removeResume(r.id());
-			})
-			.compose(r -> resumeRepository.findResumeById(1))
-			.onFailure(err -> context.failNow(err))
-			.onSuccess(r ->{
-					Assertions.assertTrue(r.isEmpty());
-					context.completeNow();
-				}			
-			);
-		});
-	}
-	
-	@Test 
-	void updateResumeTest(Vertx vertx, VertxTestContext context){
-		ResumeDTO resumeDto = new ResumeDTO(null, 1, "some content", 1, LocalDateTime.now(),LocalDateTime.now());
-		context.verify(()-> {
-			resumeRepository.createResume(resumeDto)
-			.compose(r->{
-				Assertions.assertEquals(1, r.id());
-				ResumeDTO updatedResume = new ResumeDTO(1, resumeDto.userId(), 
-						"new content", resumeDto.templateId() ,resumeDto.createdAt(), resumeDto.updatedAt());
-				return resumeRepository.updateResume(updatedResume);
-			}).compose(r -> {
-				Assertions.assertEquals("new content",r.content());
-				return resumeRepository.findResumeById(r.id());
-			})
-			.onFailure(err -> context.failNow(err))
-			.onSuccess(r -> {
-				Assertions.assertTrue(r.isPresent());
-				ResumeDTO result = r.get();
-				Assertions.assertEquals("new content",result.content());
-				context.completeNow();
-			});
-		});
-	}
-	
-	@Test 
-	void findResumeByUserId(Vertx vertx, VertxTestContext context) {
-		ResumeDTO resume1 = new ResumeDTO(null, 1, "some 1 content", 1, LocalDateTime.now(),LocalDateTime.now());
-		ResumeDTO resume2 = new ResumeDTO(null, 1, "some 2 content", 1, LocalDateTime.now(),LocalDateTime.now());
-		ResumeDTO resume3 = new ResumeDTO(null, 2, "some 3 content", 1, LocalDateTime.now(),LocalDateTime.now());
-		CompositeFuture createResumes = CompositeFuture. join(resumeRepository.createResume(resume1),
-															resumeRepository.createResume(resume2),
-															resumeRepository.createResume(resume3));
-		context.verify(()->{
-			createResumes.compose(r->{
-				Assertions.assertTrue(r.succeeded());
-				Assertions.assertTrue(r.isComplete());
-				System.out.println(r.list().get(0));
-				System.out.println(r.list().get(1));
-				System.out.println(r.list().get(2));
-				return resumeRepository.findResumeByUserId(1);
-			})
-			.onFailure(err -> context.failNow(err))
-			.onSuccess(r-> {
-				Assertions.assertEquals(2, r.resumes().size());
-				context.completeNow();
-			});
-		});
-	}
-	
-	@Test
 	void createUserTest(Vertx vertx, VertxTestContext context) {
 		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
 		context.verify(()->{
@@ -188,6 +80,44 @@ class HibernateConfigurationTest {
 				Assertions.assertEquals(1, r.id());
 				context.completeNow();
 			});
+		});
+	}
+	
+	@Test 
+	void createResumeTest(Vertx vertx, VertxTestContext context){
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		context.verify(() -> {
+			userRepository.createUser(userDto).compose( user -> {
+				Assertions.assertNotNull(user.id());
+				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, LocalDateTime.now(),LocalDateTime.now(), Optional.of(user));
+				return resumeRepository.createResume(resumeDto);
+			})
+			.onSuccess(result -> {
+				Assertions.assertNotNull(result);
+				Assertions.assertNotNull(result.id());
+				context.completeNow();
+			})
+			.onFailure(err -> context.failNow(err));
+		});
+	}
+	
+	@Test
+	void userResumeRelationTest(Vertx vertx, VertxTestContext context) {
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		context.verify(()->{
+			userRepository.createUser(userDto).compose(user -> {
+				Assertions.assertNotNull(user);
+				System.out.println("USER ID IS: "+ user.id());
+				Assertions.assertNotNull(user.id());
+				Assertions.assertEquals(1, user.id());
+				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, LocalDateTime.now(),LocalDateTime.now(), Optional.of(user));
+				return resumeRepository.createResume(resumeDto);
+			})
+			.onSuccess(result->{
+				Assertions.assertTrue(result.user().isPresent());
+				context.completeNow();
+			})
+			.onFailure(err -> context.failNow(err));
 		});
 	}
 	
@@ -263,7 +193,138 @@ class HibernateConfigurationTest {
 			});
 		});
 	}
+	/*
+	 * UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		context.verify(()->{
+			userRepository.createUser(userDto).compose(user -> {
+				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, LocalDateTime.now(),LocalDateTime.now(), Optional.of(user));
+				return resumeRepository.createResume(resumeDto);
+			})
+		});*/
+	@Test
+	void findResumeByIdDoesNotExistTest(Vertx vertx, VertxTestContext context) {
+		context.verify(()->{
+			resumeRepository.findResumeById(1)
+			.onSuccess(result ->{
+				Assertions.assertTrue(result.isEmpty());
+				context.completeNow();
+			})
+			.onFailure(err -> context.failNow(err));
+		});
+	}
+	
+	@Test
+	void findResumeByIdExistTest(Vertx vertx, VertxTestContext context) {
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		context.verify(()->{
+			userRepository.createUser(userDto).compose(user -> {
+				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, LocalDateTime.now(),LocalDateTime.now(), Optional.of(user));
+				return resumeRepository.createResume(resumeDto);
+			})
+			.compose(resume -> {
+				return resumeRepository.findResumeById(resume.id());
+			})
+			.onSuccess(result -> {
+				Assertions.assertTrue(result.isPresent());
+				Assertions.assertNotNull(result);
+				context.completeNow();
+			})
+			.onFailure(err -> context.failNow(err));
+		});
+	}
+	
+	@Test
+	void removeResumeTest(Vertx vertx, VertxTestContext context) {
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		context.verify(()->{
+			userRepository.createUser(userDto).compose(user -> {
+				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, LocalDateTime.now(),LocalDateTime.now(), Optional.of(user));
+				return resumeRepository.createResume(resumeDto);
+			})
+			.compose(resume -> {
+				return resumeRepository.removeResume(resume.id()).map(v -> resume.id());
+			})
+			.compose(result -> {
+				return resumeRepository.findResumeById(result);
+			})
+			.onSuccess(r -> {
+				Assertions.assertTrue(r.isEmpty());
+				context.completeNow();
+			})
+			.onFailure(err -> context.failNow(err));
+		});
+	}
+	
+	@Test
+	void  updateResumeTest(Vertx vertx, VertxTestContext context) {
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		context.verify(()->{
+			userRepository.createUser(userDto).compose(user -> {
+				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, LocalDateTime.now(),LocalDateTime.now(), Optional.of(user));
+				return resumeRepository.createResume(resumeDto);
+			})
+			.compose(r-> {
+				ResumeDTO newResume = new ResumeDTO(r.id(), "new content", r.templateId(), r.updatedAt(), r.createdAt(), r.user());
+				return resumeRepository.updateResume(newResume);
+			})
+			.compose(result -> {
+				Assertions.assertEquals("new content",result.content());
+				return resumeRepository.findResumeById(result.id());
+			})
+			.onFailure(err -> context.failNow(err))
+			.onSuccess(r -> {
+				Assertions.assertTrue(r.isPresent());
+				Assertions.assertEquals("new content",r.get().content());
+				context.completeNow();
+			});
+		});
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Test
+	void findResumeByUserId(Vertx vertx, VertxTestContext context) {
+	    UserDTO userDto1 = new UserDTO(null, "user1Email@gmail.com", "userPassword", LocalDateTime.now(), LocalDateTime.now());
+	    UserDTO userDto2 = new UserDTO(null, "user2Email@gmail.com", "userPassword", LocalDateTime.now(), LocalDateTime.now());
 
+	    CompositeFuture usersCreations = CompositeFuture.join(
+	        userRepository.createUser(userDto1),
+	        userRepository.createUser(userDto2)
+	    );
+
+	    usersCreations.onSuccess(users -> {
+	        Assertions.assertTrue(users.succeeded());
+	        Assertions.assertTrue(users.isComplete());
+
+	        UserDTO createdUser1 = (UserDTO) users.list().get(0);
+	        UserDTO createdUser2 = (UserDTO) users.list().get(1);
+
+	        ResumeDTO resumeDto1 = new ResumeDTO(null, "Content for user1", 1, LocalDateTime.now(), LocalDateTime.now(), Optional.of(createdUser1));
+	        ResumeDTO resumeDto2 = new ResumeDTO(null, "Another content for user1", 1, LocalDateTime.now(), LocalDateTime.now(), Optional.of(createdUser1));
+	        ResumeDTO resumeDto3 = new ResumeDTO(null, "Content for user2", 1, LocalDateTime.now(), LocalDateTime.now(), Optional.of(createdUser2));
+
+	        CompositeFuture resumesCreations = CompositeFuture.join(
+	            resumeRepository.createResume(resumeDto1),
+	            resumeRepository.createResume(resumeDto2),
+	            resumeRepository.createResume(resumeDto3)
+	        );
+
+	        resumesCreations.onSuccess(resumes -> {
+	            Assertions.assertTrue(resumes.succeeded());
+	            Assertions.assertTrue(resumes.isComplete());
+
+	            resumeRepository.findResumeByUserId(createdUser1.id())
+	                .onSuccess(resumesList -> {
+	                    Assertions.assertNotNull(resumesList);
+	                    Assertions.assertEquals(2, resumesList.resumes().size());
+	                    System.out.println("RESUMES LIST SIZE IS : " + resumesList.resumes().size());
+	                    System.out.println(resumesList.resumes().get(0));
+	                    System.out.println(resumesList.resumes().get(1));
+	                    context.completeNow();
+	                })
+	                .onFailure(err -> context.failNow(err));
+	        }).onFailure(err -> context.failNow(err));
+	    }).onFailure(err -> context.failNow(err));
+	}
 }
 
 /*@Test

@@ -1,15 +1,17 @@
 package javaTeamProject.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class User {
 	
 	@Id @GeneratedValue
@@ -18,6 +20,8 @@ public class User {
 	private String password;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
+	@OneToMany(mappedBy ="user")
+	private List<Resume> resumes;
 	
 	public User() {
 		

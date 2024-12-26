@@ -85,7 +85,7 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
 		CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
 		CriteriaQuery<Resume> criteriaQuery = criteriaBuilder.createQuery(Resume.class);
 		Root<Resume> root = criteriaQuery.from(Resume.class);
-		Predicate predicate = criteriaBuilder.equal(root.get("userId"), userId);
+		Predicate predicate = criteriaBuilder.equal(root.get("user").get("id"), userId);
 		criteriaQuery.where(predicate);
 		CompletionStage<List<Resume>> result = sessionFactory().withTransaction((s,t)-> s.createQuery(criteriaQuery).getResultList());
 		Future<ResumesList> future = Future.fromCompletionStage(result).map(list -> list.stream().map(dtoMapper).collect(Collectors.toList()))

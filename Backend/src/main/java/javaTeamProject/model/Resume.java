@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -15,8 +17,6 @@ public class Resume {
 	
 	Integer id;
 	
-	Integer userId;
-	
 	String content;
 	
 	Integer templateId;
@@ -25,20 +25,24 @@ public class Resume {
 	
 	LocalDateTime updatedAt;
 	
+	@ManyToOne
+	@JoinColumn(name="user_id", nullable=true)
+	private User user;
+	
+	public void setUser(User user) {
+		this.user =user;
+	}
+	
+	public UserDTO getUser() {
+		return new UserDtoMapper().apply(user);
+	}
+	
 	public Integer getId() {
 		return id;
 	}
 	
 	public void setId(Integer id) {
 		this.id = id;
-	}
-	
-	public Integer getUserId() {
-		return this.userId;
-	}
-	
-	public void setUserId(Integer userId) {
-		this.userId = userId;
 	}
 	
 	public String getContent() {
