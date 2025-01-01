@@ -2,6 +2,8 @@ package javaTeamProject.model;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.sql.Template;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -28,6 +30,10 @@ public class Resume {
 	@ManyToOne
 	@JoinColumn(name="user_id", nullable=true)
 	private User user;
+	
+	/*@ManyToOne
+	@JoinColumn(name= "template_id", nullable=false)
+	private Template template;*/
 	
 	public void setUser(User user) {
 		this.user =user;

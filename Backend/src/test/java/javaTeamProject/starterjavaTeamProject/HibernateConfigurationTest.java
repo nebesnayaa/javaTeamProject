@@ -3,9 +3,6 @@ package javaTeamProject.starterjavaTeamProject;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.hibernate.cfg.Configuration;
 import org.hibernate.reactive.provider.ReactiveServiceRegistryBuilder;
@@ -193,14 +190,7 @@ class HibernateConfigurationTest {
 			});
 		});
 	}
-	/*
-	 * UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
-		context.verify(()->{
-			userRepository.createUser(userDto).compose(user -> {
-				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, LocalDateTime.now(),LocalDateTime.now(), Optional.of(user));
-				return resumeRepository.createResume(resumeDto);
-			})
-		});*/
+
 	@Test
 	void findResumeByIdDoesNotExistTest(Vertx vertx, VertxTestContext context) {
 		context.verify(()->{
