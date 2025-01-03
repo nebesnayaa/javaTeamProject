@@ -1,4 +1,4 @@
-package javaTeamProject.repository;
+package repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,11 +16,11 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import javaTeamProject.model.Resume;
-import javaTeamProject.model.ResumeDTO;
-import javaTeamProject.model.ResumeDtoMapper;
-import javaTeamProject.model.ResumesList;
-import javaTeamProject.model.ResumeEntityMapper;
+import model.Resume;
+import model.ResumeDTO;
+import model.ResumeDtoMapper;
+import model.ResumeEntityMapper;
+import model.ResumesList;
 
 public record ResumeRepository (Stage.SessionFactory sessionFactory) implements IResumeRepository {
 	

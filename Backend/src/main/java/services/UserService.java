@@ -1,11 +1,12 @@
 package services;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import interfaces.IUserService;
 import io.vertx.core.Future;
-import javaTeamProject.model.UserDTO;
-import javaTeamProject.repository.UserRepository;
+import model.UserDTO;
+import repository.UserRepository;
 
 public record UserService(UserRepository repository) implements IUserService {
 
@@ -41,6 +42,29 @@ public record UserService(UserRepository repository) implements IUserService {
 				return Future.failedFuture(new NotOwnerException());
 			}
 		});
+	}
+
+	@Override
+	public Future<UserDTO> createUser(UserDTO user) {
+		return repository.createUser(user);
+	}
+
+	@Override
+	public Future<Optional<UserDTO>> findUserById(Integer id) {
+		// TODO Auto-generated method stub
+		return repository.findUserById(id);
+	}
+
+	@Override
+	public Future<UserDTO> updateUser(UserDTO user) {
+		// TODO Auto-generated method stub
+		return repository.updateUser(user);
+	}
+
+	@Override
+	public Future<Void> removeUser(Integer id) {
+		// TODO Auto-generated method stub
+		return repository.removeUser(id);
 	}
 
 }

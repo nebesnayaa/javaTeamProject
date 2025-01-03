@@ -1,6 +1,7 @@
 package javaTeamProject.starterjavaTeamProject;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -14,8 +15,8 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
-import javaTeamProject.model.UserDTO;
-import javaTeamProject.repository.UserRepository;
+import model.UserDTO;
+import repository.UserRepository;
 import services.Principal;
 import services.UserService;
 
@@ -28,7 +29,7 @@ class UserServiceTest {
 	
 	@Test
 	void updateUserIsOwnerTest(Vertx vertx, VertxTestContext context) {
-		UserDTO user = new UserDTO(1, "email", "password", LocalDateTime.now(),LocalDateTime.now());
+		UserDTO user = new UserDTO(1, "email", "password", new Date(),new Date());
 		Mockito.when(repository.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.of(user)));
 		Mockito.when(repository.updateUser(user)).thenReturn(Future.succeededFuture(user));
 		Principal principal = new Principal(user.id());
@@ -41,9 +42,9 @@ class UserServiceTest {
 	
 	@Test
 	void updateUserIsNotOwner(Vertx vertx, VertxTestContext context) {
-		UserDTO user = new UserDTO(1, "email", "password", LocalDateTime.now(),LocalDateTime.now());
+		UserDTO user = new UserDTO(1, "email", "password", new Date(),new Date());
 		Principal principal = new Principal(user.id());
-		Mockito.when(repository.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.of(new UserDTO(2,"email", "password", LocalDateTime.now(),LocalDateTime.now()))));
+		Mockito.when(repository.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.of(new UserDTO(2,"email", "password", new Date(),new Date()))));
 		context.verify(()->{
 			service.updateUser(principal, user)
 			.onSuccess(result -> context.failNow(new RuntimeException()))
@@ -53,7 +54,7 @@ class UserServiceTest {
 	
 	@Test
 	void removeUserIsOwnerTest(Vertx vertx, VertxTestContext context){
-		UserDTO user = new UserDTO(1, "email", "password", LocalDateTime.now(),LocalDateTime.now());
+		UserDTO user = new UserDTO(1, "email", "password", new Date(),new Date());
 		Mockito.when(repository.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.of(user)));
 		Mockito.when(repository.removeUser(user.id())).thenReturn(Future.succeededFuture());
 		Principal principal = new Principal(user.id());
@@ -66,8 +67,8 @@ class UserServiceTest {
 	
 	@Test
 	void removeUserIsNotOwnerTest(Vertx vertx, VertxTestContext context){
-		UserDTO user = new UserDTO(1, "email", "password", LocalDateTime.now(),LocalDateTime.now());
-		Mockito.when(repository.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.of(new UserDTO(2, "email", "password", LocalDateTime.now(),LocalDateTime.now()))));
+		UserDTO user = new UserDTO(1, "email", "password", new Date(),new Date());
+		Mockito.when(repository.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.of(new UserDTO(2, "email", "password", new Date(),new Date()))));
 		Principal principal = new Principal(user.id());
 		context.verify(()-> {
 			service.removeUser(principal, user.id())

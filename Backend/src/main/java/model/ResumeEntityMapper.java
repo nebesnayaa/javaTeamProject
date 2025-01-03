@@ -1,4 +1,4 @@
-package javaTeamProject.model;
+package model;
 
 import java.util.function.Function;
 

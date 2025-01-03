@@ -1,6 +1,6 @@
-package javaTeamProject.model;
+package model;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,8 +18,8 @@ public class User {
 	private Integer id;
 	private String email;
 	private String password;
-	private LocalDateTime createdAt;
-	private LocalDateTime updatedAt;
+	private Date createdAt;  // Замінили LocalDateTime на Date
+	private Date updatedAt;  // Замінили LocalDateTime на Date
 	@OneToMany(mappedBy ="user")
 	private List<Resume> resumes;
 	
@@ -48,17 +48,17 @@ public class User {
 		this.password = password;
 	}
 	
-	public LocalDateTime getCreatedAt() {
+	public Date getCreatedAt() {
 		return createdAt;
 	}
-	public void setCreatedAt(LocalDateTime createdAt) {
+	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
 	}
 	
-	public LocalDateTime getUpdatedAt() {
+	public Date getUpdatedAt() {
 		return updatedAt;
 	}
-	public void setUpdatedAt(LocalDateTime updatedAt) {
+	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 	

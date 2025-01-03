@@ -3,7 +3,7 @@ package interfaces;
 import java.util.Optional;
 
 import io.vertx.core.Future;
-import javaTeamProject.model.UserDTO;
+import model.UserDTO;
 
 public interface IUserRepository {
 	

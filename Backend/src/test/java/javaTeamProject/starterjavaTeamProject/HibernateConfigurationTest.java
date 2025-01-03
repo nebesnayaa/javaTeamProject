@@ -1,6 +1,7 @@
 package javaTeamProject.starterjavaTeamProject;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -19,12 +20,12 @@ import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
-import javaTeamProject.model.Resume;
-import javaTeamProject.model.ResumeDTO;
-import javaTeamProject.model.User;
-import javaTeamProject.model.UserDTO;
-import javaTeamProject.repository.ResumeRepository;
-import javaTeamProject.repository.UserRepository;
+import model.Resume;
+import model.ResumeDTO;
+import model.User;
+import model.UserDTO;
+import repository.ResumeRepository;
+import repository.UserRepository;
 
 @ExtendWith(VertxExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -67,7 +68,7 @@ class HibernateConfigurationTest {
 	
 	@Test
 	void createUserTest(Vertx vertx, VertxTestContext context) {
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto).
 			onFailure(err -> context.failNow(err))
@@ -82,11 +83,11 @@ class HibernateConfigurationTest {
 	
 	@Test 
 	void createResumeTest(Vertx vertx, VertxTestContext context){
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
 		context.verify(() -> {
 			userRepository.createUser(userDto).compose( user -> {
 				Assertions.assertNotNull(user.id());
-				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, LocalDateTime.now(),LocalDateTime.now(), Optional.of(user));
+				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, new Date(),new Date(), Optional.of(user));
 				return resumeRepository.createResume(resumeDto);
 			})
 			.onSuccess(result -> {
@@ -100,14 +101,14 @@ class HibernateConfigurationTest {
 	
 	@Test
 	void userResumeRelationTest(Vertx vertx, VertxTestContext context) {
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto).compose(user -> {
 				Assertions.assertNotNull(user);
 				System.out.println("USER ID IS: "+ user.id());
 				Assertions.assertNotNull(user.id());
 				Assertions.assertEquals(1, user.id());
-				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, LocalDateTime.now(),LocalDateTime.now(), Optional.of(user));
+				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, new Date(),new Date(), Optional.of(user));
 				return resumeRepository.createResume(resumeDto);
 			})
 			.onSuccess(result->{
@@ -134,7 +135,7 @@ class HibernateConfigurationTest {
 	
 	@Test
 	void findUserByIdDoesExistTest(Vertx vertx, VertxTestContext context) {
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto)
 			.compose(u->{
@@ -150,7 +151,7 @@ class HibernateConfigurationTest {
 	
 	@Test
 	void removeUserTest(Vertx vertx, VertxTestContext context) {
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto)
 			.compose(u -> {
@@ -169,7 +170,7 @@ class HibernateConfigurationTest {
 	
 	@Test 
 	void updateUserTest(Vertx vertx, VertxTestContext context){
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
 		context.verify(()-> {
 				userRepository.createUser(userDto).compose( u-> {
 				UserDTO updatedResume = new UserDTO(1, "newUserEmail@gmail.com", 
@@ -205,10 +206,10 @@ class HibernateConfigurationTest {
 	
 	@Test
 	void findResumeByIdExistTest(Vertx vertx, VertxTestContext context) {
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto).compose(user -> {
-				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, LocalDateTime.now(),LocalDateTime.now(), Optional.of(user));
+				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, new Date(),new Date(), Optional.of(user));
 				return resumeRepository.createResume(resumeDto);
 			})
 			.compose(resume -> {
@@ -225,10 +226,10 @@ class HibernateConfigurationTest {
 	
 	@Test
 	void removeResumeTest(Vertx vertx, VertxTestContext context) {
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto).compose(user -> {
-				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, LocalDateTime.now(),LocalDateTime.now(), Optional.of(user));
+				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, new Date(),new Date(), Optional.of(user));
 				return resumeRepository.createResume(resumeDto);
 			})
 			.compose(resume -> {
@@ -247,10 +248,10 @@ class HibernateConfigurationTest {
 	
 	@Test
 	void  updateResumeTest(Vertx vertx, VertxTestContext context) {
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",LocalDateTime.now(),LocalDateTime.now());
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto).compose(user -> {
-				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, LocalDateTime.now(),LocalDateTime.now(), Optional.of(user));
+				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, new Date(),new Date(), Optional.of(user));
 				return resumeRepository.createResume(resumeDto);
 			})
 			.compose(r-> {
@@ -273,8 +274,8 @@ class HibernateConfigurationTest {
 	@SuppressWarnings("deprecation")
 	@Test
 	void findResumeByUserId(Vertx vertx, VertxTestContext context) {
-	    UserDTO userDto1 = new UserDTO(null, "user1Email@gmail.com", "userPassword", LocalDateTime.now(), LocalDateTime.now());
-	    UserDTO userDto2 = new UserDTO(null, "user2Email@gmail.com", "userPassword", LocalDateTime.now(), LocalDateTime.now());
+	    UserDTO userDto1 = new UserDTO(null, "user1Email@gmail.com", "userPassword", new Date(), new Date());
+	    UserDTO userDto2 = new UserDTO(null, "user2Email@gmail.com", "userPassword", new Date(), new Date());
 
 	    CompositeFuture usersCreations = CompositeFuture.join(
 	        userRepository.createUser(userDto1),
@@ -288,9 +289,9 @@ class HibernateConfigurationTest {
 	        UserDTO createdUser1 = (UserDTO) users.list().get(0);
 	        UserDTO createdUser2 = (UserDTO) users.list().get(1);
 
-	        ResumeDTO resumeDto1 = new ResumeDTO(null, "Content for user1", 1, LocalDateTime.now(), LocalDateTime.now(), Optional.of(createdUser1));
-	        ResumeDTO resumeDto2 = new ResumeDTO(null, "Another content for user1", 1, LocalDateTime.now(), LocalDateTime.now(), Optional.of(createdUser1));
-	        ResumeDTO resumeDto3 = new ResumeDTO(null, "Content for user2", 1, LocalDateTime.now(), LocalDateTime.now(), Optional.of(createdUser2));
+	        ResumeDTO resumeDto1 = new ResumeDTO(null, "Content for user1", 1, new Date(), new Date(), Optional.of(createdUser1));
+	        ResumeDTO resumeDto2 = new ResumeDTO(null, "Another content for user1", 1, new Date(), new Date(), Optional.of(createdUser1));
+	        ResumeDTO resumeDto3 = new ResumeDTO(null, "Content for user2", 1, new Date(), new Date(), Optional.of(createdUser2));
 
 	        CompositeFuture resumesCreations = CompositeFuture.join(
 	            resumeRepository.createResume(resumeDto1),
@@ -355,8 +356,8 @@ void initializeHibernateWithCodeTest(Vertx vertx, VertxTestContext context) {
 	//user.setId(1);
 	user.setEmail("test@gmail.com");
 	user.setPassword("passwordFrom18_12_2024");
-	user.setCreatedAt(LocalDateTime.now());
-	user.setUpdatedAt(LocalDateTime.now());
+	user.setCreatedAt(new Date());
+	user.setUpdatedAt(new Date());
 	
 	System.out.println("Task ID before insertion: " + user.getId());
 	

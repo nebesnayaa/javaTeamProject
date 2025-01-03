@@ -1,4 +1,4 @@
-package javaTeamProject.repository;
+package repository;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -13,12 +13,12 @@ import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import javaTeamProject.model.Resume;
-import javaTeamProject.model.ResumeDTO;
-import javaTeamProject.model.User;
-import javaTeamProject.model.UserDTO;
-import javaTeamProject.model.UserDtoMapper;
-import javaTeamProject.model.UserEntityMapper;
+import model.Resume;
+import model.ResumeDTO;
+import model.User;
+import model.UserDTO;
+import model.UserDtoMapper;
+import model.UserEntityMapper;
 
 public record UserRepository(SessionFactory sessionFactory) implements IUserRepository {
 

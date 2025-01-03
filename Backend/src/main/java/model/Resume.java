@@ -1,6 +1,7 @@
-package javaTeamProject.model;
+package model;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import org.hibernate.sql.Template;
 
@@ -23,9 +24,9 @@ public class Resume {
 	
 	Integer templateId;
 	
-	LocalDateTime createdAt;
+	Date createdAt;
 	
-	LocalDateTime updatedAt;
+	Date updatedAt;
 	
 	@ManyToOne
 	@JoinColumn(name="user_id", nullable=true)
@@ -67,17 +68,17 @@ public class Resume {
 		this.templateId = templateId;
 	}
 	
-	public LocalDateTime getCreatedAt() {
+	public Date getCreatedAt() {
 		return createdAt;
 	}
-	public void setCreatedAt(LocalDateTime createdAt) {
+	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
 	}
 	
-	public LocalDateTime getUpdatedAt() {
+	public Date getUpdatedAt() {
 		return updatedAt;
 	}
-	public void setUpdatedAt(LocalDateTime updatedAt) {
+	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
 	}
 }

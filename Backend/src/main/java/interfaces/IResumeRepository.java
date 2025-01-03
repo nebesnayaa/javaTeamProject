@@ -3,8 +3,8 @@ package interfaces;
 import java.util.Optional;
 
 import io.vertx.core.Future;
-import javaTeamProject.model.ResumeDTO;
-import javaTeamProject.model.ResumesList;
+import model.ResumeDTO;
+import model.ResumesList;
 
 
 public interface IResumeRepository {
