@@ -8,6 +8,7 @@ import io.vertx.ext.web.client.WebClient;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 import model.UserDTO;
+import services.ResumeService;
 import services.UserService;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class MainVerticleTest {
 
 	@Mock private UserService userService;
+	@Mock private ResumeService resumeService;
 	@InjectMocks private MainVerticle verticle;
 	
 	WebClient client;
@@ -59,6 +61,24 @@ public class MainVerticleTest {
 			.onSuccess(result -> {
 				int statusCode = result.statusCode();
 				Assertions.assertEquals(200, statusCode);
+				context.completeNow();
+			});
+		});
+	}
+	
+	@Test
+	void findUserByIdDoesNotExistsTest (Vertx vertx, VertxTestContext context) {
+		UserDTO user = new UserDTO (1,"email", "password", new Date(), new Date());
+		Mockito.when(userService.findUserById(1)).thenReturn(Future.succeededFuture(Optional.empty()));
+		context.verify(()->{
+			client.getAbs("http://localhost:8080/users/one/1").send()
+			.onFailure(err -> {
+				err.printStackTrace();
+                context.failNow(err);
+			})
+			.onSuccess(result -> {
+				int statusCode = result.statusCode();
+				Assertions.assertEquals(404, statusCode);
 				context.completeNow();
 			});
 		});
