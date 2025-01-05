@@ -37,15 +37,16 @@ input {
   border-radius: 5px;
 }
 
-.input-wrapper input {
-  padding-left: 40px; /* Добавляем отступ для текста, чтобы не перекрывал иконку */
+/* .input-wrapper input {
+  padding-left: 30px; /* Добавляем отступ для текста, чтобы не перекрывал иконку 
   padding-right: 10px;
-}
+} */
 
 input[type="text"], input[type="password"], input[type="email"] {
   background: transparent;
   border: 2px solid #22272d;
-  padding: 25px 55px;
+  padding: 25px 50px;
+  margin: 10px 0;
   color: #e6b333;
 }
 

@@ -15,12 +15,13 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, onLogout }) => {
         <div>
           <Link to="/register">Регистрация</Link>
           <Link to="/login">Авторизация</Link>
+          <Link to="/profile">Мой профиль</Link> {/* Для тестування, потім прибрати*/}
         </div>
       ) : (
         <>
           <Link to="/users">Все пользователи</Link>
           <Link to="/resume">Резюме</Link>
-          <button onClick={onLogout}>Выйти</button>
+          <Link to="/profile">Мой профиль</Link> 
         </>
       )}
     </nav>

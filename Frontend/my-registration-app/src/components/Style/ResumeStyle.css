@@ -1,12 +1,16 @@
 .resume-form {
     max-width: 600px;
-    margin: 0 auto;
+    margin: 10px auto;
     padding: 20px;
-    border: 1px solid #ccc;
+    border: 1px solid #4a4a4a;
     border-radius: 8px;
-    background-color: #f9f9f9;
+    background-color: #646468;
   }
-  
+  .title{
+    padding: 0;
+    margin: 15px 0 20px;
+    text-align: center;
+  }
   .form-group {
     margin-bottom: 15px;
   }
@@ -17,22 +21,28 @@
     margin-bottom: 5px;
   }
   
-  input,
-  textarea,
-  select {
+  .form-group input, textarea, select {
     width: 100%;
     padding: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid #828282;
+    background-color: #565659;
     border-radius: 4px;
     font-size: 16px;
+  }
+
+  .form-group input:focus, textarea:focus, select:focus{
+    background-color: #444446;
   }
   
   textarea {
     resize: vertical;
   }
-  
+  .btn-box{
+    display: flex;
+    justify-content: center;
+  }
   .submit-button {
-    background-color: #4CAF50;
+    background-color: #358a38;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -42,6 +52,6 @@
   }
   
   .submit-button:hover {
-    background-color: #45a049;
+    background-color: rgb(58, 124, 61);
   }
   

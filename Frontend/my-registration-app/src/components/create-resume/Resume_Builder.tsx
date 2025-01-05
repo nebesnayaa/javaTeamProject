@@ -32,6 +32,7 @@ const ResumeForm: React.FC = () => {
 
   return (
     <form className="resume-form" onSubmit={handleSubmit}>
+      <h2 className="title">Создание резюме</h2>
       <div className="form-group">
         <label>ФИО:</label>
         <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} />
@@ -77,7 +78,9 @@ const ResumeForm: React.FC = () => {
         <label>Рекомендации:</label>
         <textarea name="recommendations" value={formData.recommendations} onChange={handleChange}></textarea>
       </div>
-      <button type="submit" className="submit-button">Сохранить</button>
+      <div className="btn-box">
+        <button type="submit" className="submit-button">Сохранить</button>
+      </div>
     </form>
   );
 };
