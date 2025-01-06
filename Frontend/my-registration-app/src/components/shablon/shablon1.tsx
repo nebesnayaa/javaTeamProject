@@ -10,8 +10,6 @@ export interface ResumeData {
   education: string;
   workExperience: string;
   skillsAndAwards: string;
-  personalInfo: string;
-  recommendations: string;
 }
 
 const ResumeTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
@@ -19,37 +17,34 @@ const ResumeTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
     <div className="resume-container">
       <div className="resume-header">
         <h1 className="resume-name">{data.fullName}</h1>
-        <h2 className="resume-title">Менеджер проектів</h2>
+        <p className="resume-age-gender">
+          Возраст: {data.age}, Пол: {data.gender === "male" ? "Мужской" : data.gender === "female" ? "Женский" : "Другой"}
+        </p>
       </div>
       <div className="resume-content">
         <div className="resume-section">
-          <h3>ОСОБИСТА ІНФОРМАЦІЯ</h3>
-          <p>{data.personalInfo}</p>
-        </div>
-
-        <div className="resume-section">
-          <h3>МОЇ КОНТАКТИ</h3>
+          <h3>Контактная информация</h3>
           <p>{data.contacts}</p>
         </div>
 
         <div className="resume-section">
-          <h3>ВМІННЯ ТА НАВИЧКИ</h3>
-          <p>{data.skillsAndAwards}</p>
+          <h3>Цель</h3>
+          <p>{data.objective}</p>
         </div>
 
         <div className="resume-section">
-          <h3>ІНШІ ВМІННЯ</h3>
-          <p>{data.recommendations}</p>
+          <h3>Образование</h3>
+          <p>{data.education}</p>
         </div>
 
         <div className="resume-section">
-          <h3>ДОСВІД РОБОТИ</h3>
+          <h3>Опыт работы</h3>
           <p>{data.workExperience}</p>
         </div>
 
         <div className="resume-section">
-          <h3>ОСВІТА ТА ПІДГОТОВКА</h3>
-          <p>{data.education}</p>
+          <h3>Навыки и награды</h3>
+          <p>{data.skillsAndAwards}</p>
         </div>
       </div>
     </div>
