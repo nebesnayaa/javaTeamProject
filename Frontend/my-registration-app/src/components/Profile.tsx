@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate  } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Style/Profile.css";
 
@@ -9,7 +9,7 @@ const Profile: React.FC = () => {
     email: "",
     password: "",
   });
-  
+
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(profileData);
 
@@ -17,6 +17,14 @@ const Profile: React.FC = () => {
     content: "",
   });
   const [resumeAvailable, setResumeAvailable] = useState(true);
+
+  const [selectedTemplate, setSelectedTemplate] = useState<string>(""); // Состояние для выбранного шаблона
+  const [templates] = useState([
+    { id: "template1", name: "Шаблон 1" },
+    { id: "template2", name: "Шаблон 2" },
+    { id: "template3", name: "Шаблон 3" },
+  ]); // Пример массива шаблонов
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,16 +67,18 @@ const Profile: React.FC = () => {
     axios
       .post("/api/logout", {}, { withCredentials: true })
       .then(() => {
-        // Очистка состояния
         setProfileData({ name: "", email: "", password: "" });
-        // Перенаправление на страницу входа
         window.location.href = "/login";
       })
       .catch((error) => console.error("Error during logout:", error));
   };
 
   const handleCreateResume = () => {
-    navigate("/resume");
+    navigate("/resume", { state: { templateId: selectedTemplate } }); // Передаем выбранный шаблон
+  };
+
+  const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedTemplate(e.target.value);
   };
 
   return (
@@ -76,7 +86,9 @@ const Profile: React.FC = () => {
       <div className="profilePanel">
         <nav className="navbar-profile">
           <a className="username">{profileData.name || "Username"}</a>
-          <button className="btn-logout" onClick={handleLogout}>Выйти</button>
+          <button className="btn-logout" onClick={handleLogout}>
+            Выйти
+          </button>
         </nav>
       </div>
       <div className="wrapper">
@@ -84,12 +96,20 @@ const Profile: React.FC = () => {
           <div className="navbar-profile">
             <h2>My profile</h2>
             {!isEditing ? (
-            <a className="icon-edit" onClick={() => setIsEditing(true)}>
-              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#D9D9D9">
-                <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/>
-              </svg>
-            </a>
-            ) : ( <></>) }
+              <a className="icon-edit" onClick={() => setIsEditing(true)}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="24px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  fill="#D9D9D9"
+                >
+                  <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
+                </svg>
+              </a>
+            ) : (
+              <></>
+            )}
           </div>
           {!isEditing ? (
             <div className="infoFields">
@@ -121,8 +141,15 @@ const Profile: React.FC = () => {
                 placeholder="Пароль"
               />
               <div className="buttons-container">
-                <button className="btn-save" onClick={handleSave}>Сохранить</button>
-                <button className="btn-cancel" onClick={() => setIsEditing(false)}>Отмена</button>
+                <button className="btn-save" onClick={handleSave}>
+                  Сохранить
+                </button>
+                <button
+                  className="btn-cancel"
+                  onClick={() => setIsEditing(false)}
+                >
+                  Отмена
+                </button>
               </div>
             </div>
           )}
@@ -130,6 +157,19 @@ const Profile: React.FC = () => {
       </div>
       <div className="resume-container">
         <h3>Моє резюме</h3>
+        <label>Выберите шаблон:</label>
+        <select
+          value={selectedTemplate}
+          onChange={handleTemplateChange}
+          className="template-select"
+        >
+          <option value="">Выберите шаблон</option>
+          {templates.map((template) => (
+            <option key={template.id} value={template.id}>
+              {template.name}
+            </option>
+          ))}
+        </select>
         {resumeAvailable ? (
           <div>
             <p>{resumeData?.content}</p>
@@ -138,7 +178,9 @@ const Profile: React.FC = () => {
         ) : (
           <div className="create-resume">
             <p className="text">Вы еще не создали резюме.</p>
-            <button className="btn-add" onClick={handleCreateResume}>Создать</button>
+            <button className="btn-add" onClick={handleCreateResume}>
+              Создать
+            </button>
           </div>
         )}
       </div>

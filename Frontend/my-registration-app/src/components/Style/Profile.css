@@ -117,3 +117,12 @@ h2, h3{
   font-size: 0.9em;
   cursor: pointer;
 }
+
+.template-select {
+  margin: 10px 0;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  max-width: 300px;
+}
