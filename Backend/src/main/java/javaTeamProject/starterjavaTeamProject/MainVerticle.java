@@ -1,8 +1,11 @@
 package javaTeamProject.starterjavaTeamProject;
 
+import java.util.Objects;
 import java.util.Properties;
 
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import io.vertx.core.json.Json;
+import io.vertx.core.json.jackson.DatabindCodec;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.reactive.provider.ReactiveServiceRegistryBuilder;
 import org.hibernate.reactive.stage.Stage;
@@ -36,6 +39,13 @@ public class MainVerticle extends AbstractVerticle {
 
 	@Override
 	public void start(Promise<Void> startPromise) throws Exception {
+    /*
+    * Enables mapping Optional
+    * Error sample
+    * java.lang.IllegalArgumentException: Java 8 optional type java.util.Optional<model.UserDTO> not supported by default: add Module "com.fasterxml.jackson.datatype:jackson-datatype-jdk8" to enable handling
+     */
+    DatabindCodec.mapper().registerModule(new Jdk8Module());
+    DatabindCodec.prettyMapper().registerModule(new Jdk8Module());
 
     if(this.userService == null){
       System.out.println("userService is null");
@@ -48,11 +58,19 @@ public class MainVerticle extends AbstractVerticle {
 			context.response().setStatusCode(200).send("Hello from server!");
 		});
 
+    router.post("/users/signup").handler(context -> {
+      if(!context.body().isEmpty()){
+
+      }
+      else {
+        context.response().setStatusCode(400).end("Body is empty");
+      }
+    });
+
 		router.get("/users/one/:id").handler(context -> {
 			try {
 				Integer id = Integer.parseInt(context.pathParam("id"));
 
-        assert userService != null;
         userService.findUserById(id).onSuccess(result -> {
 					if (result.isPresent()) {
 						JsonObject body = JsonObject.mapFrom(result.get());
@@ -69,15 +87,34 @@ public class MainVerticle extends AbstractVerticle {
 		});
 
 		router.get("/resumes/userId/:userId").handler(context -> {
-			Integer userId = Integer.parseInt(context.pathParam("userId"));
+      try {
+        Integer userId = Integer.parseInt(context.pathParam("userId"));
 
+        resumeService.findResumeByUserId(userId).
+          onSuccess(result -> {
+
+            if(result.resumes().isEmpty()){
+              context.response().setStatusCode(404).end("No resumes found.");
+            }
+            else{
+              JsonObject body = JsonObject.mapFrom(result);
+              context.response().setStatusCode(200).end(body.encode());
+            }
+          })
+          .onFailure(err -> {
+            context.response().setStatusCode(500).end(err.getMessage());
+          });
+      }
+      catch(NumberFormatException e){
+        context.response().setStatusCode(400).end(e.getMessage());
+      }
 		});
 		Dotenv dotenv = Dotenv.load();
-		Integer port = 8080;// Integer.parseInt(dotenv.get("PORT"), 8080);//config.getInteger("port");
+		Integer port = Integer.parseInt(Objects.requireNonNull(dotenv.get("PORT")));
 
 		server.requestHandler(router).listen(port)
       .onSuccess(result -> startPromise.complete())
-      .onFailure(err -> startPromise.fail(err));
+      .onFailure(err -> startPromise.fail(err.getMessage()));
 	}
 
 	public static void main(String[] args) {
@@ -121,5 +158,4 @@ public class MainVerticle extends AbstractVerticle {
 			System.out.println("Application is running");
 		});
 	}
-
 }
