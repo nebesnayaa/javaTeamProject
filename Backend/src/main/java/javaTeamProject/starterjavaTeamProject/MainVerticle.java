@@ -1,11 +1,16 @@
 package javaTeamProject.starterjavaTeamProject;
 
+import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.jackson.DatabindCodec;
+import io.vertx.ext.web.handler.BodyHandler;
+import model.ResumeDTO;
+import model.UserDTO;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.reactive.provider.ReactiveServiceRegistryBuilder;
 import org.hibernate.reactive.stage.Stage;
@@ -47,23 +52,34 @@ public class MainVerticle extends AbstractVerticle {
     DatabindCodec.mapper().registerModule(new Jdk8Module());
     DatabindCodec.prettyMapper().registerModule(new Jdk8Module());
 
-    if(this.userService == null){
-      System.out.println("userService is null");
-    }
-
 		HttpServer server = vertx.createHttpServer();
 		Router router = Router.router(vertx);
+
+    router.route("/*").handler(BodyHandler.create());
 
 		router.get("/").handler(context ->{
 			context.response().setStatusCode(200).send("Hello from server!");
 		});
 
     router.post("/users/signup").handler(context -> {
-      if(!context.body().isEmpty()){
-
+      JsonObject body = context.getBodyAsJson();
+      if(body == null){
+        context.response().setStatusCode(500).end("Internal server error");
+      }
+      else if(body.isEmpty()){
+        context.response().setStatusCode(400).end("Bad request");
       }
       else {
-        context.response().setStatusCode(400).end("Body is empty");
+        String email = body.getString("email");
+        String password = body.getString("password");
+        UserDTO user = new UserDTO(null, email, password, new Date(), new Date());
+        userService.createUser(user)
+          .onSuccess(result -> {
+            context.response().setStatusCode(201).end(body.encode());
+          })
+          .onFailure(err -> {
+            context.response().setStatusCode(500).end(err.getMessage());
+          });
       }
     });
 
@@ -101,14 +117,68 @@ public class MainVerticle extends AbstractVerticle {
               context.response().setStatusCode(200).end(body.encode());
             }
           })
-          .onFailure(err -> {
-            context.response().setStatusCode(500).end(err.getMessage());
-          });
+          .onFailure(err -> context.response().setStatusCode(500).end(err.getMessage()));
       }
       catch(NumberFormatException e){
         context.response().setStatusCode(400).end(e.getMessage());
       }
 		});
+
+    router.delete("/resumes/:id").handler(context -> {
+      Integer id = Integer.parseInt(context.pathParam("id"));
+      resumeService.removeResume(id)
+        .onSuccess(result -> context.response().setStatusCode(204).end())
+        .onFailure(err -> context.response().setStatusCode(500).end(err.getMessage()));
+    });
+
+    router.post("/resumes").handler(context -> {
+      JsonObject body = context.getBodyAsJson();
+      //JsonObject user  = body.getJsonObject("user");
+      Integer userId = body.getInteger("userId");//user.mapTo(UserDTO.class).id();
+      Integer templateId = body.getInteger("templateId");
+      String content = body.getString("content");
+      userService.findUserById(userId)
+      .onSuccess(res -> {
+
+        ResumeDTO payload = new ResumeDTO(null, content, templateId, new Date(), new Date(), res);
+        resumeService.createResume(payload)
+          .onSuccess(result -> {
+            JsonObject responseBody = JsonObject.mapFrom(result);
+            context.response().setStatusCode(201).end(responseBody.encode());
+          })
+          .onFailure(err -> {
+            context.response().setStatusCode(500).end(err.getMessage());
+          });
+      })
+      .onFailure(err -> {
+        context.response().setStatusCode(500).end(err.getMessage());
+      });
+    });
+
+    router.put("/resumes").handler(context -> {
+      JsonObject body = context.getBodyAsJson();
+      Integer id = body.getInteger("id");
+      Integer userId = body.getInteger("userId");
+      Integer templateId = body.getInteger("templateId");
+      String content = body.getString("content");
+      userService.findUserById(userId)
+        .onSuccess(res -> {
+
+          ResumeDTO payload = new ResumeDTO(id, content, null, null, null, res);
+          resumeService.updateResume(payload)
+            .onSuccess(result -> {
+              JsonObject responseBody = JsonObject.mapFrom(result);
+              context.response().setStatusCode(200).end(responseBody.encode());
+            })
+            .onFailure(err -> {
+              context.response().setStatusCode(500).end(err.getMessage());
+            });
+        })
+        .onFailure(err -> {
+          context.response().setStatusCode(500).end(err.getMessage());
+        });
+    });
+
 		Dotenv dotenv = Dotenv.load();
 		Integer port = Integer.parseInt(Objects.requireNonNull(dotenv.get("PORT")));
 
@@ -145,10 +215,6 @@ public class MainVerticle extends AbstractVerticle {
 		ResumeService resumeService = new ResumeService(resumeRepository);
 
 		MainVerticle verticle = new MainVerticle(userService,resumeService);
-
-//		DeploymentOptions options = new DeploymentOptions().setConfig(new JsonObject()
-//			    .put("userService", userService)
-//			    .put("resumeService", resumeService));
 
 		Vertx vertx = Vertx.vertx();
 		vertx.deployVerticle(verticle)
