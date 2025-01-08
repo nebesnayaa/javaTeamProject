@@ -224,5 +224,4 @@ public class MainVerticle extends AbstractVerticle {
 			System.out.println("Application is running");
 		});
 	}
-
 }
