@@ -63,43 +63,50 @@ public class MainVerticle extends AbstractVerticle {
 
     router.route("/*").handler(BodyHandler.create());
 
-		router.get("/").handler(context ->{
-			context.response().setStatusCode(200).send("Hello from server!");
-		});
-
     router.post("/users/signup").handler(context -> {
+      try {
+        JsonObject body = context.getBodyAsJson();
+        if (body == null) {
+          context.response().setStatusCode(500).end("Internal server error");
+        } else if (body.isEmpty()) {
+          context.response().setStatusCode(400).end("Bad request");
+        } else {
+          String email = body.getString("email");
+          String password = body.getString("password");
+          password = Hasher.getHash(password,10);
+          body.putNull("password");
+          UserDTO user = new UserDTO(null, email, password, new Date(), new Date());
+          userService.createUser(user)
+            .onSuccess(result -> {
+              String sessionId = UUID.randomUUID().toString();
+
+              JsonObject sessionData = new JsonObject()
+                .put("userId", result.id())
+                .put("email", result.email());
+
+              redisAPI.set(List.of(sessionId, sessionData.encode()))
+                .compose(res -> redisAPI.expire(List.of(sessionId, "3600")))
+                .onSuccess(res -> {
+                  context.response().setStatusCode(201).putHeader("Set-Cookie", "sessionId=" + sessionId + "; HttpOnly; Secure; SameSite=Strict").end(body.encode());
+                })
+                .onFailure(err -> {
+                  context.response().setStatusCode(500).end(err.getMessage());
+                });
+            })
+            .onFailure(err -> {
+              context.response().setStatusCode(500).end(err.getMessage());
+            });
+        }
+      }
+      catch (Exception e){
+        context.response().setStatusCode(500).end(e.getMessage());
+      }
+    });
+
+    router.post("/users/login").handler(context->{
       JsonObject body = context.getBodyAsJson();
-      if(body == null){
-        context.response().setStatusCode(500).end("Internal server error");
-      }
-      else if(body.isEmpty()){
-        context.response().setStatusCode(400).end("Bad request");
-      }
-      else {
-        String email = body.getString("email");
-        String password = body.getString("password");
-        UserDTO user = new UserDTO(null, email, password, new Date(), new Date());
-        userService.createUser(user)
-        .onSuccess(result -> {
-          String sessionId = UUID.randomUUID().toString();
-
-          JsonObject sessionData = new JsonObject()
-          .put("userId", result.id())
-          .put("email", result.email());
-
-          redisAPI.set(List.of(sessionId, sessionData.encode()))
-          .compose(res -> redisAPI.expire(List.of(sessionId, "3600")))
-          .onSuccess(res -> {
-              context.response().setStatusCode(201).putHeader("Set-Cookie", "sessionId="+sessionId + "; HttpOnly; Secure; SameSite=Strict").end(body.encode());
-          })
-          .onFailure(err -> {
-            context.response().setStatusCode(500).end(err.getMessage());
-          });
-        })
-        .onFailure(err -> {
-          context.response().setStatusCode(500).end(err.getMessage());
-        });
-      }
+      String email = body.getString("email");
+      String password = body.getString("password");
     });
 
 		router.get("/users/one/:id").handler(context -> {
