@@ -1,9 +1,6 @@
 package javaTeamProject.starterjavaTeamProject;
 
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import io.vertx.core.json.Json;
@@ -31,10 +28,15 @@ import repository.UserRepository;
 import services.ResumeService;
 import services.UserService;
 
+import io.vertx.redis.client.Redis;
+import io.vertx.redis.client.RedisAPI;
+import io.vertx.redis.client.RedisOptions;
+
 public class MainVerticle extends AbstractVerticle {
 
 	private final UserService userService ;
 	private final ResumeService resumeService;
+  private RedisAPI redisAPI;
 
 	public MainVerticle(UserService userService, ResumeService resumeService) {
 
@@ -51,6 +53,10 @@ public class MainVerticle extends AbstractVerticle {
      */
     DatabindCodec.mapper().registerModule(new Jdk8Module());
     DatabindCodec.prettyMapper().registerModule(new Jdk8Module());
+
+    RedisOptions redisOptions = new RedisOptions().setConnectionString("redis://localhost:6379");
+    Redis redisClient = Redis.createClient(vertx, redisOptions);
+    redisAPI = RedisAPI.api(redisClient);
 
 		HttpServer server = vertx.createHttpServer();
 		Router router = Router.router(vertx);
@@ -74,12 +80,25 @@ public class MainVerticle extends AbstractVerticle {
         String password = body.getString("password");
         UserDTO user = new UserDTO(null, email, password, new Date(), new Date());
         userService.createUser(user)
-          .onSuccess(result -> {
-            context.response().setStatusCode(201).end(body.encode());
+        .onSuccess(result -> {
+          String sessionId = UUID.randomUUID().toString();
+
+          JsonObject sessionData = new JsonObject()
+          .put("userId", result.id())
+          .put("email", result.email());
+
+          redisAPI.set(List.of(sessionId, sessionData.encode()))
+          .compose(res -> redisAPI.expire(List.of(sessionId, "3600")))
+          .onSuccess(res -> {
+              context.response().setStatusCode(201).putHeader("Set-Cookie", "sessionId="+sessionId + "; HttpOnly; Secure; SameSite=Strict").end(body.encode());
           })
           .onFailure(err -> {
             context.response().setStatusCode(500).end(err.getMessage());
           });
+        })
+        .onFailure(err -> {
+          context.response().setStatusCode(500).end(err.getMessage());
+        });
       }
     });
 
