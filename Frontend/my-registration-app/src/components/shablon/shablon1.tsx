@@ -1,5 +1,5 @@
 import React from "react";
-import "./ResumeTemplate.css";
+import "./ResumeTemplate1.css";
 
 export interface ResumeData {
   fullName: string;
@@ -12,9 +12,10 @@ export interface ResumeData {
   skillsAndAwards: string;
 }
 
-const ResumeTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
+const ResumeTemplate1: React.FC<{ data: ResumeData }> = ({ data }) => {
   return (
     <div className="resume-container">
+      <div className="upper-line"></div>
       <div className="resume-header">
         <h1 className="resume-name">{data.fullName}</h1>
         <p className="resume-age-gender">
@@ -22,27 +23,27 @@ const ResumeTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
         </p>
       </div>
       <div className="resume-content">
-        <div className="resume-section">
+        <div className="resume-section1">
           <h3>Контактная информация</h3>
           <p>{data.contacts}</p>
         </div>
 
-        <div className="resume-section">
+        <div className="resume-section1">
           <h3>Цель</h3>
           <p>{data.objective}</p>
         </div>
 
-        <div className="resume-section">
+        <div className="resume-section1">
           <h3>Образование</h3>
           <p>{data.education}</p>
         </div>
 
-        <div className="resume-section">
+        <div className="resume-section1">
           <h3>Опыт работы</h3>
           <p>{data.workExperience}</p>
         </div>
 
-        <div className="resume-section">
+        <div className="resume-section1">
           <h3>Навыки и награды</h3>
           <p>{data.skillsAndAwards}</p>
         </div>
@@ -51,4 +52,4 @@ const ResumeTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
   );
 };
 
-export default ResumeTemplate;
+export default ResumeTemplate1;
