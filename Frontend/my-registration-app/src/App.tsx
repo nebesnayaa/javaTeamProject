@@ -9,6 +9,7 @@ import ResumeForm from './components/create-resume/Resume_Builder';
 import Profile from "./components/Profile";
 import ResumeTemplate1 from "./components/shablon/shablon1";
 import ResumeTemplate2 from "./components/shablon/shablon2";
+import ResumeTemplate3 from "./components/shablon/shablon3";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -65,6 +66,7 @@ const App = () => {
           <Route path="/profile" element={<Profile />} /> 
           <Route path="/shablon1" element={<ResumeTemplate1 data={data} />} />
           <Route path="/shablon2" element={<ResumeTemplate2 data={data} />} /> 
+          <Route path="/shablon3" element={<ResumeTemplate3 data={data} />} /> 
         </Routes> 
       </BrowserRouter>
     </>
