@@ -48,6 +48,10 @@ body {
   background-color: #b08819;
 }
 
+.container{
+  margin: 0 0 15px;
+}
+
 /* Стили для точек (.swing) */
 .swing div {
   border-radius: 50%;

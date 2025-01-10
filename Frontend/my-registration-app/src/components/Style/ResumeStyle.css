@@ -138,7 +138,7 @@ textarea {
 .form-group input, 
 textarea, 
 select {
-  color: orange;
+  color: #e6b333;
   font-family: 'Roboto', sans-serif; /* Указание подключенного шрифта */
   font-size: 14px;
   line-height: 1.5;

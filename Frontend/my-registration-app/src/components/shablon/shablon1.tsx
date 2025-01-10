@@ -19,32 +19,32 @@ const ResumeTemplate1: React.FC<{ data: ResumeData }> = ({ data }) => {
       <div className="resume-header">
         <h1 className="resume-name">{data.fullName}</h1>
         <p className="resume-age-gender">
-          Возраст: {data.age}, Пол: {data.gender === "male" ? "Мужской" : data.gender === "female" ? "Женский" : "Другой"}
+          Age: {data.age}, Gender: {data.gender === "male" ? "Male" : data.gender === "female" ? "Female" : "Other"}
         </p>
       </div>
       <div className="resume-content">
         <div className="resume-section1">
-          <h3>Контактная информация</h3>
+          <h3>Contacts</h3>
           <p>{data.contacts}</p>
         </div>
 
         <div className="resume-section1">
-          <h3>Цель</h3>
+          <h3>Aim</h3>
           <p>{data.objective}</p>
         </div>
 
         <div className="resume-section1">
-          <h3>Образование</h3>
+          <h3>Education</h3>
           <p>{data.education}</p>
         </div>
 
         <div className="resume-section1">
-          <h3>Опыт работы</h3>
+          <h3>Work experience</h3>
           <p>{data.workExperience}</p>
         </div>
 
         <div className="resume-section1">
-          <h3>Навыки и награды</h3>
+          <h3>Skills and awards</h3>
           <p>{data.skillsAndAwards}</p>
         </div>
       </div>

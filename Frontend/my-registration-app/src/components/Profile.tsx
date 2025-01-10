@@ -20,9 +20,9 @@ const Profile: React.FC = () => {
 
   const [selectedTemplate, setSelectedTemplate] = useState<string>(""); // Состояние для выбранного шаблона
   const [templates] = useState([
-    { id: "template1", name: "Шаблон 1" },
-    { id: "template2", name: "Шаблон 2" },
-    { id: "template3", name: "Шаблон 3" },
+    { id: "template1", name: "Template 1" },
+    { id: "template2", name: "Template 2" },
+    { id: "template3", name: "Template 3" },
   ]); // Пример массива шаблонов
 
   const navigate = useNavigate();
@@ -87,7 +87,7 @@ const Profile: React.FC = () => {
         <nav className="navbar-profile">
           <a className="username">{profileData.name || "Username"}</a>
           <button className="btn-logout" onClick={handleLogout}>
-            Выйти
+            Logout
           </button>
         </nav>
       </div>
@@ -113,9 +113,9 @@ const Profile: React.FC = () => {
           </div>
           {!isEditing ? (
             <div className="infoFields">
-              <p>Имя: {profileData.name}</p>
+              <p>Name: {profileData.name}</p>
               <p>Email: {profileData.email}</p>
-              <p>Пароль: {profileData.password}</p>
+              <p>Password: {profileData.password}</p>
             </div>
           ) : (
             <div className="infoFields">
@@ -124,7 +124,7 @@ const Profile: React.FC = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
-                placeholder="Имя"
+                placeholder="Name"
               />
               <input
                 type="email"
@@ -138,32 +138,32 @@ const Profile: React.FC = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                placeholder="Пароль"
+                placeholder="Password"
               />
               <div className="buttons-container">
                 <button className="btn-save" onClick={handleSave}>
-                  Сохранить
+                  Save
                 </button>
                 <button
                   className="btn-cancel"
                   onClick={() => setIsEditing(false)}
                 >
-                  Отмена
+                  Cancel
                 </button>
               </div>
             </div>
           )}
         </div>
       </div>
-      <div className="resume-container">
-        <h3>Моє резюме</h3>
-        <label>Выберите шаблон:</label>
+      <div className="resume-profile-container">
+        <h3>My resume</h3>
+        <label>Choose the template:</label>
         <select
           value={selectedTemplate}
           onChange={handleTemplateChange}
           className="template-select"
         >
-          <option value="">Выберите шаблон</option>
+          <option value="">Choose</option>
           {templates.map((template) => (
             <option key={template.id} value={template.id}>
               {template.name}
@@ -173,13 +173,13 @@ const Profile: React.FC = () => {
         {resumeAvailable ? (
           <div>
             <p>{resumeData?.content}</p>
-            <button>Редактировать резюме</button>
+            <button>Edit resume</button>
           </div>
         ) : (
           <div className="create-resume">
-            <p className="text">Вы еще не создали резюме.</p>
+            <p className="text">You haven't created any resume yet.</p>
             <button className="btn-add" onClick={handleCreateResume}>
-              Создать
+              Create
             </button>
           </div>
         )}

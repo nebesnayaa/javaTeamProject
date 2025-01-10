@@ -10,18 +10,18 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, onLogout }) => {
   return (
     <nav className="navbar">
-      <Link to="/">Главная</Link>
+      <Link to="/">Home</Link>
       {!isAuthenticated ? (
         <div>
-          <Link to="/register">Регистрация</Link>
-          <Link to="/login">Авторизация</Link>
-          <Link to="/profile">Мой профиль</Link> {/* Для тестування, потім прибрати*/}
+          <Link to="/register">Sign up</Link>
+          <Link to="/login">Sign in</Link>
+          <Link to="/profile">Profile</Link> {/* Для тестування, потім прибрати*/}
         </div>
       ) : (
         <>
           <Link to="/users">Все пользователи</Link>
-          <Link to="/resume">Резюме</Link>
-          <Link to="/profile">Мой профиль</Link> 
+          <Link to="/resume">Resume</Link>
+          <Link to="/profile">Profile</Link> 
         </>
       )}
     </nav>

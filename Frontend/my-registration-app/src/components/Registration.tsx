@@ -16,12 +16,12 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      setErrorMessage("Пароли не совпадают");
+      setErrorMessage("Passwords don't match");
       return;
     }
 
     if (!validateEmail(email) || !validatePassword(password)) {
-      setErrorMessage("Неверный формат email или пароля");
+      setErrorMessage("Invalid email or password format");
       return;
     }
 
@@ -45,7 +45,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess }) => {
                 type="email"
                 id="email"
                 name="email"
-                placeholder="Введите email"
+                placeholder="Input email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -62,7 +62,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess }) => {
                 type="password"
                 id="password"
                 name="password"
-                placeholder="Введите пароль"
+                placeholder="Input password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -79,7 +79,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess }) => {
                 type="password"
                 id="confirm-password"
                 name="confirm-password"
-                placeholder="Подтвердите пароль"
+                placeholder="Confirm password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -88,7 +88,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess }) => {
 
             {errorMessage && <div className="registration-message">{errorMessage}</div>}
 
-            <input type="submit" value="Зарегистрироваться" />
+            <input type="submit" value="Sign up" />
           </div>
         </form>
       </div>
