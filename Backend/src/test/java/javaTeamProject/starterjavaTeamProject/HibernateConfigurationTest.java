@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.hibernate.cfg.Configuration;
 import org.hibernate.reactive.provider.ReactiveServiceRegistryBuilder;
@@ -30,17 +31,17 @@ import repository.UserRepository;
 @ExtendWith(VertxExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class HibernateConfigurationTest {
-	
+
 	final String USER = "root";
 	final String PASSWORD = "rootroot";
 	final String DB_NAME= "test";
 	final String PORT = "3306";
-	
-	
-	
+
+
+
 	ResumeRepository resumeRepository;
 	UserRepository userRepository;
-	
+
 	@BeforeEach
 	void setup(Vertx vertx, VertxTestContext context) {
 		System.out.println("Running setup...");
@@ -58,32 +59,32 @@ class HibernateConfigurationTest {
 		hibernateConfiguration.addProperties(hibernateProps);
 		hibernateConfiguration.addAnnotatedClass(User.class);
 		hibernateConfiguration.addAnnotatedClass(Resume.class);
-		
+
 		ServiceRegistry serviceRegistry = new ReactiveServiceRegistryBuilder().applySettings(hibernateConfiguration.getProperties()).build();
 		Stage.SessionFactory sessionFactory = hibernateConfiguration.buildSessionFactory(serviceRegistry).unwrap(Stage.SessionFactory.class);
 		resumeRepository = new ResumeRepository(sessionFactory);
 		userRepository = new UserRepository(sessionFactory);
 		context.completeNow();
 	}
-	
+
 	@Test
 	void createUserTest(Vertx vertx, VertxTestContext context) {
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
+		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto).
 			onFailure(err -> context.failNow(err))
 			.onSuccess(r->{
 				Assertions.assertNotNull(r);
 				Assertions.assertNotNull(r.id());
-				Assertions.assertEquals(1, r.id());
+        System.out.println(r.id());
 				context.completeNow();
 			});
 		});
 	}
-	
-	@Test 
+
+	@Test
 	void createResumeTest(Vertx vertx, VertxTestContext context){
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
+    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
 		context.verify(() -> {
 			userRepository.createUser(userDto).compose( user -> {
 				Assertions.assertNotNull(user.id());
@@ -98,31 +99,32 @@ class HibernateConfigurationTest {
 			.onFailure(err -> context.failNow(err));
 		});
 	}
-	
+
 	@Test
 	void userResumeRelationTest(Vertx vertx, VertxTestContext context) {
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
+    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto).compose(user -> {
 				Assertions.assertNotNull(user);
 				System.out.println("USER ID IS: "+ user.id());
 				Assertions.assertNotNull(user.id());
-				Assertions.assertEquals(1, user.id());
+				//Assertions.assertEquals(1, user.id());
 				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, new Date(),new Date(), Optional.of(user));
 				return resumeRepository.createResume(resumeDto);
 			})
 			.onSuccess(result->{
 				Assertions.assertTrue(result.user().isPresent());
+        System.out.println("userResumeRelationTest: "+ result.user().get().id());
 				context.completeNow();
 			})
 			.onFailure(err -> context.failNow(err));
 		});
 	}
-	
+
 	@Test
 	void findUserByIdDoesNotExist(Vertx vertx, VertxTestContext context) {
 		context.verify(()-> {
-			userRepository.findUserById(1)
+			userRepository.findUserById(UUID.randomUUID())
 			.onSuccess(r -> {
 				Assertions.assertTrue(r.isEmpty());
 				context.completeNow();
@@ -132,10 +134,10 @@ class HibernateConfigurationTest {
 			});
 		});
 	}
-	
+
 	@Test
 	void findUserByIdDoesExistTest(Vertx vertx, VertxTestContext context) {
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
+    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto)
 			.compose(u->{
@@ -148,17 +150,17 @@ class HibernateConfigurationTest {
 			});
 		});
 	}
-	
+
 	@Test
 	void removeUserTest(Vertx vertx, VertxTestContext context) {
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
+    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto)
 			.compose(u -> {
-				Assertions.assertEquals(1, u.id());
-				return userRepository.removeUser(u.id());
+        UUID userId = u.id();
+				return userRepository.removeUser(u.id()).map(v -> userId);
 			})
-			.compose(u -> userRepository.findUserById(1)
+			.compose(u -> userRepository.findUserById(u)
 			)
 			.onFailure(err -> context.failNow(err))
 			.onSuccess(u ->{
@@ -167,26 +169,32 @@ class HibernateConfigurationTest {
 			});
 		});
 	}
-	
-	@Test 
+
+	@Test
 	void updateUserTest(Vertx vertx, VertxTestContext context){
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
+    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
 		context.verify(()-> {
 				userRepository.createUser(userDto).compose( u-> {
-				UserDTO updatedResume = new UserDTO(1, "newUserEmail@gmail.com", 
-						"newUserPassword",userDto.createdAt(), userDto.updatedAt());
+				UserDTO updatedResume = new UserDTO(u.id(), "newUserEmail@gmail.com",
+						"newUserPassword", "new gender", "new phone", 0, userDto.createdAt(), userDto.updatedAt());
 				return userRepository.updateUser(updatedResume);
 			}).compose(r -> {
 				Assertions.assertEquals("newUserEmail@gmail.com",r.email());
 				Assertions.assertEquals("newUserPassword",r.password());
+        Assertions.assertEquals("new gender",r.gender());
+        Assertions.assertEquals("new phone",r.phone());
+        Assertions.assertEquals(0,r.age());
 				return userRepository.findUserById(r.id());
 			})
 			.onFailure(err -> context.failNow(err))
 			.onSuccess(r -> {
 				Assertions.assertTrue(r.isPresent());
 				UserDTO result = r.get();
-				Assertions.assertEquals("newUserEmail@gmail.com",result.email());
-				Assertions.assertEquals("newUserPassword",result.password());
+        Assertions.assertEquals("newUserEmail@gmail.com",result.email());
+        Assertions.assertEquals("newUserPassword",result.password());
+        Assertions.assertEquals("new gender",result.gender());
+        Assertions.assertEquals("new phone",result.phone());
+        Assertions.assertEquals(0,result.age());
 				context.completeNow();
 			});
 		});
@@ -195,7 +203,7 @@ class HibernateConfigurationTest {
 	@Test
 	void findResumeByIdDoesNotExistTest(Vertx vertx, VertxTestContext context) {
 		context.verify(()->{
-			resumeRepository.findResumeById(1)
+			resumeRepository.findResumeById(UUID.randomUUID())
 			.onSuccess(result ->{
 				Assertions.assertTrue(result.isEmpty());
 				context.completeNow();
@@ -203,10 +211,10 @@ class HibernateConfigurationTest {
 			.onFailure(err -> context.failNow(err));
 		});
 	}
-	
+
 	@Test
 	void findResumeByIdExistTest(Vertx vertx, VertxTestContext context) {
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
+    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto).compose(user -> {
 				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, new Date(),new Date(), Optional.of(user));
@@ -223,10 +231,10 @@ class HibernateConfigurationTest {
 			.onFailure(err -> context.failNow(err));
 		});
 	}
-	
+
 	@Test
 	void removeResumeTest(Vertx vertx, VertxTestContext context) {
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
+    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto).compose(user -> {
 				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, new Date(),new Date(), Optional.of(user));
@@ -245,10 +253,10 @@ class HibernateConfigurationTest {
 			.onFailure(err -> context.failNow(err));
 		});
 	}
-	
+
 	@Test
 	void  updateResumeTest(Vertx vertx, VertxTestContext context) {
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword",new Date(),new Date());
+    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto).compose(user -> {
 				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, new Date(),new Date(), Optional.of(user));
@@ -270,12 +278,12 @@ class HibernateConfigurationTest {
 			});
 		});
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	@Test
 	void findResumeByUserId(Vertx vertx, VertxTestContext context) {
-	    UserDTO userDto1 = new UserDTO(null, "user1Email@gmail.com", "userPassword", new Date(), new Date());
-	    UserDTO userDto2 = new UserDTO(null, "user2Email@gmail.com", "userPassword", new Date(), new Date());
+	    UserDTO userDto1 = new UserDTO(null, "userEmail1@gmail.com", "userPassword1","gender1", "phone1", 21,new Date(),new Date());
+	    UserDTO userDto2 = new UserDTO(null, "userEmail2@gmail.com", "userPassword2","gender2", "phone2", 22,new Date(),new Date());
 
 	    CompositeFuture usersCreations = CompositeFuture.join(
 	        userRepository.createUser(userDto1),
@@ -321,36 +329,36 @@ class HibernateConfigurationTest {
 /*@Test
 void initializeHibernateWithCodeTest(Vertx vertx, VertxTestContext context) {
 	//Creating properties with config data
-	
+
 	Properties hibernateProps = new Properties();
-	
+
 	//url
 	hibernateProps.put("hibernate.connection.url", "jdbc:mysql://localhost:3306/test");
-	
+
 	//credentials
 	hibernateProps.put("hibernate.connection.username", USER);
 	hibernateProps.put("hibernate.connection.password", PASSWORD);
-	
+
 	//schema diagram
 	hibernateProps.put("jakarta.persistence.schema-generation.database.action", "drop-and-create");
 	hibernateProps.put("hibernate.hbm2ddl.auto", "update");
 
 	//dialect *
 	hibernateProps.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-	
+
 	//Creating Hiberate configuration
 	Configuration hibernateConfiguration = new Configuration();
 	hibernateConfiguration.setProperties(hibernateProps);
 	hibernateConfiguration.addAnnotatedClass(User.class);
 	hibernateConfiguration.addAnnotatedClass(Resume.class);
-	
+
 	//Creating ServiceRegistry
 	ServiceRegistry serviceRegistry = new ReactiveServiceRegistryBuilder()
 										.applySettings(hibernateConfiguration.getProperties()).build();
-	
+
 	//Creating SessionFactory
 	Stage.SessionFactory sessionFactory = hibernateConfiguration.buildSessionFactory(serviceRegistry).unwrap(Stage.SessionFactory.class);
-	
+
 	//Doing something with db
 	User user = new User();
 	//user.setId(1);
@@ -358,11 +366,11 @@ void initializeHibernateWithCodeTest(Vertx vertx, VertxTestContext context) {
 	user.setPassword("passwordFrom18_12_2024");
 	user.setCreatedAt(new Date());
 	user.setUpdatedAt(new Date());
-	
+
 	System.out.println("Task ID before insertion: " + user.getId());
-	
+
 	var insertionResult = sessionFactory.withTransaction((s,t) -> s.persist(user));
-	
+
 	Future<Void> future = Future.fromCompletionStage(insertionResult);
 	context.verify(() -> future
 			.onFailure(err -> context.failNow(err))

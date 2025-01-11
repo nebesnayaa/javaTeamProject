@@ -2,6 +2,7 @@ package services;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import interfaces.IUserService;
 import io.vertx.core.Future;
@@ -12,7 +13,7 @@ public record UserService(UserRepository repository) implements IUserService {
 
 	@Override
 	public Future<UserDTO> updateUser(Principal principal, UserDTO userDTO) {
-		Integer principalId = principal.Id();
+		UUID principalId = principal.Id();
 		return repository.findUserById(principalId).compose(result -> {
 			if(result.isEmpty()) {
 				return Future.failedFuture(new RuntimeException());
@@ -28,8 +29,8 @@ public record UserService(UserRepository repository) implements IUserService {
 	}
 
 	@Override
-	public Future<Void> removeUser(Principal principal, Integer id) {
-		Integer principalId = principal.Id();
+	public Future<Void> removeUser(Principal principal, UUID id) {
+    UUID principalId = principal.Id();
 		return repository.findUserById(principalId).compose(result -> {
 			if(result.isEmpty()) {
 				return Future.failedFuture(new RuntimeException());
@@ -50,7 +51,7 @@ public record UserService(UserRepository repository) implements IUserService {
 	}
 
 	@Override
-	public Future<Optional<UserDTO>> findUserById(Integer id) {
+	public Future<Optional<UserDTO>> findUserById(UUID id) {
 		// TODO Auto-generated method stub
 		return repository.findUserById(id);
 	}
@@ -62,7 +63,7 @@ public record UserService(UserRepository repository) implements IUserService {
 	}
 
 	@Override
-	public Future<Void> removeUser(Integer id) {
+	public Future<Void> removeUser(UUID id) {
 		// TODO Auto-generated method stub
 		return repository.removeUser(id);
 	}

@@ -1,7 +1,9 @@
 package repository;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 
 import org.hibernate.reactive.stage.Stage.SessionFactory;
@@ -26,10 +28,10 @@ public record UserRepository(SessionFactory sessionFactory) implements IUserRepo
 	public Future<UserDTO> createUser(UserDTO user) {
 		UserEntityMapper entityMapper = new UserEntityMapper();
 		User entity = entityMapper.apply(user);
-		
+
 		CompletionStage<Void> result = sessionFactory.withTransaction((s,t)-> s.persist(entity));
 		Future<UserDTO> future = Future.fromCompletionStage(result).map(e -> new UserDtoMapper().apply(entity));
-		
+
 		return future;
 	}
 
@@ -39,11 +41,14 @@ public record UserRepository(SessionFactory sessionFactory) implements IUserRepo
 		CriteriaUpdate<User> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(User.class);
 		Root<User> root = criteriaUpdate.from(User.class);
 		Predicate predicate = criteriaBuilder.equal(root.get("id"), user.id());
-		
+
 		criteriaUpdate.set("email", user.email());
 		criteriaUpdate.set("password", user.password());
+    criteriaUpdate.set("gender", user.gender() );
+    criteriaUpdate.set("phone", user.phone());
+    criteriaUpdate.set("age", user.age());
 		criteriaUpdate.set("updatedAt", LocalDateTime.now());
-		
+
 		criteriaUpdate.where(predicate);
 		CompletionStage<Integer> result = sessionFactory.withTransaction((s,t) -> s.createQuery(criteriaUpdate).executeUpdate());
 		Future<UserDTO> future = Future.fromCompletionStage(result).map(r -> user);
@@ -51,20 +56,20 @@ public record UserRepository(SessionFactory sessionFactory) implements IUserRepo
 	}
 
 	@Override
-	public Future<Void> removeUser(Integer id) {
+	public Future<Void> removeUser(UUID id) {
 		CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
 		CriteriaDelete<User> criteriaDelete = criteriaBuilder.createCriteriaDelete(User.class);
 		Root<User> root = criteriaDelete.from(User.class);
 		Predicate predicate = criteriaBuilder.equal(root.get("id"), id);
 		criteriaDelete.where(predicate);
-		
+
 		CompletionStage<Integer> result = sessionFactory.withTransaction((s,t) -> s.createQuery(criteriaDelete).executeUpdate());
 		Future<Void> future = Future.fromCompletionStage(result).compose(r -> Future.succeededFuture());
 		return future;
 	}
 
 	@Override
-	public Future<Optional<UserDTO>> findUserById(Integer id) {
+	public Future<Optional<UserDTO>> findUserById(UUID id) {
 		UserDtoMapper dtoMapper = new UserDtoMapper();
 		CompletionStage<User> result = sessionFactory.withTransaction((s,t) -> s.find(User.class, id));
 		Future<Optional<UserDTO>> future = Future.fromCompletionStage(result).map(r -> Optional.ofNullable(r)).map(r -> r.map(dtoMapper));

@@ -1,6 +1,7 @@
 package services;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import interfaces.IResumeService;
 import io.vertx.core.Future;
@@ -18,7 +19,7 @@ public record ResumeService(ResumeRepository repository) implements IResumeServi
 	}
 
 	@Override
-	public Future<Void> removeResume(Principal principal, Integer id) {
+	public Future<Void> removeResume(Principal principal, UUID id) {
 		// TODO Auto-generated method stub
 		return null;
 	}*/
@@ -30,7 +31,7 @@ public record ResumeService(ResumeRepository repository) implements IResumeServi
 	}
 
 	@Override
-	public Future<Optional<ResumeDTO>> findResumeById(Integer id) {
+	public Future<Optional<ResumeDTO>> findResumeById(UUID id) {
 		// TODO Auto-generated method stub
 		return repository.findResumeById(id);
 	}
@@ -42,13 +43,13 @@ public record ResumeService(ResumeRepository repository) implements IResumeServi
 	}
 
 	@Override
-	public Future<Void> removeResume(Integer id) {
+	public Future<Void> removeResume(UUID id) {
 		// TODO Auto-generated method stub
 		return repository.removeResume(id);
 	}
 
 	@Override
-	public Future<ResumesList> findResumeByUserId(Integer userId) {
+	public Future<ResumesList> findResumeByUserId(UUID userId) {
 		// TODO Auto-generated method stub
 		return repository.findResumeByUserId(userId);
 	}

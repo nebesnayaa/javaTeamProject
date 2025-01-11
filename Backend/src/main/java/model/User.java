@@ -3,6 +3,7 @@ package model;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import jakarta.persistence.*;
 
@@ -10,10 +11,13 @@ import jakarta.persistence.*;
 @Table(name = "user", uniqueConstraints = @UniqueConstraint(columnNames = {"email"}))
 public class User {
 
-	@Id @GeneratedValue
-	private Integer id;
+	@Id @GeneratedValue(strategy = GenerationType.UUID)
+	private UUID id;
 	private String email;
 	private String password;
+  private String gender;
+  private String phone;
+  private Integer age;
 	private Date createdAt;  // Замінили LocalDateTime на Date
 	private Date updatedAt;  // Замінили LocalDateTime на Date
 	@OneToMany(mappedBy ="user")
@@ -23,10 +27,10 @@ public class User {
 
 	}
 
-	public Integer getId() {
+	public UUID getId() {
 		return id;
 	}
-	public void setId(Integer id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 
@@ -43,6 +47,15 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+  public String getGender (){return this.gender;}
+  public void setGender(String gender) {this.gender = gender;}
+
+  public String getPhone(){return this.phone;}
+  public void setPhone(String phone){this.phone = phone;}
+
+  public Integer getAge(){return this.age;}
+  public void setAge(Integer age){this.age = age;}
 
 	public Date getCreatedAt() {
 		return createdAt;

@@ -74,8 +74,11 @@ public class MainVerticle extends AbstractVerticle {
           String email = body.getString("email");
           String password = body.getString("password");
           password = Hasher.getHash(password,10);
+          String gender = body.getString("gender");
+          String phone = body.getString("phone");
+          Integer age = Integer.parseInt(body.getString("age"));
           body.putNull("password");
-          UserDTO user = new UserDTO(null, email, password, new Date(), new Date());
+          UserDTO user = new UserDTO(null, email, password,gender, phone, age, new Date(), new Date());
           userService.createUser(user)
             .onSuccess(result -> {
               String sessionId = UUID.randomUUID().toString();
@@ -87,7 +90,11 @@ public class MainVerticle extends AbstractVerticle {
               redisAPI.set(List.of(sessionId, sessionData.encode()))
                 .compose(res -> redisAPI.expire(List.of(sessionId, "3600")))
                 .onSuccess(res -> {
-                  context.response().setStatusCode(201).putHeader("Set-Cookie", "sessionId=" + sessionId + "; HttpOnly; Secure; SameSite=Strict").end(body.encode());
+                  try {
+                    context.response().setStatusCode(201).putHeader("Set-Cookie", "sessionId=" + AesEncryptor.encrypt(sessionId.toString()) + "; HttpOnly; Secure; SameSite=Strict").end(body.encode());
+                  } catch (Exception e) {
+                    throw new RuntimeException(e);
+                  }
                 })
                 .onFailure(err -> {
                   context.response().setStatusCode(500).end(err.getMessage());
@@ -111,7 +118,7 @@ public class MainVerticle extends AbstractVerticle {
 
 		router.get("/users/one/:id").handler(context -> {
 			try {
-				Integer id = Integer.parseInt(context.pathParam("id"));
+				UUID id = UUID.fromString(context.pathParam("id"));
 
         userService.findUserById(id).onSuccess(result -> {
 					if (result.isPresent()) {
@@ -130,7 +137,7 @@ public class MainVerticle extends AbstractVerticle {
 
 		router.get("/resumes/userId/:userId").handler(context -> {
       try {
-        Integer userId = Integer.parseInt(context.pathParam("userId"));
+        UUID userId = UUID.fromString(context.pathParam("userId"));
 
         resumeService.findResumeByUserId(userId).
           onSuccess(result -> {
@@ -151,7 +158,7 @@ public class MainVerticle extends AbstractVerticle {
 		});
 
     router.delete("/resumes/:id").handler(context -> {
-      Integer id = Integer.parseInt(context.pathParam("id"));
+      UUID id = UUID.fromString(context.pathParam("id"));
       resumeService.removeResume(id)
         .onSuccess(result -> context.response().setStatusCode(204).end())
         .onFailure(err -> context.response().setStatusCode(500).end(err.getMessage()));
@@ -160,7 +167,7 @@ public class MainVerticle extends AbstractVerticle {
     router.post("/resumes").handler(context -> {
       JsonObject body = context.getBodyAsJson();
       //JsonObject user  = body.getJsonObject("user");
-      Integer userId = body.getInteger("userId");//user.mapTo(UserDTO.class).id();
+      UUID userId = UUID.fromString(body.getString("userId"));//user.mapTo(UserDTO.class).id();
       Integer templateId = body.getInteger("templateId");
       String content = body.getString("content");
       userService.findUserById(userId)
@@ -183,8 +190,8 @@ public class MainVerticle extends AbstractVerticle {
 
     router.put("/resumes").handler(context -> {
       JsonObject body = context.getBodyAsJson();
-      Integer id = body.getInteger("id");
-      Integer userId = body.getInteger("userId");
+      UUID id = UUID.fromString(body.getString("id"));
+      UUID userId = UUID.fromString(body.getString("userId"));
       Integer templateId = body.getInteger("templateId");
       String content = body.getString("content");
       userService.findUserById(userId)

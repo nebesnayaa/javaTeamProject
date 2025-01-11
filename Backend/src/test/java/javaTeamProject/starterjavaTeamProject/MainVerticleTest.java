@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +60,7 @@ public class MainVerticleTest {
 
   @Test
   void signupTest(Vertx vertx, VertxTestContext context){
-    UserDTO user = new UserDTO (1,"email", "password", new Date(), new Date());
+    UserDTO user = new UserDTO(UUID.randomUUID(), "email", "password","gender", "phone", 21, new Date(),new Date());
     Mockito.when(userService.createUser(Mockito.any(UserDTO.class))).thenReturn(Future.succeededFuture(user));
     context.verify(()->{
       JsonObject requestBody = JsonObject.mapFrom(user);
@@ -74,8 +75,8 @@ public class MainVerticleTest {
 
 	@Test
 	void findUserByIdExistsTest (Vertx vertx, VertxTestContext context) {
-		UserDTO user = new UserDTO (1,"email", "password", new Date(), new Date());
-		Mockito.when(userService.findUserById(1)).thenReturn(Future.succeededFuture(Optional.of(user)));
+		UserDTO user = new UserDTO(UUID.randomUUID(), "email", "password","gender", "phone", 21, new Date(),new Date());
+		Mockito.when(userService.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.of(user)));
 		context.verify(()->{
 			client.getAbs("http://localhost:8080/users/one/1").send()
 			.onFailure(err -> {
@@ -92,8 +93,8 @@ public class MainVerticleTest {
 
 	@Test
 	void findUserByIdDoesNotExistsTest (Vertx vertx, VertxTestContext context) {
-		UserDTO user = new UserDTO (1,"email", "password", new Date(), new Date());
-		Mockito.when(userService.findUserById(1)).thenReturn(Future.succeededFuture(Optional.empty()));
+		UserDTO user = new UserDTO(UUID.randomUUID(), "email", "password","gender", "phone", 21, new Date(),new Date());
+		Mockito.when(userService.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.empty()));
 		context.verify(()->{
 			client.getAbs("http://localhost:8080/users/one/1").send()
 			.onFailure(err -> {
@@ -110,12 +111,12 @@ public class MainVerticleTest {
 
   @Test
   void findResumeByUserTest (Vertx vertx, VertxTestContext context) {
-    UserDTO user = new UserDTO(1, "email1", "password1", new Date(), new Date());
+    UserDTO user = new UserDTO(UUID.randomUUID(), "email", "password","gender", "phone", 21, new Date(),new Date());
     List<ResumeDTO> resumes = List.of(
-      new ResumeDTO(1 ,"content 1", 1, new Date(), new Date(), Optional.of(user)),
-      new ResumeDTO(2 ,"content 2", 2, new Date(), new Date(), Optional.of(user)),
-      new ResumeDTO(3, "content 3", 1, new Date(), new Date(), Optional.of(user)),
-      new ResumeDTO(4 ,"content 4", 1, new Date(), new Date(), Optional.of(user))
+      new ResumeDTO(UUID.randomUUID() ,"content 1", 1, new Date(), new Date(), Optional.of(user)),
+      new ResumeDTO(UUID.randomUUID() ,"content 2", 2, new Date(), new Date(), Optional.of(user)),
+      new ResumeDTO(UUID.randomUUID(), "content 3", 1, new Date(), new Date(), Optional.of(user)),
+      new ResumeDTO(UUID.randomUUID() ,"content 4", 1, new Date(), new Date(), Optional.of(user))
     );
     ResumesList resumesList = new ResumesList(resumes);
     Mockito.when(resumeService.findResumeByUserId(user.id())).thenReturn(Future.succeededFuture(resumesList));
@@ -133,7 +134,7 @@ public class MainVerticleTest {
 
   @Test
   void deleteResumeTest (Vertx vert, VertxTestContext context){
-    int id = 1;
+    UUID id = UUID.randomUUID();
     Mockito.when(resumeService.removeResume(id)).thenReturn(Future.succeededFuture());
     context.verify(()->{
       client.deleteAbs("http://localhost:8080/resumes/" + id).send()
@@ -147,8 +148,8 @@ public class MainVerticleTest {
 
   @Test
   void createResumeTest(Vertx vert, VertxTestContext context){
-    UserDTO user = new UserDTO(1, "email1", "password1", new Date(), new Date());
-    ResumeDTO resume =  new ResumeDTO(1 ,"content 1", 1, new Date(), new Date(), Optional.of(user));
+    UserDTO user = new UserDTO(UUID.randomUUID(), "email", "password","gender", "phone", 21, new Date(),new Date());
+    ResumeDTO resume =  new ResumeDTO(UUID.randomUUID() ,"content 1", 1, new Date(), new Date(), Optional.of(user));
     Mockito.when(userService.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.of(user)));
     Mockito.when(resumeService.createResume(Mockito.any(ResumeDTO.class))).thenReturn(Future.succeededFuture(resume));
     context.verify(() -> {
@@ -166,8 +167,8 @@ public class MainVerticleTest {
 
   @Test
   void updateResumeTest(Vertx vert, VertxTestContext context){
-    UserDTO user = new UserDTO(1, "email1", "password1", new Date(), new Date());
-    ResumeDTO resume =  new ResumeDTO(1 ,"content 1", 1, new Date(), new Date(), Optional.of(user));
+    UserDTO user = new UserDTO(UUID.randomUUID(), "email", "password","gender", "phone", 21, new Date(),new Date());
+    ResumeDTO resume =  new ResumeDTO(UUID.randomUUID() ,"content 1", 1, new Date(), new Date(), Optional.of(user));
     Mockito.when(userService.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.of(user)));
     Mockito.when(resumeService.updateResume(Mockito.any(ResumeDTO.class))).thenReturn(Future.succeededFuture(resume));
     context.verify(() -> {

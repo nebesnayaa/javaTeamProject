@@ -3,6 +3,7 @@ package repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
@@ -23,12 +24,12 @@ import model.ResumeEntityMapper;
 import model.ResumesList;
 
 public record ResumeRepository (Stage.SessionFactory sessionFactory) implements IResumeRepository {
-	
+
 	@Override
 	public Future<ResumeDTO> createResume(ResumeDTO resume) {
 	    ResumeEntityMapper entityMapper = new ResumeEntityMapper();
 	    Resume entity = entityMapper.apply(resume);
-	    
+
 	    return Future.fromCompletionStage(
 	        sessionFactory.withTransaction((s, t) -> s.persist(entity))
 	            .exceptionally(ex -> {
@@ -45,42 +46,42 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
 		CriteriaUpdate<Resume> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(Resume.class);
 		Root<Resume> root = criteriaUpdate.from(Resume.class);
 		Predicate predicate = criteriaBuilder.equal(root.get("id"), resume.id());
-		
+
 		criteriaUpdate.set("content", resume.content());
 		criteriaUpdate.set("updatedAt", LocalDateTime.now());
-		
+
 		criteriaUpdate.where(predicate);
-		
+
 		CompletionStage<Integer> result = sessionFactory.withTransaction((s,t) -> s.createQuery(criteriaUpdate).executeUpdate());
 		Future<ResumeDTO> future = Future.fromCompletionStage(result).map(r -> resume);
 		return future;
 	}
 
 	@Override
-	public Future<Void> removeResume(Integer id) {
+	public Future<Void> removeResume(UUID id) {
 		CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
 		CriteriaDelete<Resume> criteriaDelete = criteriaBuilder.createCriteriaDelete(Resume.class);
 		Root<Resume> root = criteriaDelete.from(Resume.class);
 		Predicate predicate = criteriaBuilder.equal(root.get("id"), id); //id == [id]
 		criteriaDelete.where(predicate);
-		
+
 		CompletionStage<Integer> result = sessionFactory.withTransaction((s,t) -> s.createQuery(criteriaDelete).executeUpdate());
 		Future<Void> future = Future.fromCompletionStage(result).compose(r -> Future.succeededFuture());
 		return future;
 	}
 
 	@Override
-	public Future<Optional<ResumeDTO>> findResumeById(Integer id) {
+	public Future<Optional<ResumeDTO>> findResumeById(UUID id) {
 		ResumeDtoMapper dtoMapper = new ResumeDtoMapper();
 		CompletionStage<Resume> result = sessionFactory().withTransaction((s,t) -> s.find(Resume.class, id));
-		Future<Optional<ResumeDTO>> future = Future.fromCompletionStage(result)									
+		Future<Optional<ResumeDTO>> future = Future.fromCompletionStage(result)
 												.map(r -> Optional.ofNullable(r))
 												.map(r -> r.map(dtoMapper));
 		return future;
 	}
 
 	@Override
-	public Future<ResumesList> findResumeByUserId(Integer userId) {
+	public Future<ResumesList> findResumeByUserId(UUID userId) {
 		ResumeDtoMapper dtoMapper = new ResumeDtoMapper();
 		CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
 		CriteriaQuery<Resume> criteriaQuery = criteriaBuilder.createQuery(Resume.class);

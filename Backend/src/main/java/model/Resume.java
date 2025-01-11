@@ -2,6 +2,7 @@ package model;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 import org.hibernate.sql.Template;
 
@@ -18,7 +19,7 @@ public class Resume {
 
 	@Id @GeneratedValue
 
-	Integer id;
+  UUID id;
 
 	String content;
 
@@ -40,11 +41,11 @@ public class Resume {
 		return new UserDtoMapper().apply(user);
 	}
 
-	public Integer getId() {
+	public UUID getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
 

@@ -1,5 +1,7 @@
 package services;
 
-public record Principal(Integer Id) {
-	
+import java.util.UUID;
+
+public record Principal(UUID Id) {
+
 }
