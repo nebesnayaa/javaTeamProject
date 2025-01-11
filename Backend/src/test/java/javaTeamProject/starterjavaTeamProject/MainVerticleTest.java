@@ -78,7 +78,7 @@ public class MainVerticleTest {
 		UserDTO user = new UserDTO(UUID.randomUUID(), "email", "password","gender", "phone", 21, new Date(),new Date());
 		Mockito.when(userService.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.of(user)));
 		context.verify(()->{
-			client.getAbs("http://localhost:8080/users/one/1").send()
+			client.getAbs("http://localhost:8080/users/one/"+user.id()).send()
 			.onFailure(err -> {
 				err.printStackTrace();
                 context.failNow(err);
@@ -96,7 +96,7 @@ public class MainVerticleTest {
 		UserDTO user = new UserDTO(UUID.randomUUID(), "email", "password","gender", "phone", 21, new Date(),new Date());
 		Mockito.when(userService.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.empty()));
 		context.verify(()->{
-			client.getAbs("http://localhost:8080/users/one/1").send()
+			client.getAbs("http://localhost:8080/users/one/"+user.id()).send()
 			.onFailure(err -> {
 				err.printStackTrace();
                 context.failNow(err);

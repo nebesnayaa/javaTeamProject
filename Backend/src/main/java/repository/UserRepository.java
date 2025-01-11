@@ -6,21 +6,19 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 
+import jakarta.persistence.criteria.*;
 import org.hibernate.reactive.stage.Stage.SessionFactory;
 
 import interfaces.IUserRepository;
 import io.vertx.core.Future;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaDelete;
-import jakarta.persistence.criteria.CriteriaUpdate;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import model.Resume;
 import model.ResumeDTO;
 import model.User;
 import model.UserDTO;
 import model.UserDtoMapper;
 import model.UserEntityMapper;
+
+import javax.swing.text.html.Option;
 
 public record UserRepository(SessionFactory sessionFactory) implements IUserRepository {
 
@@ -75,5 +73,18 @@ public record UserRepository(SessionFactory sessionFactory) implements IUserRepo
 		Future<Optional<UserDTO>> future = Future.fromCompletionStage(result).map(r -> Optional.ofNullable(r)).map(r -> r.map(dtoMapper));
 		return future;
 	}
+
+  @Override
+  public Future<Optional<UserDTO>> findUserByEmail(String email) {
+    UserDtoMapper mapper = new UserDtoMapper();
+    CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
+    CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+    Root<User> root = criteriaQuery.from(User.class);
+    Predicate predicate = criteriaBuilder.equal(root.get("email"), email);
+    criteriaQuery.where(predicate);
+    CompletionStage<User> result = sessionFactory.withTransaction((s,t) -> s.createQuery(criteriaQuery).getSingleResultOrNull());
+    Future<Optional<UserDTO>>  future = Future.fromCompletionStage(result).map(Optional::ofNullable).map(r -> r.map(mapper));
+    return future;
+  }
 
 }

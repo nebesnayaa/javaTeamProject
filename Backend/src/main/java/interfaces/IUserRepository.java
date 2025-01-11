@@ -16,4 +16,6 @@ public interface IUserRepository {
 
 	Future<Optional<UserDTO>> findUserById (UUID id);
 
+  Future<Optional<UserDTO>> findUserByEmail (String email);
+
 }

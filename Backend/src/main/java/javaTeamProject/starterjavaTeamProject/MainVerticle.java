@@ -1,5 +1,6 @@
 package javaTeamProject.starterjavaTeamProject;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -25,6 +26,7 @@ import model.Resume;
 import model.User;
 import repository.ResumeRepository;
 import repository.UserRepository;
+import services.Principal;
 import services.ResumeService;
 import services.UserService;
 
@@ -88,7 +90,7 @@ public class MainVerticle extends AbstractVerticle {
                 .put("email", result.email());
 
               redisAPI.set(List.of(sessionId, sessionData.encode()))
-                .compose(res -> redisAPI.expire(List.of(sessionId, "3600")))
+                .compose(res -> redisAPI.expire(List.of(sessionId, "36000")))
                 .onSuccess(res -> {
                   try {
                     context.response().setStatusCode(201).putHeader("Set-Cookie", "sessionId=" + AesEncryptor.encrypt(sessionId.toString()) + "; HttpOnly; Secure; SameSite=Strict").end(body.encode());
@@ -110,13 +112,152 @@ public class MainVerticle extends AbstractVerticle {
       }
     });
 
-    router.post("/users/login").handler(context->{
-      JsonObject body = context.getBodyAsJson();
-      String email = body.getString("email");
-      String password = body.getString("password");
+    router.put("/users").handler(context -> {
+      try{
+        JsonObject body = context.getBodyAsJson();
+        if (body == null) {
+          context.response().setStatusCode(500).end("Internal server error");
+        } else if (body.isEmpty()) {
+          context.response().setStatusCode(400).end("Bad request");
+        }
+        else{
+          String id = body.getString("id");
+          String email = body.getString("email");
+          String password = body.getString("password");
+          password = Hasher.getHash(password,10);
+          String gender = body.getString("gender");
+          String phone = body.getString("phone");
+          Integer age = Integer.parseInt(body.getString("age"));
+          body.putNull("password");
+          UserDTO user = new UserDTO(UUID.fromString(id), email, password,gender, phone, age, new Date(), new Date());
+          userService.updateUser(new Principal(UUID.fromString(id)), user)
+            .onSuccess(result -> {
+              String sessionId = UUID.randomUUID().toString();
+
+              JsonObject sessionData = new JsonObject()
+                .put("userId", result.id())
+                .put("email", result.email());
+
+              redisAPI.set(List.of(sessionId, sessionData.encode()))
+                .compose(res -> redisAPI.expire(List.of(sessionId, "36000")))
+                .onSuccess(res -> {
+                  try {
+                    context.response().setStatusCode(200).putHeader("Set-Cookie", "sessionId=" + AesEncryptor.encrypt(sessionId.toString()) + "; HttpOnly; Secure; SameSite=Strict").end(body.encode());
+                  } catch (Exception e) {
+                    throw new RuntimeException(e);
+                  }
+                })
+                .onFailure(err -> {
+                  context.response().setStatusCode(500).end(err.getMessage());
+                });
+            })
+            .onFailure(err -> {
+              context.response().setStatusCode(500).end(err.getMessage());
+            });
+
+        }
+      }
+      catch (Exception e){
+        context.response().setStatusCode(500).end(e.getMessage());
+      }
     });
 
-		router.get("/users/one/:id").handler(context -> {
+    router.post("/users/logout").handler(context -> {
+      try {
+        String encryptedSessionId = context.getCookie("sessionId").getValue();
+        if (encryptedSessionId == null) {
+          System.out.println("No session ID in cookie");
+          context.response().setStatusCode(400).end("Session ID missing in cookie");
+          return;
+        }
+        if (encryptedSessionId != null) {
+          String sessionId = AesEncryptor.decrypt(encryptedSessionId);
+
+          redisAPI.del(List.of(sessionId))
+            .onSuccess(res -> {
+              context.response()
+                .setStatusCode(200)
+                .putHeader("Set-Cookie", "sessionId=; Max-Age=0; HttpOnly; Secure; SameSite=Strict")
+                .end("Logged out successfully");
+            })
+            .onFailure(err -> {
+              System.out.println("Redis delete failed: " + err.getMessage());
+              context.response().setStatusCode(500).end("Failed to log out: " + err.getMessage());
+            });
+        } else {
+          context.response().setStatusCode(400).end("No session found");
+        }
+      } catch (Exception e) {
+        System.out.println("Error during logout: " + e.getMessage());
+        context.response().setStatusCode(500).end("Error during logout: " + e.getMessage());
+      }
+    });
+
+
+    router.post("/users/login").handler(context -> {
+      try {
+        JsonObject body = context.getBodyAsJson();
+        if (body == null || body.isEmpty()) {
+          context.response().setStatusCode(400).end("Bad request");
+          return;
+        }
+
+        String email = body.getString("email");
+        String password = body.getString("password");
+
+        if (email == null || password == null) {
+          context.response().setStatusCode(400).end("Email and password are required");
+          return;
+        }
+
+        userService.findUserByEmail(email)
+          .onSuccess(user -> {
+            if (user.isEmpty()) {
+              context.response().setStatusCode(404).end("User not found");
+              return;
+            }
+
+            try {
+              if (Hasher.compareHash(user.get().password(), password)) {
+
+                String sessionId = UUID.randomUUID().toString();
+
+                JsonObject sessionData = new JsonObject()
+                  .put("userId", user.get().id())
+                  .put("email", user.get().email());
+
+                redisAPI.set(List.of(sessionId, sessionData.encode()))
+                  .compose(res -> redisAPI.expire(List.of(sessionId, "36000")))
+                  .onSuccess(res -> {
+                    try {
+                      context.response()
+                        .setStatusCode(200)
+                        .putHeader("Set-Cookie", "sessionId=" + AesEncryptor.encrypt(sessionId) + "; HttpOnly; Secure; SameSite=Strict")
+                        .end(sessionData.encode());
+                    } catch (Exception e) {
+                      context.response().setStatusCode(500).end("Failed to encrypt sessionId");
+                    }
+                  })
+                  .onFailure(err -> {
+                    context.response().setStatusCode(500).end("Failed to create session: " + err.getMessage());
+                  });
+              } else {
+                context.response().setStatusCode(401).end("Invalid credentials");
+              }
+            } catch (NoSuchAlgorithmException e) {
+              throw new RuntimeException(e);
+            }
+          })
+          .onFailure(err -> {
+            context.response().setStatusCode(500).end("Failed to get user: " + err.getMessage());
+          });
+      } catch (Exception e) {
+        context.response().setStatusCode(500).end("Error during login: " + e.getMessage());
+      }
+    });
+
+
+    router.get("/users/one/:id").handler(context -> {
 			try {
 				UUID id = UUID.fromString(context.pathParam("id"));
 

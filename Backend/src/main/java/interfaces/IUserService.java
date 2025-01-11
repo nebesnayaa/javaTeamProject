@@ -7,6 +7,8 @@ import io.vertx.core.Future;
 import model.UserDTO;
 import services.Principal;
 
+import javax.swing.text.html.Option;
+
 public interface IUserService {
 	Future<UserDTO> updateUser(Principal principal, UserDTO user);
 
@@ -19,5 +21,7 @@ public interface IUserService {
 	Future<UserDTO> updateUser( UserDTO user);
 
 	Future<Void> removeUser( UUID id);
+
+  Future<Optional<UserDTO>> findUserByEmail(String email);
 
 }

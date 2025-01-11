@@ -68,4 +68,9 @@ public record UserService(UserRepository repository) implements IUserService {
 		return repository.removeUser(id);
 	}
 
+  @Override
+  public Future<Optional<UserDTO>> findUserByEmail(String email) {
+    return repository.findUserByEmail(email);
+  }
+
 }

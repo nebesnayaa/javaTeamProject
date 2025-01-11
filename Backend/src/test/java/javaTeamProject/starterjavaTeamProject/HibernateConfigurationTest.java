@@ -151,6 +151,23 @@ class HibernateConfigurationTest {
 		});
 	}
 
+  @Test
+  void findUserByEmailTest(Vertx vertx, VertxTestContext context){
+    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
+    context.verify(()-> {
+      userRepository.createUser(userDto)
+        .compose( u-> {
+            return userRepository.findUserByEmail(u.email());
+          }
+        )
+        .onFailure(err -> context.failNow(err))
+        .onSuccess(result-> {
+          Assertions.assertTrue(result.isPresent());
+          context.completeNow();
+        });
+    });
+  }
+
 	@Test
 	void removeUserTest(Vertx vertx, VertxTestContext context) {
     UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
