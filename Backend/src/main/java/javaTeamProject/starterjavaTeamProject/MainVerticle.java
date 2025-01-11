@@ -80,9 +80,12 @@ public class MainVerticle extends AbstractVerticle {
           String phone = body.getString("phone");
           Integer age = Integer.parseInt(body.getString("age"));
           body.putNull("password");
+
           UserDTO user = new UserDTO(null, email, password,gender, phone, age, new Date(), new Date());
           userService.createUser(user)
             .onSuccess(result -> {
+              body.put("id", result.id());
+
               String sessionId = UUID.randomUUID().toString();
 
               JsonObject sessionData = new JsonObject()
@@ -193,7 +196,6 @@ public class MainVerticle extends AbstractVerticle {
       }
     });
 
-
     router.post("/users/login").handler(context -> {
       try {
         JsonObject body = context.getBodyAsJson();
@@ -233,7 +235,7 @@ public class MainVerticle extends AbstractVerticle {
                       context.response()
                         .setStatusCode(200)
                         .putHeader("Set-Cookie", "sessionId=" + AesEncryptor.encrypt(sessionId) + "; HttpOnly; Secure; SameSite=Strict")
-                        .end(sessionData.encode());
+                        .end(JsonObject.mapFrom(user.get()).encode());
                     } catch (Exception e) {
                       context.response().setStatusCode(500).end("Failed to encrypt sessionId");
                     }
@@ -255,7 +257,6 @@ public class MainVerticle extends AbstractVerticle {
         context.response().setStatusCode(500).end("Error during login: " + e.getMessage());
       }
     });
-
 
     router.get("/users/one/:id").handler(context -> {
 			try {
