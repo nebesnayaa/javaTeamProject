@@ -1,5 +1,5 @@
 import React from "react";
-import "./ResumeTemplate.css";
+import "./ResumeTemplate3.css";
 
 export interface ResumeData {
   fullName: string;
