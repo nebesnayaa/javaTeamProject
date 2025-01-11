@@ -32,54 +32,54 @@ const ResumeForm: React.FC = () => {
 
   return (
     <form className="resume-form" onSubmit={handleSubmit}>
-      <h2 className="title">Создание резюме</h2>
+      <h2 className="title">Create resume</h2>
       <div className="form-group">
-        <label>ФИО:</label>
+        <label>Full name:</label>
         <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} />
       </div>
       <div className="form-group">
-        <label>Возраст:</label>
+        <label>Age:</label>
         <input type="number" name="age" value={formData.age} onChange={handleChange} />
       </div>
       <div className="form-group">
-        <label>Пол:</label>
+        <label>Gender:</label>
         <select name="gender" value={formData.gender} onChange={handleChange}>
-          <option value="">Выберите</option>
-          <option value="male">Мужской</option>
-          <option value="female">Женский</option>
-          <option value="other">Другой</option>
+          <option value="">Choose</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
         </select>
       </div>
       <div className="form-group">
-        <label>Контакты:</label>
+        <label>Contacts:</label>
         <input type="text" name="contacts" value={formData.contacts} onChange={handleChange} />
       </div>
       <div className="form-group">
-        <label>Цель:</label>
+        <label>Aim:</label>
         <textarea name="objective" value={formData.objective} onChange={handleChange}></textarea>
       </div>
       <div className="form-group">
-        <label>Образование:</label>
+        <label>Education:</label>
         <textarea name="education" value={formData.education} onChange={handleChange}></textarea>
       </div>
       <div className="form-group">
-        <label>Опыт работы:</label>
+        <label>Working experience:</label>
         <textarea name="workExperience" value={formData.workExperience} onChange={handleChange}></textarea>
       </div>
       <div className="form-group">
-        <label>Навыки и награды:</label>
+        <label>Skills and awards:</label>
         <textarea name="skillsAndAwards" value={formData.skillsAndAwards} onChange={handleChange}></textarea>
       </div>
       <div className="form-group">
-        <label>Личная информация и хобби:</label>
+        <label>Personal info and hobbies:</label>
         <textarea name="personalInfo" value={formData.personalInfo} onChange={handleChange}></textarea>
       </div>
       <div className="form-group">
-        <label>Рекомендации:</label>
+        <label>Recommendations:</label>
         <textarea name="recommendations" value={formData.recommendations} onChange={handleChange}></textarea>
       </div>
       <div className="btn-box">
-        <button type="submit" className="submit-button">Сохранить</button>
+        <button type="submit" className="submit-button">Save</button>
       </div>
     </form>
   );

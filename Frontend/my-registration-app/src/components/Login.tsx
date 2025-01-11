@@ -18,16 +18,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     const isPasswordValid = validatePassword(password);
 
     if (!isEmailValid) {
-      alert('Email не должен содержать @mail.ru и должен быть действительным.');
+      alert('Email must not contain @mail.ru and must be valid.');
       return;
     }
 
     if (!isPasswordValid) {
-      alert('Пароль должен быть минимум 6 символов.');
+      alert('Password must contain at least 6 symbols.');
       return;
     }
 
-    setMessage(`Добро пожаловать, ${email}!`);
+    setMessage(`Welcome, ${email}!`);
     onSuccess(); // Вызываем onSuccess после успешного входа
   };
 
@@ -48,7 +48,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 type="email"
                 id="email"
                 name="email"
-                placeholder="Введите email"
+                placeholder="Input email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -64,13 +64,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 type="password"
                 id="password"
                 name="password"
-                placeholder="Введите пароль"
+                placeholder="Input password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
-            <input type="submit" value="Войти" />
+            <input type="submit" value="Sign in" />
           </div>
         </form>
         {message && <p className="login-message">{message}</p>}

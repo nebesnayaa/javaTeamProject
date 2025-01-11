@@ -9,5 +9,8 @@ export interface ResumeData {
     skillsAndAwards: string;
     personalInfo: string;
     recommendations: string;
+    // languages: string;
+    // hobbiesAndInterests: string;
+    // position: string;
   }
   

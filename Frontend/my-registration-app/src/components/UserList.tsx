@@ -28,12 +28,12 @@ const UserList: React.FC = () => {
     loadUsers();
   }, []);
 
-  if (loading) return <div>Завантаження...</div>;
+  if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
   
   return (
     <div className="userlist-container">
-      <h1>Список пользователей</h1>
+      <h1>User list</h1>
       <ul>
         {users.map(user => (
           <li key={user.id}>
