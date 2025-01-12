@@ -9,26 +9,38 @@ interface LoginFormProps {
 const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [message, setMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const isEmailValid = validateEmail(email);
-    const isPasswordValid = validatePassword(password);
-
-    if (!isEmailValid) {
+    if (!validateEmail(email)) {
       alert('Email must not contain @mail.ru and must be valid.');
       return;
     }
-
-    if (!isPasswordValid) {
+    if (!validatePassword(password)) {
       alert('Password must contain at least 6 symbols.');
       return;
     }
 
-    setMessage(`Welcome, ${email}!`);
-    onSuccess(); // Вызываем onSuccess после успешного входа
+    try {
+      const response = await fetch('http://localhost:8080/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if(response.ok) {
+        setErrorMessage('');
+        alert("User login successfully!");
+        onSuccess();
+      } else{
+        const errorData = await response.json();
+        setErrorMessage(errorData.message || 'Failed to log in. Please try again.');
+      }
+      
+    } catch (error) {
+      setErrorMessage('An error occurred. Please try again later.');
+    }
   };
 
   return (
@@ -70,10 +82,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 required
               />
             </div>
+            
+            {errorMessage && <p className="login-message error">{errorMessage}</p>}
+
             <input type="submit" value="Sign in" />
           </div>
         </form>
-        {message && <p className="login-message">{message}</p>}
+        
       </div>
     </div>
   );

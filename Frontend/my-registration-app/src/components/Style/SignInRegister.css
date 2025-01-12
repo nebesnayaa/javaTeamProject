@@ -1,5 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,300,500);
 
+/* Загальні стилі для реєстрації та логіну */
+
 *, *:after, *:before {
   box-sizing: border-box;
 }
@@ -12,6 +14,7 @@
 .wrapper {
   margin: 8% auto;
 }
+
 .registration-container, .login-container {
   width: 600px;
   margin: 50px auto;
@@ -25,62 +28,75 @@
   color: #eee;
 }
 
-/* Форма */
-.input-wrapper {
+.registration-container .input-wrapper, .login-container .input-wrapper{
   position: relative;
   margin-bottom: 15px;
 }
 
-input {
+.registration-container input, .login-container input, .registration-container select {
   width: 100%;
-  height: 40px;
+  height: 50px;
   border-radius: 5px;
-}
-
-/* .input-wrapper input {
-  padding-left: 30px; /* Добавляем отступ для текста, чтобы не перекрывал иконку 
-  padding-right: 10px;
-} */
-
-input[type="text"], input[type="password"], input[type="email"] {
   background: transparent;
   border: 2px solid #22272d;
-  padding: 25px 50px;
+  padding: 0 0 0 45px;
   margin: 10px 0;
   color: #e6b333;
-}
-
-input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
-  border: 2px solid #6c6e72;
-  background: #2e3033;
-  color: #ffffff;
-}
-
-input[type="submit"] {
-  background: #e6b333;
-  border: none;
-  color: white;
-  text-align: center;
   font-size: 0.9em;
-  cursor: pointer;
 }
 
-input[type="submit"]:hover {
-  background: #d3a524;
-}
-
-/* Иконки */  
+/* Іконки */  
 .icon-container {
   position: absolute;
   top: 50%;
   left: 10px;
   transform: translateY(-50%);
+  height: 20px;
 }
-
 .icon {
   width: 20px;
   height: 20px;
 }
+
+.registration-container input[type="submit"],
+.login-container input[type="submit"] {
+  background: #e6b333;
+  border: none;
+  color: white;
+  text-align: center;
+  font-size: 1em;
+  cursor: pointer;
+  height: 40px; /* Висота кнопки */
+  line-height: 40px; /* Вирівнювання тексту по вертикалі */
+  display: inline-block; /* Забезпечує вирівнювання разом з line-height */
+  padding: 0; /* Скидання padding для уникнення зсуву */
+}
+.registration-container input[type="submit"]:hover, 
+.login-container input[type="submit"]:hover{
+  background: #d3a524;
+}
+
+/* Стилі для форми реєстрації */
+
+.registration-container select {
+  width: 100%;
+  height: 50px;
+
+  border-radius: 5px;
+  background: transparent;
+  border: 2px solid #22272d;
+  padding: 0 0 0 45px;
+  margin: 10px 0;
+}
+.registration-container input[type="text"]:focus, 
+                        input[type="password"]:focus, 
+                        input[type="email"]:focus, 
+              .registration-container select:focus {
+  border: 2px solid #6c6e72;
+  background: #2e3033;
+  color: #ffffff;
+}
+
 
 /* .user, .lock, .email {
   position: absolute;

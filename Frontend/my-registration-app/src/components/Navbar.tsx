@@ -15,11 +15,10 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, onLogout }) => {
         <div>
           <Link to="/register">Sign up</Link>
           <Link to="/login">Sign in</Link>
-          <Link to="/profile">Profile</Link> {/* Для тестування, потім прибрати*/}
         </div>
       ) : (
         <>
-          <Link to="/users">Все пользователи</Link>
+          {/* <Link to="/users">Все пользователи</Link> */}
           <Link to="/resume">Resume</Link>
           <Link to="/profile">Profile</Link> 
         </>
