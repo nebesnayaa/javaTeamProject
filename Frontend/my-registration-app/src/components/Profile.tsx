@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Cookies from "js-cookie";
 import "./Style/Profile.css";
 
 const Profile: React.FC = () => {
   const [profileData, setProfileData] = useState({
     name: "",
     email: "",
-    password: "",
+    phone: "",
+    gender: "",
+    age: ""
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -28,16 +31,24 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch profile data
+    const userId = Cookies.get("sessionId"); // Передбачено, що кука називається "sessionId"
+    if (!userId) {
+      console.error("User ID not found in cookies");
+      // navigate("/login"); // Якщо ID немає, перенаправляємо на логін
+      return;
+    }
+
     axios
-      .get("/api/profile", { withCredentials: true })
+      .get(`http://localhost:8080/users/one/${userId}`, { withCredentials: true })
       .then((response) => {
         setProfileData(response.data);
         setFormData(response.data);
       })
       .catch((error) => console.error("Error fetching profile data:", error));
-    axios
-      .get("/api/resumes/user", { withCredentials: true })
+    
+    
+      axios
+      .get("/api/resumes/user", { withCredentials: true }) // поки що некоректний запит
       .then((response) => {
         setResumeData(response.data);
         setResumeAvailable(true);
@@ -54,8 +65,16 @@ const Profile: React.FC = () => {
   };
 
   const handleSave = () => {
+    const userId = Cookies.get("sessionId");
+    if (!userId) {
+      console.error("User ID not found in cookies");
+      return;
+    }
+
     axios
-      .put("/api/profile", formData, { withCredentials: true })
+      .put(`http://localhost:8080/users`, formData, {
+        withCredentials: true,
+      })
       .then((response) => {
         setProfileData(response.data);
         setIsEditing(false);
@@ -63,20 +82,19 @@ const Profile: React.FC = () => {
       .catch((error) => console.error("Error updating profile:", error));
   };
 
-  const handleLogout = () => {
-    axios
-      .post("/api/logout", {}, { withCredentials: true })
-      .then(() => {
-        setProfileData({ name: "", email: "", password: "" });
-        window.location.href = "/login";
-      })
-      .catch((error) => console.error("Error during logout:", error));
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:8080/users/logout", {}, { withCredentials: true });
+      // Cookies.remove("userId"); // Видаляємо куку при логауті
+      navigate("/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
-
+  
   const handleCreateResume = () => {
     navigate("/resume", { state: { templateId: selectedTemplate } }); // Передаем выбранный шаблон
   };
-
   const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedTemplate(e.target.value);
   };
@@ -115,7 +133,9 @@ const Profile: React.FC = () => {
             <div className="infoFields">
               <p>Name: {profileData.name}</p>
               <p>Email: {profileData.email}</p>
-              <p>Password: {profileData.password}</p>
+              <p>Phone: {profileData.phone}</p>
+              <p>Gender: {profileData.gender}</p>
+              <p>Age: {profileData.age}</p>
             </div>
           ) : (
             <div className="infoFields">
@@ -135,10 +155,29 @@ const Profile: React.FC = () => {
               />
               <input
                 type="text"
-                name="password"
-                value={formData.password}
+                name="phone"
+                value={formData.phone}
                 onChange={handleInputChange}
-                placeholder="Password"
+                placeholder="Phone"
+              />
+              <select
+                id="gender"
+                name="gender"
+                value={formData.gender}
+                onChange={(e) => handleInputChange}
+                required
+              >
+                <option value="" disabled>Select your gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+              <input
+                type="number"
+                name="age"
+                value={formData.age}
+                onChange={handleInputChange}
+                placeholder="Age"
               />
               <div className="buttons-container">
                 <button className="btn-save" onClick={handleSave}>
