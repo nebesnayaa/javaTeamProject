@@ -5,11 +5,13 @@ import "./Style/Profile.css";
 
 const Profile: React.FC = () => {
   const [profileData, setProfileData] = useState({
+    id: "",
     name: "",
     email: "",
     phone: "",
     gender: "",
-    age: ""
+    age: "",
+    password: ""
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -65,12 +67,6 @@ const Profile: React.FC = () => {
   };
 
   const handleSave = () => {
-    const userId = "";
-    if (!userId) {
-      console.error("User ID not found in cookies");
-      return;
-    }
-
     axios
       .put(`http://localhost:8080/users`, formData, {
         withCredentials: true,
