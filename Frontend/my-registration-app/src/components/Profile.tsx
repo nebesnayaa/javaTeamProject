@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Style/Profile.css";
+import { AppContext } from "../context";
 
 const Profile: React.FC = () => {
   const [profileData, setProfileData] = useState({
@@ -22,6 +23,8 @@ const Profile: React.FC = () => {
   });
   const [resumeAvailable, setResumeAvailable] = useState(true);
 
+  const context = useContext(AppContext);
+
   const [selectedTemplate, setSelectedTemplate] = useState<string>(""); // Состояние для выбранного шаблона
   const [templates] = useState([
     { id: "template1", name: "Template 1" },
@@ -32,11 +35,11 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userId = "9cb97045-82ed-4c60-b60a-ef50c3499700"; // захардкорений userId
+    const userId = context?.userId;
    
-    console.log("Session ID from cookie:", userId);
+    console.log("Session ID from context:", userId);
     if (!userId) {
-      console.error("User ID not found in cookies");
+      console.error("User ID not found in context");
       navigate("/login"); // Якщо ID немає, перенаправляємо на логін
       return;
     }

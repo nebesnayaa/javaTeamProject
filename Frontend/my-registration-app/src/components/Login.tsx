@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import "./Style/SignInRegister.css";
 import { validateEmail, validatePassword } from '../validation';
+import { AppContext } from '../context';
 
 interface LoginFormProps {
   onSuccess: () => void;
@@ -10,6 +11,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
+
+  const context = useContext(AppContext);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +34,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
       });
 
       if(response.ok) {
+        const data = await response.json();
+        if(context){
+          context.setUserId(data.id);
+          console.log("UserId was set to the context: " + context.userId);
+        }
         setErrorMessage('');
         alert("User login successfully!");
         onSuccess();

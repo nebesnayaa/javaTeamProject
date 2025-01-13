@@ -10,6 +10,7 @@ import Profile from "./components/Profile";
 import ResumeTemplate1 from "./components/shablon/shablon1";
 import ResumeTemplate2 from "./components/shablon/shablon2";
 import ResumeTemplate3 from "./components/shablon/shablon3";
+import { ContextProvider } from "./context";
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -54,14 +55,14 @@ const App = () => {
   };
 
   return (
-    <>
+    <ContextProvider>
       <BrowserRouter>
         <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
         <Routes>
-          <Route path="/" element={<Main/>} />
+          <Route path="/" element={<Main />} />
           <Route path="/signup" element={<RegistrationForm onSuccess={handleLoginSuccess} />} />
           <Route path="/login" element={<Login onSuccess={handleLoginSuccess} />} />
-          <Route path="/Users" element={<UserList/>} />
+          <Route path="/Users" element={<UserList />} />
           <Route path="/resume" element={<ResumeForm />} /> 
           <Route path="/profile" element={<Profile />} /> 
           <Route path="/shablon1" element={<ResumeTemplate1 data={data} />} />
@@ -69,7 +70,7 @@ const App = () => {
           <Route path="/shablon3" element={<ResumeTemplate3 data={data} />} /> 
         </Routes> 
       </BrowserRouter>
-    </>
+    </ContextProvider>
   );
 };
 
