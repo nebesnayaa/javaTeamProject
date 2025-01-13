@@ -6,7 +6,6 @@ const Main: React.FC = () => {
   return (
     <div className="main-container">
       <h1>Welcome on Resume Builder!</h1>
-      {/* <p>Мы рады видеть вас на нашем сайте.</p> */}
       
       {/* Блок анимации */}
       <div>

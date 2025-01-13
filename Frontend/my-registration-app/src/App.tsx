@@ -59,8 +59,8 @@ const App = () => {
         <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
         <Routes>
           <Route path="/" element={<Main/>} />
-          <Route path="/Register" element={<RegistrationForm onSuccess={handleLoginSuccess} />} />
-          <Route path="/Login" element={<Login onSuccess={handleLoginSuccess} />} />
+          <Route path="/signup" element={<RegistrationForm onSuccess={handleLoginSuccess} />} />
+          <Route path="/login" element={<Login onSuccess={handleLoginSuccess} />} />
           <Route path="/Users" element={<UserList/>} />
           <Route path="/resume" element={<ResumeForm />} /> 
           <Route path="/profile" element={<Profile />} /> 

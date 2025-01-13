@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Cookies from "js-cookie";
 import "./Style/Profile.css";
 
 const Profile: React.FC = () => {
@@ -31,10 +30,12 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userId = Cookies.get("sessionId"); // Передбачено, що кука називається "sessionId"
+    const userId = "9cb97045-82ed-4c60-b60a-ef50c3499700"; // захардкорений userId
+   
+    console.log("Session ID from cookie:", userId);
     if (!userId) {
       console.error("User ID not found in cookies");
-      // navigate("/login"); // Якщо ID немає, перенаправляємо на логін
+      navigate("/login"); // Якщо ID немає, перенаправляємо на логін
       return;
     }
 
@@ -46,17 +47,16 @@ const Profile: React.FC = () => {
       })
       .catch((error) => console.error("Error fetching profile data:", error));
     
-    
-      axios
-      .get("/api/resumes/user", { withCredentials: true }) // поки що некоректний запит
-      .then((response) => {
-        setResumeData(response.data);
-        setResumeAvailable(true);
-      })
-      .catch((error) => {
-        console.error("No resume found:", error);
-        setResumeAvailable(false);
-      });
+      // axios
+      // .get("/api/resumes/user", { withCredentials: true }) // поки що некоректний запит
+      // .then((response) => {
+      //   setResumeData(response.data);
+      //   setResumeAvailable(true);
+      // })
+      // .catch((error) => {
+      //   console.error("No resume found:", error);
+      //   setResumeAvailable(false);
+      // });
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +65,7 @@ const Profile: React.FC = () => {
   };
 
   const handleSave = () => {
-    const userId = Cookies.get("sessionId");
+    const userId = "";
     if (!userId) {
       console.error("User ID not found in cookies");
       return;
@@ -85,7 +85,6 @@ const Profile: React.FC = () => {
   const handleLogout = async () => {
     try {
       await axios.post("http://localhost:8080/users/logout", {}, { withCredentials: true });
-      // Cookies.remove("userId"); // Видаляємо куку при логауті
       navigate("/login");
     } catch (error) {
       console.error("Error during logout:", error);

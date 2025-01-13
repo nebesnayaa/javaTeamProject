@@ -13,7 +13,7 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, onLogout }) => {
       <Link to="/">Home</Link>
       {!isAuthenticated ? (
         <div>
-          <Link to="/register">Sign up</Link>
+          <Link to="/signup">Sign up</Link>
           <Link to="/login">Sign in</Link>
         </div>
       ) : (

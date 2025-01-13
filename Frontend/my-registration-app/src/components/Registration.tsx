@@ -34,7 +34,8 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess }) => {
       const response = await fetch("http://localhost:8080/users/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({email, password, gender, phone, age }),
+        body: JSON.stringify({ email, password, gender, phone, age }),
+        credentials: 'include'
       });
       if(response.ok) {
         setErrorMessage("");
