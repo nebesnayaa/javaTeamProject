@@ -1,14 +1,13 @@
 import { useNavigate, useLocation} from "react-router-dom";
 import "./ResumeTemplate1.css";
 import html2pdf from 'html2pdf.js';
-import { ResumeUserData } from "../create-resume/ResumeUserData";
 
 
 const ResumeTemplate1: React.FC= () => {
   const location = useLocation();
   const navigate = useNavigate(); 
-  const data: ResumeUserData | undefined = location.state?.data; 
-  //const { data } = location.state?.data || {}; // Отримуємо передані дані
+
+  const { data } = location.state || {}; // Отримуємо передані дані
   
   if (!data) {
     return <p>Loading...</p>; // Можна відобразити повідомлення, якщо дані ще не завантажені

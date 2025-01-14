@@ -2,33 +2,15 @@ import React from "react";
 import "./ResumeTemplate2.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import html2pdf from 'html2pdf.js';
-import { ResumeUserData } from "../create-resume/ResumeUserData";
-
-const fallbackData: ResumeUserData = {
-  id: "example",
-  template: 2,
-  fullName: "John Doe",
-  position: "Software Engineer",
-  objective: "Looking for a challenging role",
-  education: "B.Sc. in Computer Science",
-  workExperience: "3 years in software development",
-  skillsAndAwards: "JavaScript, React, Node.js",
-  languages: "English, Spanish",
-  recommendations: "Available upon request",
-  hobbiesAndInterests: "Reading, Gaming",
-  user: {
-    age: 30,
-    gender: "Male",
-    email: "johndoe@example.com",
-    phone: "1234567890",
-  }
-};
 
 const ResumeTemplate2: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate(); 
   const { data } = location.state || {};
 
+  if (!data) {
+    return <p>Loading...</p>; // Можна відобразити повідомлення, якщо дані ще не завантажені
+  }
   
  const handleBack = () => {
    navigate(-1); 

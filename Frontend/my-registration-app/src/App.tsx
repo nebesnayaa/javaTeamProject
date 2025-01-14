@@ -14,6 +14,7 @@ import ResumeTemplate3 from "./components/templates/template3";
 import { ContextProvider } from "./context";
 import { ResumeData } from './components/create-resume/ResumeInterface';
 
+
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
@@ -21,7 +22,7 @@ const App = () => {
     try {
       await axios.post("http://localhost:8080/users/logout", {}, { withCredentials: true });
       window.location.href = "/login";
-      setIsAuthenticated(false); 
+      setIsAuthenticated(false);
     } catch (error) {
       console.error("Error during logout:", error);
     }
@@ -38,16 +39,17 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/signup" element={<RegistrationForm onSuccess={handleLoginSuccess} />} />
-          <Route path="/login" element={<Login onSuccess={handleLoginSuccess} />} /> 
-
+          <Route path="/login" element={<Login onSuccess={handleLoginSuccess} />} />
+          
           <Route path="/Users" element={<UserList />} />
-          <Route path="/create-resume" element={<ResumeForm />} /> 
-          <Route path="/profile" element={<Profile onLogout={handleLogout}/>} /> 
+          <Route path="/create-resume" element={<ResumeForm />} />
+          <Route path="/profile" element={<Profile onLogout={handleLogout} />} />
 
-          <Route path="/template1" element={<ResumeTemplate1/>} />
-          <Route path="/template2" element={<ResumeTemplate2 />} /> 
-          <Route path="/template3" element={<ResumeTemplate3 />} /> 
-        </Routes> 
+          <Route path="/template1" element={<ResumeTemplate1 />} />
+          <Route path="/template2" element={<ResumeTemplate2 />} />
+          <Route path="/template3" element={<ResumeTemplate3 />} />
+
+        </Routes>
       </BrowserRouter>
     </ContextProvider>
   );

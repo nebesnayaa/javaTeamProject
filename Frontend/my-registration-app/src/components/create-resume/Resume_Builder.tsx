@@ -1,9 +1,9 @@
-import React, { useContext, useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import "../Style/ResumeStyle.css";
 import { ResumeData } from './ResumeInterface';
 import { AppContext } from "../../context";
-import { Link } from 'react-router-dom';
-
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const ResumeForm: React.FC = () => {
   const [formData, setFormData] = useState<ResumeData>({
@@ -18,13 +18,27 @@ const ResumeForm: React.FC = () => {
     hobbiesAndInterests: ''
   });
   const [template, setTemplate] = useState<number>(1);
-
+  const { id } = useParams();  // Получаем id из URL
+  const navigate = useNavigate();
+  
   const context = useContext(AppContext);
   const userId = context?.userId;
-  if (!userId) {
-    console.error("User ID not found in context");
-  }
 
+  // Загружаем данные резюме при редактировании
+  useEffect(() => {
+    if (id) {
+      axios
+        .get(`http://localhost:8080/resumes/${id}`)
+        .then(response => {
+          setFormData(response.data);  // Заполняем форму загруженными данными
+        })
+        .catch(error => {
+          console.error("Error fetching resume data:", error);
+        });
+    }
+  }, [id]);
+
+  // Обработка изменений в форме
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -33,17 +47,21 @@ const ResumeForm: React.FC = () => {
     }));
   };
 
+  // Обработка выбора шаблона
   const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setTemplate(Number(e.target.value));
   };
 
-
+  // Отправка формы для создания/редактирования резюме
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const payload = { ...formData, userId, template };
+    const url = id ? `http://localhost:8080/resumes/${id}` : 'http://localhost:8080/resumes';  // URL для редактирования или создания
+    const method = id ? 'PUT' : 'POST';  // Метод зависит от наличия id
+
     try {
-      const response = await fetch('http://localhost:8080/resumes', {
-        method: 'POST',
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -56,8 +74,9 @@ const ResumeForm: React.FC = () => {
         alert(`Error: ${errorData.message}`);
       } else {
         const responseData = await response.json();
-        console.log('Resume created successfully:', responseData);
-        alert('Resume created successfully!');
+        console.log('Resume saved successfully:', responseData);
+        alert('Resume saved successfully!');
+        navigate('/profile');  // Перенаправление на страницу профиля
       }
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -67,7 +86,7 @@ const ResumeForm: React.FC = () => {
 
   return (
     <form className="resume-form" onSubmit={handleSubmit}>
-      <h2 className="title">Create resume</h2>
+      <h2 className="title">{id ? "Edit Resume" : "Create Resume"}</h2>  {/* Заголовок формы */}
       <div className="form-group">
         <label>Review available templates:</label>
         <div className='templates-container'>
