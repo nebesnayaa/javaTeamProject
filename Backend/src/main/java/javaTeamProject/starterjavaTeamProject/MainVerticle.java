@@ -111,7 +111,7 @@ public class MainVerticle extends AbstractVerticle {
                 .onSuccess(res -> {
                   try {
                     context.response().setStatusCode(201)
-                      .putHeader("Set-Cookie", "sessionId=" + AesEncryptor.encrypt(sessionId.toString()) + "; HttpOnly; SameSite=Strict")
+                      .putHeader("Set-Cookie", "sessionId=" + AesEncryptor.encrypt(sessionId.toString()) + "; HttpOnly;  Path=/;  SameSite=Strict")
                       .end(body.encode());
                   } catch (Exception e) {
                     throw new RuntimeException(e);
@@ -168,7 +168,7 @@ public class MainVerticle extends AbstractVerticle {
                         .compose(r -> redisAPI.expire(List.of(sessionId, "36000")));
                     })
                     .onSuccess(r-> {
-                      context.response().setStatusCode(200).putHeader("Set-Cookie", "sessionId=" + encryptedSessionId + "; HttpOnly; SameSite=Strict").end(body.encode());
+                      context.response().setStatusCode(200).end(body.encode());
                     })
                     .onFailure(err-> {
                       context.response().setStatusCode(500).end(err.getMessage());
@@ -205,7 +205,7 @@ public class MainVerticle extends AbstractVerticle {
             .onSuccess(res -> {
               context.response()
                 .setStatusCode(200)
-                .putHeader("Set-Cookie", "sessionId=; Max-Age=0; HttpOnly; SameSite=Strict")
+                .putHeader("Set-Cookie", "sessionId=; Max-Age=0; HttpOnly; Path=/; SameSite=Strict")
                 .end("Logged out successfully");
             })
             .onFailure(err -> {
@@ -259,7 +259,7 @@ public class MainVerticle extends AbstractVerticle {
                     try {
                       context.response()
                         .setStatusCode(200)
-                        .putHeader("Set-Cookie", "sessionId=" + AesEncryptor.encrypt(sessionId) + "; HttpOnly; SameSite=Strict")
+                        .putHeader("Set-Cookie", "sessionId=" + AesEncryptor.encrypt(sessionId) + "; HttpOnly; Path=/; SameSite=Strict")
                         .end(JsonObject.mapFrom(user.get()).encode());
                     } catch (Exception e) {
                       context.response().setStatusCode(500).end("Failed to encrypt sessionId");
