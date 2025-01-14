@@ -61,13 +61,13 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
     };
 
     fetchResumes();
-  }, []);
+  }, []); // Используем useEffect для загрузки данных
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
+  
   const handleSave = () => {
     axios
       .put(`http://localhost:8080/users`, formData, {
@@ -190,9 +190,19 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
               <li key={resume.id} className="resume-item">
                 <span>{resume.position}</span>
                 <div>
-                  <button className="btn-edit">Edit Resume</button>
-                  <button className="btn-view"
-                    onClick={() => handleViewResume(resume, resume.template)}>View Resume</button>
+                  {/* Кнопка для переходу до редагування резюме */}
+                  <button
+                    className="btn-edit"
+                    onClick={() => navigate(`/edit-resume/${resume.id}`)} // Тут додається роути
+                  >
+                    Edit Resume
+                  </button>
+                  <button
+                    className="btn-view"
+                    onClick={() => handleViewResume(resume, resume.template)}
+                  >
+                    View Resume
+                  </button>
                 </div>
               </li>
             ))}
