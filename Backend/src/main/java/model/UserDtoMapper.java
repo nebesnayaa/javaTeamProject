@@ -7,7 +7,7 @@ public class UserDtoMapper implements Function<User, UserDTO> {
 
 	@Override
 	public UserDTO apply(User t) {
-		return new UserDTO(t.getId(), t.getEmail(), t.getPassword(), t.getGender(), t.getPhone(), t.getAge(), t.getCreatedAt(), t.getUpdatedAt());
+		return new UserDTO(t.getId(),t.getUsername(), t.getEmail(), t.getPassword(), t.getGender(), t.getPhone(), t.getAge(), t.getCreatedAt(), t.getUpdatedAt());
 	}
 
 }

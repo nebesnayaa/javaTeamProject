@@ -7,6 +7,7 @@ public class UserEntityMapper implements Function<UserDTO, User> {
 	@Override
 	public User apply(UserDTO t) {
 		User user = new User();
+    user.setUserName(t.username());
 		user.setId(t.id());
 		user.setEmail(t.email());
 		user.setPassword(t.password());

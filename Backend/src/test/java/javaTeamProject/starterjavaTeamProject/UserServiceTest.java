@@ -30,7 +30,7 @@ class UserServiceTest {
 
 	@Test
 	void updateUserIsOwnerTest(Vertx vertx, VertxTestContext context) {
-		UserDTO user = new UserDTO(UUID.randomUUID(), "email", "password","gender", "phone", 21, new Date(),new Date());
+		UserDTO user = new UserDTO(UUID.randomUUID(),"username", "email", "password","gender", "phone", 21, new Date(),new Date());
 		Mockito.when(repository.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.of(user)));
 		Mockito.when(repository.updateUser(user)).thenReturn(Future.succeededFuture(user));
 		Principal principal = new Principal(user.id());
@@ -43,9 +43,9 @@ class UserServiceTest {
 
 	@Test
 	void updateUserIsNotOwner(Vertx vertx, VertxTestContext context) {
-    UserDTO user = new UserDTO(UUID.randomUUID(), "email", "password","gender", "phone", 21, new Date(),new Date());
+    UserDTO user = new UserDTO(UUID.randomUUID(),"username", "email", "password","gender", "phone", 21, new Date(),new Date());
 		Principal principal = new Principal(user.id());
-		Mockito.when(repository.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.of(new UserDTO(UUID.randomUUID(), "email", "password","gender", "phone", 21, new Date(),new Date()))));
+		Mockito.when(repository.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.of(new UserDTO(UUID.randomUUID(),"username", "email", "password","gender", "phone", 21, new Date(),new Date()))));
 		context.verify(()->{
 			service.updateUser(principal, user)
 			.onSuccess(result -> context.failNow(new RuntimeException()))
@@ -55,7 +55,7 @@ class UserServiceTest {
 
 	@Test
 	void removeUserIsOwnerTest(Vertx vertx, VertxTestContext context){
-		UserDTO user = new UserDTO(UUID.randomUUID(), "email", "password","gender", "phone", 21, new Date(),new Date());
+		UserDTO user = new UserDTO(UUID.randomUUID(),"username", "email", "password","gender", "phone", 21, new Date(),new Date());
 		Mockito.when(repository.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.of(user)));
 		Mockito.when(repository.removeUser(user.id())).thenReturn(Future.succeededFuture());
 		Principal principal = new Principal(user.id());
@@ -68,8 +68,8 @@ class UserServiceTest {
 
 	@Test
 	void removeUserIsNotOwnerTest(Vertx vertx, VertxTestContext context){
-		UserDTO user = new UserDTO(UUID.randomUUID(), "email", "password","gender", "phone", 21, new Date(),new Date());
-		Mockito.when(repository.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.of(new UserDTO(UUID.randomUUID(), "email", "password","gender", "phone", 21, new Date(),new Date()))));
+		UserDTO user = new UserDTO(UUID.randomUUID(),"username", "email", "password","gender", "phone", 21, new Date(),new Date());
+		Mockito.when(repository.findUserById(user.id())).thenReturn(Future.succeededFuture(Optional.of(new UserDTO(UUID.randomUUID(),"username", "email", "password","gender", "phone", 21, new Date(),new Date()))));
 		Principal principal = new Principal(user.id());
 		context.verify(()-> {
 			service.removeUser(principal, user.id())

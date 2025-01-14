@@ -13,6 +13,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import javax.naming.Name;
+
 @Entity
 @Table(name = "resume")
 public class Resume {
@@ -21,9 +23,25 @@ public class Resume {
 
   UUID id;
 
-	String content;
+  String fullName;
 
-	Integer templateId;
+  String position;
+
+  String objective;
+
+  String education;
+
+  String workExperience;
+
+  String skillsAndAwards;
+
+  String languages;
+
+  String recommendations;
+
+  String hobbiesAndInterests;
+
+	private Integer template;
 
 	Date createdAt;
 
@@ -41,7 +59,79 @@ public class Resume {
 		return new UserDtoMapper().apply(user);
 	}
 
-	public UUID getId() {
+  public String getFullName() {
+    return fullName;
+  }
+
+  public void setFullName(String fullName) {
+    this.fullName = fullName;
+  }
+
+  public String getPosition() {
+    return position;
+  }
+
+  public void setPosition(String position) {
+    this.position = position;
+  }
+
+  public String getObjective() {
+    return objective;
+  }
+
+  public void setObjective(String objective) {
+    this.objective = objective;
+  }
+
+  public String getEducation() {
+    return education;
+  }
+
+  public void setEducation(String education) {
+    this.education = education;
+  }
+
+  public String getWorkExperience() {
+    return workExperience;
+  }
+
+  public void setWorkExperience(String workExperience) {
+    this.workExperience = workExperience;
+  }
+
+  public String getSkillsAndAwards() {
+    return skillsAndAwards;
+  }
+
+  public void setSkillsAndAwards(String skillsAndAwards) {
+    this.skillsAndAwards = skillsAndAwards;
+  }
+
+  public String getLanguages() {
+    return languages;
+  }
+
+  public void setLanguages(String languages) {
+    this.languages = languages;
+  }
+
+  public String getRecommendations() {
+    return recommendations;
+  }
+
+  public void setRecommendations(String recommendations) {
+    this.recommendations = recommendations;
+  }
+
+  public String getHobbiesAndInterests() {
+    return hobbiesAndInterests;
+  }
+
+  public void setHobbiesAndInterests(String hobbiesAndInterests) {
+    this.hobbiesAndInterests = hobbiesAndInterests;
+  }
+
+  public UUID getId() {
 		return id;
 	}
 
@@ -49,20 +139,12 @@ public class Resume {
 		this.id = id;
 	}
 
-	public String getContent() {
-		return this.content;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
-
 	public Integer getTemplateId() {
-		return this.templateId;
+		return this.template;
 	}
 
-	public void setTemplateId(Integer templateId) {
-		this.templateId = templateId;
+	public void setTemplateId(Integer template) {
+		this.template = template;
 	}
 
 	public Date getCreatedAt() {

@@ -69,7 +69,7 @@ class HibernateConfigurationTest {
 
 	@Test
 	void createUserTest(Vertx vertx, VertxTestContext context) {
-		UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
+		UserDTO userDto = new UserDTO(null,"username", "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto).
 			onFailure(err -> context.failNow(err))
@@ -82,44 +82,41 @@ class HibernateConfigurationTest {
 		});
 	}
 
-	@Test
-	void createResumeTest(Vertx vertx, VertxTestContext context){
-    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
-		context.verify(() -> {
-			userRepository.createUser(userDto).compose( user -> {
-				Assertions.assertNotNull(user.id());
-				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, new Date(),new Date(), Optional.of(user));
-				return resumeRepository.createResume(resumeDto);
-			})
-			.onSuccess(result -> {
-				Assertions.assertNotNull(result);
-				Assertions.assertNotNull(result.id());
-				context.completeNow();
-			})
-			.onFailure(err -> context.failNow(err));
-		});
-	}
+  @Test
+  void createResumeTest(Vertx vertx, VertxTestContext context) {
+    UserDTO userDto = new UserDTO(null, "username", "userEmail@gmail.com", "userPassword", "gender", "phone", 21, new Date(), new Date());
+    context.verify(() -> {
+      userRepository.createUser(userDto).compose(user -> {
+          Assertions.assertNotNull(user.id());
+          ResumeDTO resumeDto = new ResumeDTO(null, 1, new Date(), new Date(), Optional.of(user), "Full Name", "Position", "Objective", "Education", "Work Experience", "Skills and Awards", "Languages", "Recommendations", "Hobbies and Interests");
+          return resumeRepository.createResume(resumeDto);
+        })
+        .onSuccess(result -> {
+          Assertions.assertNotNull(result);
+          Assertions.assertNotNull(result.id());
+          context.completeNow();
+        })
+        .onFailure(err -> context.failNow(err));
+    });
+  }
 
-	@Test
-	void userResumeRelationTest(Vertx vertx, VertxTestContext context) {
-    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
-		context.verify(()->{
-			userRepository.createUser(userDto).compose(user -> {
-				Assertions.assertNotNull(user);
-				System.out.println("USER ID IS: "+ user.id());
-				Assertions.assertNotNull(user.id());
-				//Assertions.assertEquals(1, user.id());
-				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, new Date(),new Date(), Optional.of(user));
-				return resumeRepository.createResume(resumeDto);
-			})
-			.onSuccess(result->{
-				Assertions.assertTrue(result.user().isPresent());
-        System.out.println("userResumeRelationTest: "+ result.user().get().id());
-				context.completeNow();
-			})
-			.onFailure(err -> context.failNow(err));
-		});
-	}
+  @Test
+  void userResumeRelationTest(Vertx vertx, VertxTestContext context) {
+    UserDTO userDto = new UserDTO(null, "username", "userEmail@gmail.com", "userPassword", "gender", "phone", 21, new Date(), new Date());
+    context.verify(() -> {
+      userRepository.createUser(userDto).compose(user -> {
+          Assertions.assertNotNull(user);
+          Assertions.assertNotNull(user.id());
+          ResumeDTO resumeDto = new ResumeDTO(null, 1, new Date(), new Date(), Optional.of(user), "Full Name", "Position", "Objective", "Education", "Work Experience", "Skills and Awards", "Languages", "Recommendations", "Hobbies and Interests");
+          return resumeRepository.createResume(resumeDto);
+        })
+        .onSuccess(result -> {
+          Assertions.assertTrue(result.user().isPresent());
+          context.completeNow();
+        })
+        .onFailure(err -> context.failNow(err));
+    });
+  }
 
 	@Test
 	void findUserByIdDoesNotExist(Vertx vertx, VertxTestContext context) {
@@ -137,7 +134,7 @@ class HibernateConfigurationTest {
 
 	@Test
 	void findUserByIdDoesExistTest(Vertx vertx, VertxTestContext context) {
-    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
+    UserDTO userDto = new UserDTO(null,"username", "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto)
 			.compose(u->{
@@ -153,7 +150,7 @@ class HibernateConfigurationTest {
 
   @Test
   void findUserByEmailTest(Vertx vertx, VertxTestContext context){
-    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
+    UserDTO userDto = new UserDTO(null, "username","userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
     context.verify(()-> {
       userRepository.createUser(userDto)
         .compose( u-> {
@@ -170,7 +167,7 @@ class HibernateConfigurationTest {
 
 	@Test
 	void removeUserTest(Vertx vertx, VertxTestContext context) {
-    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
+    UserDTO userDto = new UserDTO(null,"username", "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
 		context.verify(()->{
 			userRepository.createUser(userDto)
 			.compose(u -> {
@@ -189,10 +186,10 @@ class HibernateConfigurationTest {
 
 	@Test
 	void updateUserTest(Vertx vertx, VertxTestContext context){
-    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
+    UserDTO userDto = new UserDTO(null, "username","userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
 		context.verify(()-> {
 				userRepository.createUser(userDto).compose( u-> {
-				UserDTO updatedResume = new UserDTO(u.id(), "newUserEmail@gmail.com",
+				UserDTO updatedResume = new UserDTO(u.id(), "username","newUserEmail@gmail.com",
 						"newUserPassword", "new gender", "new phone", 0, userDto.createdAt(), userDto.updatedAt());
 				return userRepository.updateUser(updatedResume);
 			}).compose(r -> {
@@ -229,170 +226,106 @@ class HibernateConfigurationTest {
 		});
 	}
 
-	@Test
-	void findResumeByIdExistTest(Vertx vertx, VertxTestContext context) {
-    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
-		context.verify(()->{
-			userRepository.createUser(userDto).compose(user -> {
-				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, new Date(),new Date(), Optional.of(user));
-				return resumeRepository.createResume(resumeDto);
-			})
-			.compose(resume -> {
-				return resumeRepository.findResumeById(resume.id());
-			})
-			.onSuccess(result -> {
-				Assertions.assertTrue(result.isPresent());
-				Assertions.assertNotNull(result);
-				context.completeNow();
-			})
-			.onFailure(err -> context.failNow(err));
-		});
-	}
+  @Test
+  void findResumeByIdExistTest(Vertx vertx, VertxTestContext context) {
+    UserDTO userDto = new UserDTO(null, "username", "userEmail@gmail.com", "userPassword", "gender", "phone", 21, new Date(), new Date());
+    context.verify(() -> {
+      userRepository.createUser(userDto).compose(user -> {
+          ResumeDTO resumeDto = new ResumeDTO(null, 1, new Date(), new Date(), Optional.of(user), "Full Name", "Position", "Objective", "Education", "Work Experience", "Skills and Awards", "Languages", "Recommendations", "Hobbies and Interests");
+          return resumeRepository.createResume(resumeDto);
+        })
+        .compose(resume -> resumeRepository.findResumeById(resume.id()))
+        .onSuccess(result -> {
+          Assertions.assertTrue(result.isPresent());
+          Assertions.assertNotNull(result);
+          context.completeNow();
+        })
+        .onFailure(err -> context.failNow(err));
+    });
+  }
 
-	@Test
-	void removeResumeTest(Vertx vertx, VertxTestContext context) {
-    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
-		context.verify(()->{
-			userRepository.createUser(userDto).compose(user -> {
-				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, new Date(),new Date(), Optional.of(user));
-				return resumeRepository.createResume(resumeDto);
-			})
-			.compose(resume -> {
-				return resumeRepository.removeResume(resume.id()).map(v -> resume.id());
-			})
-			.compose(result -> {
-				return resumeRepository.findResumeById(result);
-			})
-			.onSuccess(r -> {
-				Assertions.assertTrue(r.isEmpty());
-				context.completeNow();
-			})
-			.onFailure(err -> context.failNow(err));
-		});
-	}
+  @Test
+  void removeResumeTest(Vertx vertx, VertxTestContext context) {
+    UserDTO userDto = new UserDTO(null, "username", "userEmail@gmail.com", "userPassword", "gender", "phone", 21, new Date(), new Date());
+    context.verify(() -> {
+      userRepository.createUser(userDto).compose(user -> {
+          ResumeDTO resumeDto = new ResumeDTO(null, 1, new Date(), new Date(), Optional.of(user), "Full Name", "Position", "Objective", "Education", "Work Experience", "Skills and Awards", "Languages", "Recommendations", "Hobbies and Interests");
+          return resumeRepository.createResume(resumeDto);
+        })
+        .compose(resume -> resumeRepository.removeResume(resume.id()).map(v -> resume.id()))
+        .compose(result -> resumeRepository.findResumeById(result))
+        .onSuccess(r -> {
+          Assertions.assertTrue(r.isEmpty());
+          context.completeNow();
+        })
+        .onFailure(err -> context.failNow(err));
+    });
+  }
 
-	@Test
-	void  updateResumeTest(Vertx vertx, VertxTestContext context) {
-    UserDTO userDto = new UserDTO(null, "userEmail@gmail.com", "userPassword","gender", "phone", 21,new Date(),new Date());
-		context.verify(()->{
-			userRepository.createUser(userDto).compose(user -> {
-				ResumeDTO resumeDto = new ResumeDTO(null, "some content", 1, new Date(),new Date(), Optional.of(user));
-				return resumeRepository.createResume(resumeDto);
-			})
-			.compose(r-> {
-				ResumeDTO newResume = new ResumeDTO(r.id(), "new content", r.templateId(), r.updatedAt(), r.createdAt(), r.user());
-				return resumeRepository.updateResume(newResume);
-			})
-			.compose(result -> {
-				Assertions.assertEquals("new content",result.content());
-				return resumeRepository.findResumeById(result.id());
-			})
-			.onFailure(err -> context.failNow(err))
-			.onSuccess(r -> {
-				Assertions.assertTrue(r.isPresent());
-				Assertions.assertEquals("new content",r.get().content());
-				context.completeNow();
-			});
-		});
-	}
+  @Test
+  void updateResumeTest(Vertx vertx, VertxTestContext context) {
+    UserDTO userDto = new UserDTO(null, "username", "userEmail@gmail.com", "userPassword", "gender", "phone", 21, new Date(), new Date());
+    context.verify(() -> {
+      userRepository.createUser(userDto).compose(user -> {
+          ResumeDTO resumeDto = new ResumeDTO(null, 1, new Date(), new Date(), Optional.of(user), "Full Name", "Position", "Objective", "Education", "Work Experience", "Skills and Awards", "Languages", "Recommendations", "Hobbies and Interests");
+          return resumeRepository.createResume(resumeDto);
+        })
+        .compose(r -> {
+          ResumeDTO newResume = new ResumeDTO(r.id(), 1, r.updatedAt(), r.createdAt(), r.user(), r.fullName(), r.position(), r.objective(), r.education(), r.workExperience(), r.skillsAndAwards(), r.languages(), r.recommendations(), r.hobbiesAndInterests());
+          return resumeRepository.updateResume(newResume);
+        })
+        .compose(result -> {
+          Assertions.assertEquals(1, result.template());
+          return resumeRepository.findResumeById(result.id());
+        })
+        .onFailure(err -> context.failNow(err))
+        .onSuccess(r -> {
+          Assertions.assertTrue(r.isPresent());
+          Assertions.assertEquals(1, r.get().template());
+          context.completeNow();
+        });
+    });
+  }
 
-	@SuppressWarnings("deprecation")
-	@Test
-	void findResumeByUserId(Vertx vertx, VertxTestContext context) {
-	    UserDTO userDto1 = new UserDTO(null, "userEmail1@gmail.com", "userPassword1","gender1", "phone1", 21,new Date(),new Date());
-	    UserDTO userDto2 = new UserDTO(null, "userEmail2@gmail.com", "userPassword2","gender2", "phone2", 22,new Date(),new Date());
+  @Test
+  void findResumeByUserId(Vertx vertx, VertxTestContext context) {
+    UserDTO userDto1 = new UserDTO(null, "username", "userEmail1@gmail.com", "userPassword1", "gender1", "phone1", 21, new Date(), new Date());
+    UserDTO userDto2 = new UserDTO(null, "username", "userEmail2@gmail.com", "userPassword2", "gender2", "phone2", 22, new Date(), new Date());
 
-	    CompositeFuture usersCreations = CompositeFuture.join(
-	        userRepository.createUser(userDto1),
-	        userRepository.createUser(userDto2)
-	    );
+    CompositeFuture usersCreations = CompositeFuture.join(
+      userRepository.createUser(userDto1),
+      userRepository.createUser(userDto2)
+    );
 
-	    usersCreations.onSuccess(users -> {
-	        Assertions.assertTrue(users.succeeded());
-	        Assertions.assertTrue(users.isComplete());
+    usersCreations.onSuccess(users -> {
+      Assertions.assertTrue(users.succeeded());
+      Assertions.assertTrue(users.isComplete());
 
-	        UserDTO createdUser1 = (UserDTO) users.list().get(0);
-	        UserDTO createdUser2 = (UserDTO) users.list().get(1);
+      UserDTO createdUser1 = (UserDTO) users.list().get(0);
+      UserDTO createdUser2 = (UserDTO) users.list().get(1);
 
-	        ResumeDTO resumeDto1 = new ResumeDTO(null, "Content for user1", 1, new Date(), new Date(), Optional.of(createdUser1));
-	        ResumeDTO resumeDto2 = new ResumeDTO(null, "Another content for user1", 1, new Date(), new Date(), Optional.of(createdUser1));
-	        ResumeDTO resumeDto3 = new ResumeDTO(null, "Content for user2", 1, new Date(), new Date(), Optional.of(createdUser2));
+      ResumeDTO resumeDto1 = new ResumeDTO(null, 1, new Date(), new Date(), Optional.of(createdUser1), "Full Name", "Position", "Objective", "Education", "Work Experience", "Skills and Awards", "Languages", "Recommendations", "Hobbies and Interests");
+      ResumeDTO resumeDto2 = new ResumeDTO(null, 1, new Date(), new Date(), Optional.of(createdUser1), "Full Name", "Position", "Objective", "Education", "Work Experience", "Skills and Awards", "Languages", "Recommendations", "Hobbies and Interests");
+      ResumeDTO resumeDto3 = new ResumeDTO(null, 1, new Date(), new Date(), Optional.of(createdUser2), "Full Name", "Position", "Objective", "Education", "Work Experience", "Skills and Awards", "Languages", "Recommendations", "Hobbies and Interests");
 
-	        CompositeFuture resumesCreations = CompositeFuture.join(
-	            resumeRepository.createResume(resumeDto1),
-	            resumeRepository.createResume(resumeDto2),
-	            resumeRepository.createResume(resumeDto3)
-	        );
+      CompositeFuture resumesCreations = CompositeFuture.join(
+        resumeRepository.createResume(resumeDto1),
+        resumeRepository.createResume(resumeDto2),
+        resumeRepository.createResume(resumeDto3)
+      );
 
-	        resumesCreations.onSuccess(resumes -> {
-	            Assertions.assertTrue(resumes.succeeded());
-	            Assertions.assertTrue(resumes.isComplete());
+      resumesCreations.onSuccess(resumes -> {
+        Assertions.assertTrue(resumes.succeeded());
+        Assertions.assertTrue(resumes.isComplete());
 
-	            resumeRepository.findResumeByUserId(createdUser1.id())
-	                .onSuccess(resumesList -> {
-	                    Assertions.assertNotNull(resumesList);
-	                    Assertions.assertEquals(2, resumesList.resumes().size());
-	                    System.out.println("RESUMES LIST SIZE IS : " + resumesList.resumes().size());
-	                    System.out.println(resumesList.resumes().get(0));
-	                    System.out.println(resumesList.resumes().get(1));
-	                    context.completeNow();
-	                })
-	                .onFailure(err -> context.failNow(err));
-	        }).onFailure(err -> context.failNow(err));
-	    }).onFailure(err -> context.failNow(err));
-	}
+        resumeRepository.findResumeByUserId(createdUser1.id())
+          .onSuccess(resumesList -> {
+            Assertions.assertNotNull(resumesList);
+            Assertions.assertEquals(2, resumesList.resumes().size());
+            context.completeNow();
+          })
+          .onFailure(err -> context.failNow(err));
+      }).onFailure(err -> context.failNow(err));
+    }).onFailure(err -> context.failNow(err));
+  }
 }
-
-/*@Test
-void initializeHibernateWithCodeTest(Vertx vertx, VertxTestContext context) {
-	//Creating properties with config data
-
-	Properties hibernateProps = new Properties();
-
-	//url
-	hibernateProps.put("hibernate.connection.url", "jdbc:mysql://localhost:3306/test");
-
-	//credentials
-	hibernateProps.put("hibernate.connection.username", USER);
-	hibernateProps.put("hibernate.connection.password", PASSWORD);
-
-	//schema diagram
-	hibernateProps.put("jakarta.persistence.schema-generation.database.action", "drop-and-create");
-	hibernateProps.put("hibernate.hbm2ddl.auto", "update");
-
-	//dialect *
-	hibernateProps.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-
-	//Creating Hiberate configuration
-	Configuration hibernateConfiguration = new Configuration();
-	hibernateConfiguration.setProperties(hibernateProps);
-	hibernateConfiguration.addAnnotatedClass(User.class);
-	hibernateConfiguration.addAnnotatedClass(Resume.class);
-
-	//Creating ServiceRegistry
-	ServiceRegistry serviceRegistry = new ReactiveServiceRegistryBuilder()
-										.applySettings(hibernateConfiguration.getProperties()).build();
-
-	//Creating SessionFactory
-	Stage.SessionFactory sessionFactory = hibernateConfiguration.buildSessionFactory(serviceRegistry).unwrap(Stage.SessionFactory.class);
-
-	//Doing something with db
-	User user = new User();
-	//user.setId(1);
-	user.setEmail("test@gmail.com");
-	user.setPassword("passwordFrom18_12_2024");
-	user.setCreatedAt(new Date());
-	user.setUpdatedAt(new Date());
-
-	System.out.println("Task ID before insertion: " + user.getId());
-
-	var insertionResult = sessionFactory.withTransaction((s,t) -> s.persist(user));
-
-	Future<Void> future = Future.fromCompletionStage(insertionResult);
-	context.verify(() -> future
-			.onFailure(err -> context.failNow(err))
-			.onSuccess(r -> {
-				System.out.println("Task ID after insertion: " + user.getId());
-				context.completeNow();
-			}));
-}*/
