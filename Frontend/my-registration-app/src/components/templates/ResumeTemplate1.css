@@ -83,4 +83,39 @@
       font-size: 14px;
     }
   }
+/* Контейнер для кнопок внизу */
+.buttons-container {
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;   
+  right: 20px;   
+  width: calc(100% - 40px);
+}
+
+/* Стили для кнопки "Назад" */
+.btn-back {
+  background-color: #ff4d4d;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Стили для кнопки "Скачать PDF" */
+.btn-download {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-download:hover {
+  background-color: #45a049;
+}
+
+
   

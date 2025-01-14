@@ -1,6 +1,8 @@
 import React from "react";
 import "./ResumeTemplate3.css";
 import { ResumeData } from '../create-resume/ResumeInterface';
+import { useNavigate } from "react-router-dom";
+import html2pdf from 'html2pdf.js'; 
 
 interface UserData {
   age: string;
@@ -17,8 +19,34 @@ const personalData: UserData = {
 }
 
 const ResumeTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
+
+      ///////////Navigation
+ const navigate = useNavigate(); // Инициализируем navigate
+  
+ // Функция для возврата на предыдущую страницу
+ const handleBack = () => {
+   navigate(-1); // Переход на шаг назад
+ };
+///////////
+
+
+ // Функция для скачивания PDF
+ const handleDownloadPDF = () => {
+   const element = document.getElementById("resume-to-pdf"); // Получаем элемент для конвертации
+   if (element) {
+     const opt = {
+       margin:       0.2,
+       filename:     'resume.pdf',
+       image:        { type: 'jpeg', quality: 0.98 },
+       html2canvas:  { scale: 2 },
+       jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+     };
+     html2pdf().from(element).set(opt).save(); // Генерация и сохранение PDF
+   }
+ };
+
   return (
-    <div className="resume-container3">
+    <div className="resume-container3" id="resume-to-pdf">
      <div className="upper-line3"></div>
       <div className="resume-header3">
         <h1 className="resume-name3">{data.fullName}</h1>
@@ -72,6 +100,20 @@ const ResumeTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
               hobby.trim() && <p key={index}>{hobby}</p>
             ))}
           </div>
+        </div>
+      </div>
+     {/* Контейнер для кнопок внизу */}
+     <div className="buttons-container">
+        <div className="resume-back-button">
+          <button onClick={handleBack} className="btn-back">
+            Back
+          </button>
+        </div>
+
+        <div className="resume-download-button">
+          <button onClick={handleDownloadPDF} className="btn-download">
+            Download as PDF
+          </button>
         </div>
       </div>
     </div>

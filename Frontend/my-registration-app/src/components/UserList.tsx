@@ -19,7 +19,7 @@ const UserList: React.FC = () => {
         const data = await fetchAllUsers();
         setUsers(data);
       } catch (err) {
-        setError("Не вдалося завантажити користувачів.");
+        setError("Failed to upload users.");
       } finally {
         setLoading(false);
       }
@@ -28,7 +28,7 @@ const UserList: React.FC = () => {
     loadUsers();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div>download...</div>;
   if (error) return <div>{error}</div>;
   
   return (

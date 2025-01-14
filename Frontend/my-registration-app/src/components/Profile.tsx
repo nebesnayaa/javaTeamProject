@@ -16,7 +16,7 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
     phone: "",
     gender: "",
     age: "",
-    password: ""
+    password: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -29,12 +29,13 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
 
   const context = useContext(AppContext);
 
-  const [selectedTemplate, setSelectedTemplate] = useState<string>(""); // Состояние для выбранного шаблона
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+
   const [templates] = useState([
     { id: "template1", name: "Template 1" },
     { id: "template2", name: "Template 2" },
     { id: "template3", name: "Template 3" },
-  ]); // Пример массива шаблонов
+  ]);
 
   const navigate = useNavigate();
 
@@ -43,7 +44,7 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
     console.log("Session ID from context:", userId);
     if (!userId) {
       console.error("User ID not found in context");
-      navigate("/login"); // Якщо ID немає, перенаправляємо на логін
+      navigate("/login");
       return;
     }
 
@@ -54,9 +55,11 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
         setFormData(response.data);
       })
       .catch((error) => console.error("Error fetching profile data:", error));
-    
+
     axios
-      .get(`http://localhost:8080/resumes/userId/${userId}`, { withCredentials: true }) // поки що некоректний запит
+      .get(`http://localhost:8080/resumes/userId/${userId}`, {
+        withCredentials: true,
+      })
       .then((response) => {
         setResumeData(response.data);
         setResumeAvailable(true);
@@ -71,6 +74,7 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+
   const handleSave = () => {
     axios
       .put(`http://localhost:8080/users`, formData, {
@@ -82,12 +86,24 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
       })
       .catch((error) => console.error("Error updating profile:", error));
   };
-  
+
   const handleCreateResume = () => {
-    navigate("/create-resume", { state: { templateId: selectedTemplate } }); // Передаем выбранный шаблон
+    navigate("/create-resume", { state: { templateId: selectedTemplate } });
   };
+
   const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedTemplate(e.target.value);
+  };
+
+  // Обработчик скачивания шаблона
+  const handleDownloadTemplate = (templateId: string) => {
+    const fileUrl = `http://localhost:8080/templates/${templateId}`; // Ваш URL для скачивания шаблона
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.download = `${templateId}.pdf`; // Имя файла для скачивания
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -158,7 +174,9 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
                 onChange={(e) => handleInputChange}
                 required
               >
-                <option value="" disabled>Select your gender</option>
+                <option value="" disabled>
+                  Select your gender
+                </option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
@@ -213,6 +231,17 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
             </button>
           </div>
         )}
+        {/* Добавленная кнопка для скачивания шаблона */}
+        <div className="template-download">
+          {selectedTemplate && (
+            <button
+              className="btn-download"
+              onClick={() => handleDownloadTemplate(selectedTemplate)}
+            >
+              Download Template
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
