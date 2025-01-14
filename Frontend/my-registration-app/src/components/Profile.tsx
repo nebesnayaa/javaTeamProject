@@ -63,7 +63,7 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
     fetchResumes();
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
@@ -149,7 +149,7 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
                 id="gender"
                 name="gender"
                 value={formData.gender}
-                onChange={(e) => handleInputChange}
+                onChange={handleInputChange}
                 required
               >
                 <option value="" disabled>
