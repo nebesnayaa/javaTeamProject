@@ -86,6 +86,7 @@ public class MainVerticle extends AbstractVerticle {
         } else if (body.isEmpty()) {
           context.response().setStatusCode(400).end("Bad request");
         } else {
+          String username = body.getString("username");
           String email = body.getString("email");
           String password = body.getString("password");
           password = Hasher.getHash(password,10);
@@ -94,7 +95,7 @@ public class MainVerticle extends AbstractVerticle {
           Integer age = Integer.parseInt(body.getString("age"));
           body.putNull("password");
 
-          UserDTO user = new UserDTO(null, email, password,gender, phone, age, new Date(), new Date());
+          UserDTO user = new UserDTO(null, username, email, password,gender, phone, age, new Date(), new Date());
           userService.createUser(user)
             .onSuccess(result -> {
               body.put("id", result.id());
@@ -140,6 +141,7 @@ public class MainVerticle extends AbstractVerticle {
         }
         else{
           String id = body.getString("id");
+          String username = body.getString("username");
           String email = body.getString("email");
           String password = body.getString("password");
           password = Hasher.getHash(password,10);
@@ -147,7 +149,7 @@ public class MainVerticle extends AbstractVerticle {
           String phone = body.getString("phone");
           Integer age = Integer.parseInt(body.getString("age"));
           body.putNull("password");
-          UserDTO user = new UserDTO(UUID.fromString(id), email, password,gender, phone, age, new Date(), new Date());
+          UserDTO user = new UserDTO(UUID.fromString(id), username, email, password,gender, phone, age, new Date(), new Date());
           userService.updateUser(new Principal(UUID.fromString(id)), user)
             .onSuccess(result -> {
               String sessionId = UUID.randomUUID().toString();
@@ -323,38 +325,63 @@ public class MainVerticle extends AbstractVerticle {
 
     router.post("/resumes").handler(context -> {
       JsonObject body = context.getBodyAsJson();
-      //JsonObject user  = body.getJsonObject("user");
-      UUID userId = UUID.fromString(body.getString("userId"));//user.mapTo(UserDTO.class).id();
-      Integer templateId = body.getInteger("templateId");
-      String content = body.getString("content");
-      userService.findUserById(userId)
-      .onSuccess(res -> {
+      UUID userId = UUID.fromString(body.getString("userId"));
+      Integer templateId = body.getInteger("template");
+      String fullName = body.getString("fullName");
+      String position = body.getString("position");
+      String objective = body.getString("objective");
+      String education = body.getString("education");
+      String workExperience = body.getString("workExperience");
+      String skillsAndAwards = body.getString("skillsAndAwards");
+      String languages = body.getString("languages");
+      String recommendations = body.getString("recommendations");
+      String hobbiesAndInterests = body.getString("hobbiesAndInterests");
 
-        ResumeDTO payload = new ResumeDTO(null, content, templateId, new Date(), new Date(), res);
-        resumeService.createResume(payload)
-          .onSuccess(result -> {
-            JsonObject responseBody = JsonObject.mapFrom(result);
-            context.response().setStatusCode(201).end(responseBody.encode());
-          })
-          .onFailure(err -> {
-            context.response().setStatusCode(500).end(err.getMessage());
-          });
-      })
-      .onFailure(err -> {
-        context.response().setStatusCode(500).end(err.getMessage());
-      });
+      userService.findUserById(userId)
+        .onSuccess(res -> {
+          ResumeDTO payload = new ResumeDTO(
+            null, templateId, new Date(), new Date(),
+            res, fullName, position, objective,
+            education, workExperience, skillsAndAwards,
+            languages, recommendations, hobbiesAndInterests
+          );
+          resumeService.createResume(payload)
+            .onSuccess(result -> {
+              JsonObject responseBody = JsonObject.mapFrom(result);
+              context.response().setStatusCode(201).end(responseBody.encode());
+            })
+            .onFailure(err -> {
+              context.response().setStatusCode(500).end(err.getMessage());
+            });
+        })
+        .onFailure(err -> {
+          context.response().setStatusCode(500).end(err.getMessage());
+        });
     });
 
     router.put("/resumes").handler(context -> {
       JsonObject body = context.getBodyAsJson();
       UUID id = UUID.fromString(body.getString("id"));
       UUID userId = UUID.fromString(body.getString("userId"));
-      Integer templateId = body.getInteger("templateId");
-      String content = body.getString("content");
+      Integer templateId = body.getInteger("template");
+      String fullName = body.getString("fullName");
+      String position = body.getString("position");
+      String objective = body.getString("objective");
+      String education = body.getString("education");
+      String workExperience = body.getString("workExperience");
+      String skillsAndAwards = body.getString("skillsAndAwards");
+      String languages = body.getString("languages");
+      String recommendations = body.getString("recommendations");
+      String hobbiesAndInterests = body.getString("hobbiesAndInterests");
+
       userService.findUserById(userId)
         .onSuccess(res -> {
-
-          ResumeDTO payload = new ResumeDTO(id, content, null, null, null, res);
+          ResumeDTO payload = new ResumeDTO(
+            id, templateId, null, null,
+            res, fullName, position, objective,
+            education, workExperience, skillsAndAwards,
+            languages, recommendations, hobbiesAndInterests
+          );
           resumeService.updateResume(payload)
             .onSuccess(result -> {
               JsonObject responseBody = JsonObject.mapFrom(result);
@@ -369,7 +396,9 @@ public class MainVerticle extends AbstractVerticle {
         });
     });
 
-		Dotenv dotenv = Dotenv.load();
+
+
+    Dotenv dotenv = Dotenv.load();
 		Integer port = Integer.parseInt(Objects.requireNonNull(dotenv.get("PORT")));
 
 		server.requestHandler(router).listen(port)

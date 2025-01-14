@@ -1,6 +1,7 @@
 package repository;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,22 +41,33 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
 	}
 
 
-	@Override
-	public Future<ResumeDTO> updateResume(ResumeDTO resume) {
-		CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
-		CriteriaUpdate<Resume> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(Resume.class);
-		Root<Resume> root = criteriaUpdate.from(Resume.class);
-		Predicate predicate = criteriaBuilder.equal(root.get("id"), resume.id());
+  @Override
+  public Future<ResumeDTO> updateResume(ResumeDTO resume) {
+    CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
+    CriteriaUpdate<Resume> criteriaUpdate = criteriaBuilder.createCriteriaUpdate(Resume.class);
+    Root<Resume> root = criteriaUpdate.from(Resume.class);
 
-		criteriaUpdate.set("content", resume.content());
-		criteriaUpdate.set("updatedAt", LocalDateTime.now());
+    Predicate predicate = criteriaBuilder.equal(root.get("id"), resume.id());
 
-		criteriaUpdate.where(predicate);
+    // Оновлення необхідних полів
+    criteriaUpdate.set("fullName", resume.fullName());
+    criteriaUpdate.set("position", resume.position());
+    criteriaUpdate.set("objective", resume.objective());
+    criteriaUpdate.set("education", resume.education());
+    criteriaUpdate.set("workExperience", resume.workExperience());
+    criteriaUpdate.set("skillsAndAwards", resume.skillsAndAwards());
+    criteriaUpdate.set("languages", resume.languages());
+    criteriaUpdate.set("recommendations", resume.recommendations());
+    criteriaUpdate.set("hobbiesAndInterests", resume.hobbiesAndInterests());
+    criteriaUpdate.set("template", resume.template());
+    criteriaUpdate.set("updatedAt", new Date());
 
-		CompletionStage<Integer> result = sessionFactory.withTransaction((s,t) -> s.createQuery(criteriaUpdate).executeUpdate());
-		Future<ResumeDTO> future = Future.fromCompletionStage(result).map(r -> resume);
-		return future;
-	}
+    CompletionStage<Integer> result = sessionFactory.withTransaction((s, t) -> s.createQuery(criteriaUpdate).executeUpdate());
+
+    Future<ResumeDTO> future = Future.fromCompletionStage(result).map(r -> resume);
+    return future;
+  }
+
 
 	@Override
 	public Future<Void> removeResume(UUID id) {

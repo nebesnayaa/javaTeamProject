@@ -8,11 +8,12 @@ import java.util.UUID;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "user", uniqueConstraints = @UniqueConstraint(columnNames = {"email"}))
+@Table(name = "user", uniqueConstraints = @UniqueConstraint(columnNames = {"email", "username"}))
 public class User {
 
 	@Id @GeneratedValue(strategy = GenerationType.UUID)
 	private UUID id;
+  private String username;
 	private String email;
 	private String password;
   private String gender;
@@ -33,6 +34,9 @@ public class User {
 	public void setId(UUID id) {
 		this.id = id;
 	}
+
+  public String getUsername(){return this.username;}
+  public void setUserName(String username){this.username = username;}
 
 	public String getEmail() {
 		return email;
