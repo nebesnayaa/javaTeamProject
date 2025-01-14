@@ -34,12 +34,12 @@ const Main: React.FC = () => {
 
       {/* Ссылка на создание резюме */}
       <Link to="/create-resume">Create first resume</Link>
-      <div>
+      <div className='tmp-container'>
         <h3>Here you can view different templates:</h3>
-        <div>
-          <Link to="/template1">Template 1</Link>
-          <Link to="/template2">Template 2</Link>
-          <Link to="/template3">Template 3</Link>
+        <div className='template-box'>
+          <Link to="/template1" className='btn-template'>Template 1</Link>
+          <Link to="/template2" className='btn-template'>Template 2</Link>
+          <Link to="/template3" className='btn-template'>Template 3</Link>
         </div>
       </div>
     </div>

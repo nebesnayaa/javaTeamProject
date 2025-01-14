@@ -17,7 +17,24 @@ body {
   font-size: 2rem; /* Увеличиваем размер заголовка для лучшего восприятия */
 }
 
-.main-container p {
+.tmp-container {
+ margin-top: 35px;
+}
+
+.tmp-container h3 {
+  color: #eee;
+}
+
+.template-box{
+  display: flex;
+  gap: 15px;
+}
+
+.template-box .btn-template{
+  background-color: #94804e;
+}
+
+.main-container p { 
   color: #bbb6b6;
   font-size: 1.1rem;
 }
