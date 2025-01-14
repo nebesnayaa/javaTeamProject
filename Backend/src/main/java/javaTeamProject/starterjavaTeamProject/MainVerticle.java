@@ -152,24 +152,32 @@ public class MainVerticle extends AbstractVerticle {
           UserDTO user = new UserDTO(UUID.fromString(id), username, email, password,gender, phone, age, new Date(), new Date());
           userService.updateUser(new Principal(UUID.fromString(id)), user)
             .onSuccess(result -> {
-              String sessionId = UUID.randomUUID().toString();
+              String cookieHeader = context.request().getHeader("Cookie");
+              if(cookieHeader!= null && cookieHeader.contains("sessionId=")){
+                String encryptedSessionId = cookieHeader.split("sessionId=")[1].split(";")[0];
+                try{
+                  String sessionId = AesEncryptor.decrypt(encryptedSessionId);
 
-              JsonObject sessionData = new JsonObject()
-                .put("userId", result.id())
-                .put("email", result.email());
+                  redisAPI.get(sessionId)
+                    .compose(res -> {
+                      JsonObject sessionData = res != null ? new JsonObject(res.toString()) : new JsonObject();
+                      sessionData.put("userId", id);
+                      sessionData.put("email", email);
 
-              redisAPI.set(List.of(sessionId, sessionData.encode()))
-                .compose(res -> redisAPI.expire(List.of(sessionId, "36000")))
-                .onSuccess(res -> {
-                  try {
-                    context.response().setStatusCode(200).putHeader("Set-Cookie", "sessionId=" + AesEncryptor.encrypt(sessionId.toString()) + "; HttpOnly; SameSite=Strict").end(body.encode());
-                  } catch (Exception e) {
-                    throw new RuntimeException(e);
-                  }
-                })
-                .onFailure(err -> {
-                  context.response().setStatusCode(500).end(err.getMessage());
-                });
+                      return redisAPI.set(List.of(sessionId, sessionData.encode()))
+                        .compose(r -> redisAPI.expire(List.of(sessionId, "36000")));
+                    })
+                    .onSuccess(r-> {
+                      context.response().setStatusCode(200).putHeader("Set-Cookie", "sessionId=" + encryptedSessionId + "; HttpOnly; SameSite=Strict").end(body.encode());
+                    })
+                    .onFailure(err-> {
+                      context.response().setStatusCode(500).end(err.getMessage());
+                    });
+                }
+                catch(Exception e){
+                  context.response().setStatusCode(500).end("Invalid session ID");
+                }
+              }
             })
             .onFailure(err -> {
               context.response().setStatusCode(500).end(err.getMessage());
