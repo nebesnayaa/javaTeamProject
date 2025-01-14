@@ -1,18 +1,17 @@
-import "./ResumeTemplate1.css";
-import { ResumeData } from '../create-resume/ResumeInterface';
-import { useNavigate } from "react-router-dom";
+import "./ResumeTemplate1.css";import { useLocation, useNavigate} from "react-router-dom";
 import html2pdf from 'html2pdf.js';
+import { ResumeUserData } from "../create-resume/ResumeUserData";
 
-const personalData = {
-  age: "25",
-  gender: "Male",
-  email: "sashka2000@gmail.com",
-  phone: "0987654678"
-};
+const ResumeTemplate1: React.FC= () => {
+  const location = useLocation();
+  const { data } = location.state?.data || {}; // Отримуємо передані дані
+  
+  if (!data) {
+    return <p>Loading...</p>; // Можна відобразити повідомлення, якщо дані ще не завантажені
+  }
 
-const ResumeTemplate1: React.FC<{ data: ResumeData }> = ({ data }) => {
   const navigate = useNavigate();
-
+  
   const handleBack = () => {
     navigate(-1);
   };
@@ -39,13 +38,13 @@ const ResumeTemplate1: React.FC<{ data: ResumeData }> = ({ data }) => {
         <div className="resume-header1">
           <h1 className="resume-name1">{data.fullName}</h1>
           <p className="resume-age-gender1">
-            Age: {personalData.age}, Gender: {personalData.gender === "male" ? "Male" : personalData.gender === "female" ? "Female" : "Other"}
+            Age: {data.user.age}, Gender: {data.user.gender === "male" ? "Male" : data.user.gender === "female" ? "Female" : "Other"}
           </p>
         </div>
         <div className="resume-content1">
           <div className="resume-section1">
             <h3>Contacts</h3>
-            <p>Email: {personalData.email} Phone: {personalData.phone}</p>
+            <p>Email: {data.user.email} Phone: {data.user.phone}</p>
           </div>
 
           <div className="resume-section1">

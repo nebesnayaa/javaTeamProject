@@ -1,34 +1,38 @@
 import React from "react";
 import "./ResumeTemplate3.css";
-import { ResumeData } from '../create-resume/ResumeInterface';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import html2pdf from 'html2pdf.js'; 
+import { ResumeUserData } from "../create-resume/ResumeUserData";
 
-interface UserData {
-  age: string;
-  gender: string;
-  email: string;
-  phone: string;
-}
+const fallbackData: ResumeUserData = {
+  id: "example",
+  template: 3,
+  fullName: "John Doe",
+  position: "Software Engineer",
+  objective: "Looking for a challenging role",
+  education: "B.Sc. in Computer Science",
+  workExperience: "3 years in software development",
+  skillsAndAwards: "JavaScript, React, Node.js",
+  languages: "English, Spanish",
+  recommendations: "Available upon request",
+  hobbiesAndInterests: "Reading, Gaming",
+  user: {
+    age: 30,
+    gender: "Male",
+    email: "johndoe@example.com",
+    phone: "1234567890",
+  }
+};
 
-const personalData: UserData = {
-  age: "25",
-  gender: "Male",
-  email: "sashka2000@gmail.com",
-  phone: "0987654678"
-}
+const ResumeTemplate: React.FC = () => {
+  const location = useLocation();
+  const { data } = location.state || {};
 
-const ResumeTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
-
-      ///////////Navigation
- const navigate = useNavigate(); // Инициализируем navigate
+ const navigate = useNavigate(); 
   
- // Функция для возврата на предыдущую страницу
  const handleBack = () => {
-   navigate(-1); // Переход на шаг назад
+   navigate(-1);
  };
-///////////
-
 
  // Функция для скачивания PDF
  const handleDownloadPDF = () => {
@@ -51,7 +55,7 @@ const ResumeTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
       <div className="resume-header3">
         <h1 className="resume-name3">{data.fullName}</h1>
         <p className="resume-age-gender3">
-          Age: {personalData.age}, Gender: {personalData.gender === "male" ? "Male" : personalData.gender === "female" ? "Female" : "Other"}
+          Age: {data.user.age}, Gender: {data.user.gender === "male" ? "Male" : data.user.gender === "female" ? "Female" : "Other"}
         </p>
       </div>
 
@@ -59,7 +63,7 @@ const ResumeTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
         <div className="resume-left3">
           <div className="resume-section3">
             <h3>Contacts</h3>
-            <p>Email: {personalData.email} Phone: {personalData.phone}</p>
+            <p>Email: {data.user.email} Phone: {data.user.phone}</p>
           </div>
 
           <div className="resume-section3">
@@ -96,9 +100,7 @@ const ResumeTemplate: React.FC<{ data: ResumeData }> = ({ data }) => {
 
           <div className="resume-section3">
             <h3>Hobbies and interests</h3>
-            {data.hobbiesAndInterests.split('\n').map((hobby, index) => (
-              hobby.trim() && <p key={index}>{hobby}</p>
-            ))}
+            <p>{data.hobbiesAndInterests}</p>
           </div>
         </div>
       </div>

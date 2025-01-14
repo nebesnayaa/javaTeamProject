@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Style/Profile.css";
 import { AppContext } from "../context";
+import { ResumeUserData } from "./create-resume/ResumeUserData";
 
 interface ProfileProps {
   onLogout: () => void;
@@ -22,20 +23,10 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(profileData);
 
-  const [resumeData, setResumeData] = useState<null | { content: string }>({
-    content: "",
-  });
-  const [resumeAvailable, setResumeAvailable] = useState(true);
-
   const context = useContext(AppContext);
 
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
-
-  const [templates] = useState([
-    { id: "template1", name: "Template 1" },
-    { id: "template2", name: "Template 2" },
-    { id: "template3", name: "Template 3" },
-  ]);
+  const [resumes, setResumes] = useState<ResumeUserData[]>([]);
+  const [resumeAvailable, setResumeAvailable] = useState(true);
 
   const navigate = useNavigate();
 
@@ -48,26 +39,28 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
       return;
     }
 
+    // Fetch profile data
     axios
       .get(`http://localhost:8080/users/one/${userId}`, { withCredentials: true })
-      .then((response) => {
+      .then(async (response) => {
         setProfileData(response.data);
         setFormData(response.data);
       })
       .catch((error) => console.error("Error fetching profile data:", error));
 
-    axios
-      .get(`http://localhost:8080/resumes/userId/${userId}`, {
-        withCredentials: true,
-      })
-      .then((response) => {
-        setResumeData(response.data);
-        setResumeAvailable(true);
-      })
-      .catch((error) => {
-        console.error("No resume found:", error);
+    const fetchResumes = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/resumes/userId/${userId}`);
+        const data = await response.json();
+        setResumes(data.resumes); // Встановлюємо масив резюме в state
+        setResumeAvailable(data.resumes.length > 0); // Встановлюємо статус доступності
+      } catch (error) {
+        console.error('Error fetching resumes:', error);
         setResumeAvailable(false);
-      });
+      }
+    };
+
+    fetchResumes();
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,23 +80,8 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
       .catch((error) => console.error("Error updating profile:", error));
   };
 
-  const handleCreateResume = () => {
-    navigate("/create-resume", { state: { templateId: selectedTemplate } });
-  };
-
-  const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedTemplate(e.target.value);
-  };
-
-  // Обработчик скачивания шаблона
-  const handleDownloadTemplate = (templateId: string) => {
-    const fileUrl = `http://localhost:8080/templates/${templateId}`; // Ваш URL для скачивания шаблона
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.download = `${templateId}.pdf`; // Имя файла для скачивания
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleViewResume = (resume: ResumeUserData, template: number) => {
+    navigate(`/template${template}`, { state: { data: resume } });
   };
 
   return (
@@ -148,7 +126,7 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
             <div className="infoFields">
               <input
                 type="text"
-                name="name"
+                name="username"
                 value={formData.username}
                 onChange={handleInputChange}
                 placeholder="Name"
@@ -188,7 +166,7 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
                 onChange={handleInputChange}
                 placeholder="Age"
               />
-              <div className="buttons-container">
+              <div className="buttons-box">
                 <button className="btn-save" onClick={handleSave}>
                   Save
                 </button>
@@ -204,44 +182,29 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
         </div>
       </div>
       <div className="resume-profile-container">
-        <h3>My resume</h3>
-        <label>Choose the template:</label>
-        <select
-          value={selectedTemplate}
-          onChange={handleTemplateChange}
-          className="template-select"
-        >
-          <option value="">Choose</option>
-          {templates.map((template) => (
-            <option key={template.id} value={template.id}>
-              {template.name}
-            </option>
-          ))}
-        </select>
-        {resumeAvailable ? (
-          <div>
-            <p>{resumeData?.content}</p>
-            <button>Edit resume</button>
-          </div>
+        <h3>My resumes</h3>
+        
+        {resumes && resumes.length > 0 ? (
+          <ul className="resume-list">
+            {resumes.map((resume) => (
+              <li key={resume.id} className="resume-item">
+                <span>{resume.position}</span>
+                <div>
+                  <button className="btn-edit">Edit Resume</button>
+                  <button className="btn-view"
+                    onClick={() => handleViewResume(resume, resume.template)}>View Resume</button>
+                </div>
+              </li>
+            ))}
+          </ul>
         ) : (
           <div className="create-resume">
-            <p className="text">You haven't created any resume yet.</p>
-            <button className="btn-add" onClick={handleCreateResume}>
-              Create
+            <p className="text">You haven't created any resumes yet.</p>
+            <button className="btn-add" onClick={() => navigate("/create-resume")}>
+              Create now
             </button>
           </div>
         )}
-        {/* Добавленная кнопка для скачивания шаблона */}
-        <div className="template-download">
-          {selectedTemplate && (
-            <button
-              className="btn-download"
-              onClick={() => handleDownloadTemplate(selectedTemplate)}
-            >
-              Download Template
-            </button>
-          )}
-        </div>
       </div>
     </div>
   );

@@ -1,34 +1,38 @@
 import React from "react";
 import "./ResumeTemplate2.css";
-import { ResumeData } from '../create-resume/ResumeInterface';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import html2pdf from 'html2pdf.js';
+import { ResumeUserData } from "../create-resume/ResumeUserData";
 
-interface UserData {
-  age: string;
-  gender: string;
-  email: string;
-  phone: string;
-}
+const fallbackData: ResumeUserData = {
+  id: "example",
+  template: 2,
+  fullName: "John Doe",
+  position: "Software Engineer",
+  objective: "Looking for a challenging role",
+  education: "B.Sc. in Computer Science",
+  workExperience: "3 years in software development",
+  skillsAndAwards: "JavaScript, React, Node.js",
+  languages: "English, Spanish",
+  recommendations: "Available upon request",
+  hobbiesAndInterests: "Reading, Gaming",
+  user: {
+    age: 30,
+    gender: "Male",
+    email: "johndoe@example.com",
+    phone: "1234567890",
+  }
+};
 
-const personalData: UserData = {
-  age: "25",
-  gender: "Male",
-  email: "sashka2000@gmail.com",
-  phone: "0987654678"
-}
+const ResumeTemplate2: React.FC = () => {
+  const location = useLocation();
+  const { data } = location.state || {};
 
-const ResumeTemplate2: React.FC<{ data: ResumeData }> = ({ data }) => {
-
- ///////////Navigation
- const navigate = useNavigate(); // Инициализируем navigate
+ const navigate = useNavigate(); 
   
- // Функция для возврата на предыдущую страницу
  const handleBack = () => {
-   navigate(-1); // Переход на шаг назад
+   navigate(-1); 
  };
-///////////
-
 
  // Функция для скачивания PDF
  const handleDownloadPDF = () => {
@@ -58,12 +62,12 @@ const ResumeTemplate2: React.FC<{ data: ResumeData }> = ({ data }) => {
 
         <div className="resume-section2">
           <h3>Personal information</h3>
-          <p>Age: {personalData.age}, Gender: {personalData.gender === "male" ? "Male" : personalData.gender === "female" ? "Female" : "Other"}</p>
+          <p>Age: {data.user.age}, Gender: {data.user.gender === "male" ? "Male" : data.user.gender === "female" ? "Female" : "Other"}</p>
         </div>
 
         <div className="resume-section2">
           <h3>Contacts</h3>
-          <p>Email: {personalData.email} Phone: {personalData.phone}</p>
+          <p>Email: {data.user.email} Phone: {data.user.phone}</p>
         </div>
 
         <div className="resume-section2">
