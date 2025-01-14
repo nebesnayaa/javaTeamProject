@@ -26,9 +26,9 @@ const fallbackData: ResumeUserData = {
 
 const ResumeTemplate: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate(); 
   const { data } = location.state || {};
 
- const navigate = useNavigate(); 
   
  const handleBack = () => {
    navigate(-1);

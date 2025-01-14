@@ -1,16 +1,18 @@
-import "./ResumeTemplate1.css";import { useLocation, useNavigate} from "react-router-dom";
+import { useNavigate, useLocation} from "react-router-dom";
+import "./ResumeTemplate1.css";
 import html2pdf from 'html2pdf.js';
 import { ResumeUserData } from "../create-resume/ResumeUserData";
 
+
 const ResumeTemplate1: React.FC= () => {
   const location = useLocation();
-  const { data } = location.state?.data || {}; // Отримуємо передані дані
+  const navigate = useNavigate(); 
+  const data: ResumeUserData | undefined = location.state?.data; 
+  //const { data } = location.state?.data || {}; // Отримуємо передані дані
   
   if (!data) {
     return <p>Loading...</p>; // Можна відобразити повідомлення, якщо дані ще не завантажені
   }
-
-  const navigate = useNavigate();
   
   const handleBack = () => {
     navigate(-1);
@@ -38,7 +40,8 @@ const ResumeTemplate1: React.FC= () => {
         <div className="resume-header1">
           <h1 className="resume-name1">{data.fullName}</h1>
           <p className="resume-age-gender1">
-            Age: {data.user.age}, Gender: {data.user.gender === "male" ? "Male" : data.user.gender === "female" ? "Female" : "Other"}
+            Age: {data.user.age}, 
+            Gender: {data.user.gender === "male" ? "Male" : data.user.gender === "female" ? "Female" : "Other"}
           </p>
         </div>
         <div className="resume-content1">
