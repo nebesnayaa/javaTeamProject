@@ -111,7 +111,7 @@ public class MainVerticle extends AbstractVerticle {
                   try {
                     context.response().setStatusCode(201)
                       .putHeader("Set-Cookie", "sessionId=" + AesEncryptor.encrypt(sessionId.toString()) + "; HttpOnly; SameSite=Strict")
-                      .end(new JsonObject().put("sessionId", sessionId).encode());
+                      .end(body.encode());
                   } catch (Exception e) {
                     throw new RuntimeException(e);
                   }

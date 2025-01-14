@@ -1,73 +1,90 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState } from "react";
-import Login from "./components/Login";
+import axios from "axios";
 import Navbar from "./components/Navbar";
-import RegistrationForm from "./components/Registration";
-import UserList from "./components/UserList";
 import Main from "./components/Main";
-import ResumeForm from './components/create-resume/Resume_Builder';
+import RegistrationForm from "./components/Registration";
+import Login from "./components/Login";
 import Profile from "./components/Profile";
-import ResumeTemplate1 from "./components/shablon/shablon1";
-import ResumeTemplate2 from "./components/shablon/shablon2";
-import ResumeTemplate3 from "./components/shablon/shablon3";
+import ResumeForm from './components/create-resume/Resume_Builder';
+import UserList from "./components/UserList";
+import ResumeTemplate1 from "./components/templates/template1";
+import ResumeTemplate2 from "./components/templates/template2";
+import ResumeTemplate3 from "./components/templates/template3";
 import { ContextProvider } from "./context";
+import { ResumeData } from './components/create-resume/ResumeInterface';
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  const handleLogout = () => {
-    setIsAuthenticated(false); // Логика выхода
+  const handleLogout = async () => { // Логика выхода
+    try {
+      await axios.post("http://localhost:8080/users/logout", {}, { withCredentials: true });
+      window.location.href = "/login";
+      setIsAuthenticated(false); 
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   const handleLoginSuccess = () => {
     setIsAuthenticated(true); // Логика успешного входа
   };
-  interface ResumeData {
-    fullName: string;
-    age: number;
-    gender: string;
-    contacts: string;
-    objective: string;
-    education: string;
-    workExperience: string;
-    skillsAndAwards: string;
-  }
+
   const data: ResumeData = {
-    fullName: "John Doe",
-    age: 29,
-    gender: "Male",
-    contacts: "johndoe@example.com | +1 (555) 123-4567",
-    objective: "To secure a challenging position as a Software Engineer, where I can utilize my skills in web development and problem-solving.",
-    education: "Bachelor of Science in Computer Science, University of Technology, 2016-2020",
-    workExperience: 
-      "Software Engineer, TechCorp Inc., 2020-Present\n" +
-      "- Developed and maintained scalable web applications using React and Node.js.\n" +
-      "- Led a team of 5 developers to deliver a customer-facing portal, increasing customer satisfaction by 15%.\n" +
-      "- Implemented CI/CD pipelines to streamline deployments and reduce errors.",
-    skillsAndAwards: 
-      "Skills:\n" +
-      "- Proficient in JavaScript, TypeScript, and Python.\n" +
-      "- Experienced in React, Node.js, and MongoDB.\n" +
-      "- Strong knowledge of RESTful APIs and microservices architecture.\n\n" +
-      "Awards:\n" +
-      "- Employee of the Month, TechCorp Inc., March 2022.\n" +
-      "- Winner, Hackathon 2021: Built an AI-powered chatbot."
+    fullName: "Oleksandr Kovalenko",
+    position: "Software Developer",
+    objective: "To develop programming skills and create innovative solutions that benefit the company and its clients.",
+    education: `
+      National Technical University of Ukraine "Kyiv Polytechnic Institute" 
+      (2016–2020)
+      Bachelor of Computer Science
+    `,
+    workExperience: `
+      Junior Software Developer, SoftServe (2021–2023)
+      - Developed REST APIs for web applications using Node.js and TypeScript.
+      - Integrated with AWS cloud services (S3, Lambda).
+      - Participated in frontend development using React.
+
+      Intern Software Developer, EPAM Systems (2020–2021)
+      - Wrote tests for existing applications.
+      - Contributed to microservices architecture development.
+    `,
+    skillsAndAwards: `
+      - Proficient in programming languages: JavaScript, TypeScript, Java.
+      - Databases: MySQL, PostgreSQL.
+      - Frameworks: React, Express.js, Spring Boot.
+      - Awarded "Best Rookie of the Year" at SoftServe, 2022.
+    `,
+    languages: "Ukrainian (native), English (fluent), German (intermediate)",
+    recommendations: `
+      Maria Ivanchenko, CTO at SoftServe.
+      Phone: +380 50 123 4567
+      Email: maria.ivanchenko@softserve.ua
+    `,
+    hobbiesAndInterests: `
+      - Dancing: 2 years of experience (hip-hop, contemporary).
+      - Reading personal development books.
+      - Playing the guitar.
+    `
   };
 
   return (
     <ContextProvider>
       <BrowserRouter>
-        <Navbar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
+        <Navbar isAuthenticated={isAuthenticated} />
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/signup" element={<RegistrationForm onSuccess={handleLoginSuccess} />} />
-          <Route path="/login" element={<Login onSuccess={handleLoginSuccess} />} />
+          <Route path="/login" element={<Login onSuccess={handleLoginSuccess} />} /> 
+
           <Route path="/Users" element={<UserList />} />
-          <Route path="/resume" element={<ResumeForm />} /> 
-          <Route path="/profile" element={<Profile />} /> 
-          <Route path="/shablon1" element={<ResumeTemplate1 data={data} />} />
-          <Route path="/shablon2" element={<ResumeTemplate2 data={data} />} /> 
-          <Route path="/shablon3" element={<ResumeTemplate3 data={data} />} /> 
+          <Route path="/create-resume" element={<ResumeForm />} /> 
+          <Route path="/profile" element={<Profile onLogout={handleLogout}/>} /> 
+
+          <Route path="/template1" element={<ResumeTemplate1 data={data}/>} />
+          <Route path="/template2" element={<ResumeTemplate2 data={data} />} /> 
+          <Route path="/template3" element={<ResumeTemplate3 data={data} />} /> 
         </Routes> 
       </BrowserRouter>
     </ContextProvider>

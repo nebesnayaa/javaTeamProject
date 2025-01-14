@@ -15,6 +15,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess }) => {
   const [phone, setPhone] = useState<string>("");
   const [age, setAge] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+
   const context = useContext(AppContext);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,10 +40,14 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess }) => {
         body: JSON.stringify({ email, password, gender, phone, age }),
         credentials: 'include'
       });
+
       if(response.ok) {
         const data = await response.json();
-        context?.setUserId(data.id);
-        console.log("UserId was set to the context: " + context?.userId);
+        console.log(data);
+        if(context){
+          context.setUserId(data.id);
+          console.log("UserId was set to the context: " + context.userId);
+        }
         setErrorMessage("");
         alert("User registered successfully!");
         onSuccess();

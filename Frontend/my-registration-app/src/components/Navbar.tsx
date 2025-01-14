@@ -4,10 +4,9 @@ import './Style/Navbar.css';
 
 interface NavbarProps {
   isAuthenticated: boolean;
-  onLogout: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, onLogout }) => {
+const Navbar: React.FC<NavbarProps> = ({ isAuthenticated }) => {
   return (
     <nav className="navbar">
       <Link to="/">Home</Link>
@@ -17,11 +16,11 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated, onLogout }) => {
           <Link to="/login">Sign in</Link>
         </div>
       ) : (
-        <>
+        <div>
           {/* <Link to="/users">Все пользователи</Link> */}
           <Link to="/resume">Resume</Link>
           <Link to="/profile">Profile</Link> 
-        </>
+        </div>
       )}
     </nav>
   );

@@ -1,72 +1,85 @@
   /* Основной контейнер */
-  .resume-container {
+  .resume-container1 {
     font-family: Arial, sans-serif;
     margin: 0 auto;
     padding: 0;
-    max-width: 800px;
+    max-width: 700px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    background-color: #fbfaf5;
+    background-color: #f9f9f9;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
+  .upper-line1{
+    width: 100%;
+    height: 20px;
+    position: relative;
+    top: 0;
+    background-color: #a6cbcc;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+
   /* Шапка резюме */
-  .resume-header {
+  .resume-header1 {
     text-align: center;
     margin: 0 20px;
   }
   
-  .resume-name {
+  .resume-name1 {
     font-size: 40px;
     font-weight: bold;
     color: #333;
     margin-bottom: 10px;
   }
   
-  .resume-age-gender {
+  .resume-age-gender1 {
     font-size: 16px;
     color: #666;
   }
   
   /* Содержимое резюме */
-  .resume-content {
+  .resume-content1 {
     padding: 5px 20px 10px;
   }
   
-  .resume-section2 {
+  .resume-section1 {
     margin-bottom: 20px;
   }
   
-  .resume-section2 h3 {
+  .resume-section1 h3 {
+    text-align: left;
     font-size: 18px;
     color: #333;
-    padding: 5px 0;
+    margin: 0 0 8px 0;
     text-transform: uppercase;
     /* Для выделения заголовков */
-    background-color: #fadfc5;
+    border-bottom: 3px solid #a6cbcc;
+    padding-bottom: 5px;
   }
   
-  .resume-section2 p {
+  .resume-section1 p {
     font-size: 16px;
     color: #555;
     line-height: 1.5;
+    margin: 5px 10px;
   }
   
   /* Адаптивность */
   @media (max-width: 600px) {
-    .resume-container {
+    .resume-container1 {
       padding: 10px;
     }
   
-    .resume-name {
+    .resume-name1 {
       font-size: 20px;
     }
   
-    .resume-section2 h3 {
+    .resume-section1 h3 {
       font-size: 16px;
     }
   
-    .resume-section2 p {
+    .resume-section1 p {
       font-size: 14px;
     }
   }

@@ -4,7 +4,11 @@ import axios from "axios";
 import "./Style/Profile.css";
 import { AppContext } from "../context";
 
-const Profile: React.FC = () => {
+interface ProfileProps {
+  onLogout: () => void;
+}
+
+const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
   const [profileData, setProfileData] = useState({
     id: "",
     name: "",
@@ -36,7 +40,6 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     const userId = context?.userId;
-   
     console.log("Session ID from context:", userId);
     if (!userId) {
       console.error("User ID not found in context");
@@ -52,23 +55,22 @@ const Profile: React.FC = () => {
       })
       .catch((error) => console.error("Error fetching profile data:", error));
     
-      // axios
-      // .get("/api/resumes/user", { withCredentials: true }) // поки що некоректний запит
-      // .then((response) => {
-      //   setResumeData(response.data);
-      //   setResumeAvailable(true);
-      // })
-      // .catch((error) => {
-      //   console.error("No resume found:", error);
-      //   setResumeAvailable(false);
-      // });
+    axios
+      .get(`http://localhost:8080/resumes/userId/${userId}`, { withCredentials: true }) // поки що некоректний запит
+      .then((response) => {
+        setResumeData(response.data);
+        setResumeAvailable(true);
+      })
+      .catch((error) => {
+        console.error("No resume found:", error);
+        setResumeAvailable(false);
+      });
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
   const handleSave = () => {
     axios
       .put(`http://localhost:8080/users`, formData, {
@@ -80,18 +82,9 @@ const Profile: React.FC = () => {
       })
       .catch((error) => console.error("Error updating profile:", error));
   };
-
-  const handleLogout = async () => {
-    try {
-      await axios.post("http://localhost:8080/users/logout", {}, { withCredentials: true });
-      navigate("/login");
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
-  };
   
   const handleCreateResume = () => {
-    navigate("/resume", { state: { templateId: selectedTemplate } }); // Передаем выбранный шаблон
+    navigate("/create-resume", { state: { templateId: selectedTemplate } }); // Передаем выбранный шаблон
   };
   const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedTemplate(e.target.value);
@@ -102,7 +95,7 @@ const Profile: React.FC = () => {
       <div className="profilePanel">
         <nav className="navbar-profile">
           <a className="username">{profileData.name || "Username"}</a>
-          <button className="btn-logout" onClick={handleLogout}>
+          <button className="btn-logout" onClick={onLogout}>
             Logout
           </button>
         </nav>

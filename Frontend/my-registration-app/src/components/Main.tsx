@@ -33,7 +33,15 @@ const Main: React.FC = () => {
       </div>
 
       {/* Ссылка на создание резюме */}
-      <Link to="/resume">Create first resume</Link>
+      <Link to="/create-resume">Create first resume</Link>
+      <div>
+        <h3>Here you can view different templates:</h3>
+        <div>
+          <Link to="/template1">Template 1</Link>
+          <Link to="/template2">Template 2</Link>
+          <Link to="/template3">Template 3</Link>
+        </div>
+      </div>
     </div>
   );
 };
