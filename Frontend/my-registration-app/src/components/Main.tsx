@@ -5,21 +5,21 @@ import { ResumeUserData } from './create-resume/ResumeUserData';
 
 const fallbackData: ResumeUserData = {
   id: "example",
-  template: 1,
+  template: 0,
   fullName: "John Doe",
   position: "Software Engineer",
-  objective: "Looking for a challenging role",
-  education: "B.Sc. in Computer Science",
-  workExperience: "3 years in software development",
-  skillsAndAwards: "JavaScript, React, Node.js",
-  languages: "English, Spanish",
-  recommendations: "Available upon request",
-  hobbiesAndInterests: "Reading, Gaming",
+  objective: "Passionate software engineer with 5+ years of experience in full-stack development. Seeking a challenging role in a dynamic team.",
+  education: "B.S. in Computer Science, University of Tech, 2018",
+  workExperience: "Software Developer at Tech Solutions Inc. (2018–2023). Developed and maintained web applications using JavaScript, React, and Node.js.",
+  skillsAndAwards: "Skills: JavaScript, React, Node.js, MongoDB. Award: Employee of the Year 2022.",
+  languages: "English (Fluent), Spanish (Intermediate)",
+  recommendations: "Highly recommended for his exceptional problem-solving skills and strong team collaboration.",
+  hobbiesAndInterests: "Hiking, Traveling, Playing Chess",
   user: {
-    age: 30,
+    age: 29,
     gender: "Male",
     email: "johndoe@example.com",
-    phone: "1234567890",
+    phone: "+1234567890"
   }
 };
 
@@ -65,9 +65,11 @@ const Main: React.FC = () => {
         <h3>Here you can view different templates:</h3>
         <div className='template-box'>
           <button className='btn-template'
-                    onClick={() => handleViewTemplate(1)}>Template 1</button>
-          <Link to="/template2" className='btn-template'>Template 2</Link>
-          <Link to="/template3" className='btn-template'>Template 3</Link>
+                  onClick={() => handleViewTemplate(1)}>Template 1</button>
+          <button className='btn-template'
+                  onClick={() => handleViewTemplate(2)}>Template 2</button>
+          <button className='btn-template'
+                  onClick={() => handleViewTemplate(3)}>Template 3</button>
         </div>
       </div>
     </div>

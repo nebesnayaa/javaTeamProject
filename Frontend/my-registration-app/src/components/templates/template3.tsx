@@ -2,33 +2,15 @@ import React from "react";
 import "./ResumeTemplate3.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import html2pdf from 'html2pdf.js'; 
-import { ResumeUserData } from "../create-resume/ResumeUserData";
 
-const fallbackData: ResumeUserData = {
-  id: "example",
-  template: 3,
-  fullName: "John Doe",
-  position: "Software Engineer",
-  objective: "Looking for a challenging role",
-  education: "B.Sc. in Computer Science",
-  workExperience: "3 years in software development",
-  skillsAndAwards: "JavaScript, React, Node.js",
-  languages: "English, Spanish",
-  recommendations: "Available upon request",
-  hobbiesAndInterests: "Reading, Gaming",
-  user: {
-    age: 30,
-    gender: "Male",
-    email: "johndoe@example.com",
-    phone: "1234567890",
-  }
-};
-
-const ResumeTemplate: React.FC = () => {
+const ResumeTemplate3: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate(); 
   const { data } = location.state || {};
 
+  if (!data) {
+    return <p>Loading...</p>; // Можна відобразити повідомлення, якщо дані ще не завантажені
+  }
   
  const handleBack = () => {
    navigate(-1);
@@ -104,6 +86,7 @@ const ResumeTemplate: React.FC = () => {
           </div>
         </div>
       </div>
+      
      {/* Контейнер для кнопок внизу */}
      <div className="buttons-container">
         <div className="resume-back-button">
@@ -122,4 +105,4 @@ const ResumeTemplate: React.FC = () => {
   );
 };
 
-export default ResumeTemplate;
+export default ResumeTemplate3;
