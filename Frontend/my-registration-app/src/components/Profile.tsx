@@ -11,7 +11,7 @@ interface ProfileProps {
 const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
   const [profileData, setProfileData] = useState({
     id: "",
-    name: "",
+    username: "",
     email: "",
     phone: "",
     gender: "",
@@ -94,7 +94,7 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
     <div>
       <div className="profilePanel">
         <nav className="navbar-profile">
-          <a className="username">{profileData.name || "Username"}</a>
+          <a className="username">{profileData.username || "Username"}</a>
           <button className="btn-logout" onClick={onLogout}>
             Logout
           </button>
@@ -122,7 +122,7 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
           </div>
           {!isEditing ? (
             <div className="infoFields">
-              <p>Name: {profileData.name}</p>
+              <p>Name: {profileData.username}</p>
               <p>Email: {profileData.email}</p>
               <p>Phone: {profileData.phone}</p>
               <p>Gender: {profileData.gender}</p>
@@ -133,7 +133,7 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
               <input
                 type="text"
                 name="name"
-                value={formData.name}
+                value={formData.username}
                 onChange={handleInputChange}
                 placeholder="Name"
               />
