@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import "../Style/ResumeStyle.css";
 import { ResumeData } from './ResumeInterface';
+import { AppContext } from "../../context";
+import { Link } from 'react-router-dom';
 
 
 const ResumeForm: React.FC = () => {
@@ -15,23 +17,73 @@ const ResumeForm: React.FC = () => {
     recommendations: '',
     hobbiesAndInterests: ''
   });
+  const [template, setTemplate] = useState<number>(1);
+
+  const context = useContext(AppContext);
+  const userId = context?.userId;
+  if (!userId) {
+    console.error("User ID not found in context");
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'age' ? Number(value) : value,
+      [name]: value,
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setTemplate(Number(e.target.value));
+  };
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Submitted Data:', formData);
+    const payload = { ...formData, userId, template };
+    try {
+      const response = await fetch('http://localhost:8080/resumes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error:', errorData);
+        alert(`Error: ${errorData.message}`);
+      } else {
+        const responseData = await response.json();
+        console.log('Resume created successfully:', responseData);
+        alert('Resume created successfully!');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Failed to submit resume.');
+    }
   };
 
   return (
     <form className="resume-form" onSubmit={handleSubmit}>
       <h2 className="title">Create resume</h2>
+      <div className="form-group">
+        <label>Review available templates:</label>
+        <div className='templates-container'>
+          <Link to="/template1" className='btn-template'>Template 1</Link>
+          <Link to="/template2" className='btn-template'>Template 2</Link>
+          <Link to="/template3" className='btn-template'>Template 3</Link>
+        </div>
+      </div>
+      <div className="form-group">
+        <label>Choose the template:</label>
+        <select value={template} onChange={handleTemplateChange}>
+          <option value={1}>Template 1</option>
+          <option value={2}>Template 2</option>
+          <option value={3}>Template 3</option>
+        </select>
+      </div>
       <div className="form-group">
         <label>Full name:</label>
         <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} />
@@ -58,7 +110,7 @@ const ResumeForm: React.FC = () => {
       </div>
       <div className="form-group">
         <label>Languages:</label>
-        <textarea name="languages" value={formData.skillsAndAwards} onChange={handleChange}></textarea>
+        <textarea name="languages" value={formData.languages} onChange={handleChange}></textarea>
       </div>
       <div className="form-group">
         <label>Recommendations:</label>
@@ -66,11 +118,10 @@ const ResumeForm: React.FC = () => {
       </div>
       <div className="form-group">
         <label>Hobbies and interests:</label>
-        <textarea name="hobbiesAndInterests" value={formData.recommendations} onChange={handleChange}></textarea>
+        <textarea name="hobbiesAndInterests" value={formData.hobbiesAndInterests} onChange={handleChange}></textarea>
       </div>
-      <div className="btn-box">
-        <button type="submit" className="submit-button">Save</button>
-      </div>
+      
+      <button type="submit" className="btn-save-resume">Save</button>
     </form>
   );
 };

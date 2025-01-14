@@ -8,7 +8,7 @@
 
 .navbar-profile{
   display: flex;
-  align-items: center;
+  align-items: center; 
   gap: 10px;
 }
 
@@ -29,7 +29,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-h2, h3{
+.profile-container h2, .resume-profile-container h3{
   color: #eee;
   margin: 20px 0px;
 }
@@ -47,9 +47,14 @@ h2, h3{
   margin-top: 30px;
 }
 
-.infoFields input{
+.infoFields input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #828282;
+  background-color: #444446;
+  border-radius: 4px;
+  font-size: 16px;
   margin-bottom: 20px;
-  padding: 25px;
 }
 
 .btn-logout{

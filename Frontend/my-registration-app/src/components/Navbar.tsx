@@ -18,7 +18,7 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated }) => {
       ) : (
         <div>
           {/* <Link to="/users">Все пользователи</Link> */}
-          <Link to="/resume">Resume</Link>
+          <Link to="/create-resume">Resume</Link>
           <Link to="/profile">Profile</Link> 
         </div>
       )}
