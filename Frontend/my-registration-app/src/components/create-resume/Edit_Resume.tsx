@@ -11,7 +11,7 @@ const EditResume: React.FC = () => {
   const context = useContext(AppContext);
   const userId = context?.userId;
 
-  const { data } = location.state || {}; // Убедитесь, что state передается при навигации
+  const { data, template } = location.state || {}; // Убедитесь, что state передается при навигации
 
   const [formData, setFormData] = useState<ResumeData>({
     fullName: '',
@@ -26,13 +26,22 @@ const EditResume: React.FC = () => {
   });
 
   const [id, setId] = useState<string>("");
-  const [templateid, setTemplate] = useState<number>(1);
 
   useEffect(() => {
     if (data) {
       console.log(data);
-      setFormData(data);
-      setTemplate(data.template || 1); // Встановлюємо шаблон, якщо є
+      const { fullName, position, objective, education, workExperience, skillsAndAwards, languages, recommendations, hobbiesAndInterests, id, template } = data;
+      setFormData({
+        fullName,
+        position,
+        objective,
+        education,
+        workExperience,
+        skillsAndAwards,
+        languages,
+        recommendations,
+        hobbiesAndInterests,
+      });
       setId(data.id);
     }
   }, [data]);
@@ -57,8 +66,23 @@ const EditResume: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = { ...formData, id, userId, templateid };
+    const { fullName, position, objective, education, workExperience, skillsAndAwards, languages, recommendations, hobbiesAndInterests } = formData;
+    const payload = {
+      id,
+      userId,
+      template: data.template, // Якщо template є частиною форми
+      fullName,
+      position,
+      objective,
+      education,
+      workExperience,
+      skillsAndAwards,
+      languages,
+      recommendations,
+      hobbiesAndInterests,
+    };
     console.log('Payload:', payload);
+
     try {
       const response = await axios.put(`http://localhost:8080/resumes`, payload, {
         headers: { 'Content-Type': 'application/json' },
@@ -81,7 +105,7 @@ const EditResume: React.FC = () => {
       <h2 className="title">Edit Resume</h2>
       <div className="form-group">
         <label>Choose the template:</label>
-        <select value={templateid} onChange={handleTemplateChange}>
+        <select value={template} onChange={handleTemplateChange}>
           <option value={1}>Template 1</option>
           <option value={2}>Template 2</option>
           <option value={3}>Template 3</option>
