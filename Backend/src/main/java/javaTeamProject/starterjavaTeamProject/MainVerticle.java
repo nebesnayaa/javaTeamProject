@@ -4,8 +4,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import io.vertx.core.*;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.jackson.DatabindCodec;
+import io.vertx.ext.mail.MailClient;
+import io.vertx.ext.mail.MailConfig;
+import io.vertx.ext.mail.MailMessage;
+import io.vertx.ext.mail.StartTLSOptions;
 import io.vertx.ext.web.handler.BodyHandler;
 import model.ResumeDTO;
 import model.UserDTO;
@@ -15,10 +21,6 @@ import org.hibernate.reactive.stage.Stage;
 import org.hibernate.service.ServiceRegistry;
 
 import io.github.cdimascio.dotenv.Dotenv;
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
@@ -48,6 +50,7 @@ public class MainVerticle extends AbstractVerticle {
 
 	@Override
 	public void start(Promise<Void> startPromise) throws Exception {
+    Dotenv dotenv = Dotenv.load();
     /*
     * Enables mapping Optional
     * Error sample
@@ -302,7 +305,114 @@ public class MainVerticle extends AbstractVerticle {
 			}
 		});
 
-		router.get("/resumes/userId/:userId").handler(context -> {
+    router.post("/users/reset-password").handler(context -> {
+      String username = context.getBodyAsJson().getString("username");
+      String mail = context.getBodyAsJson().getString("email");
+      String newPassword = context.getBodyAsJson().getString("newPassword");
+
+      MailConfig config = new MailConfig()
+        .setHostname("smtp.gmail.com")
+        .setPort(587)
+        .setStarttls(StartTLSOptions.REQUIRED)
+        .setUsername(dotenv.get("MAIL_ADDRESS"))
+        .setPassword(dotenv.get("MAIL_PASSWORD"))
+        .setAuthMethods("PLAIN LOGIN");
+
+      MailClient mailClient = MailClient.createShared(vertx, config);
+
+      String token  = UUID.randomUUID().toString();
+      JsonObject userData = new JsonObject();
+      userData.put("mail", mail);
+      userData.put("newPassword", newPassword);
+      redisAPI.set(List.of(token, userData.encode()))
+        .compose(r -> redisAPI.expire(List.of(token, "86400")))
+        .onSuccess(res-> {
+          String emailBody = "Dear " + username + ",\n\n" +
+            "We received a request to reset your password for your account associated with this email address. " +
+            "If you made this request, please follow the instructions below to reset your password.\n\n" +
+            "Reset Your Password:\n" +
+            "Click the link below to reset your password:\n" +
+            dotenv.get("FRONTEND_HOME") + "/password-recovery/"+token+"\n\n" +
+            "If you did not request a password reset, please ignore this email or contact support if you have concerns about your account's security.\n\n" +
+            "For security reasons, this link will expire in 24 hours.\n\n" +
+            "Thank you,\n" +
+            "ResumeBuilder team";
+
+
+          MailMessage message = new MailMessage()
+            .setFrom("noreply@gmail.com")
+            .setTo(mail)
+            .setSubject("Password recovery")
+            .setText(emailBody);
+
+          mailClient.sendMail(message, result -> {
+            if (result.succeeded()) {
+              context.response().setStatusCode(200).end(Json.encodePrettily(new JsonObject().put("message", "Email sent successfully").put("token", token)));
+            } else {
+              context.response().setStatusCode(500).end("Failed to send email");
+            }
+          });
+        })
+        .onFailure(err -> {
+          context.response().setStatusCode(500).end(err.getMessage());
+        });
+
+    });
+
+    router.post("/users/password-token-validation").handler(context -> {
+      String token = context.getBodyAsJson().getString("token");
+
+      redisAPI.get(token).compose(res -> {
+        if (res != null) {
+          JsonObject userData = new JsonObject(res.toString());
+          try {
+            userData.put("password", Hasher.getHash(userData.getString("newPassword"), 10));
+          } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+          }
+
+          return userService.findUserByEmail(userData.getString("mail"))
+            .compose(u -> {
+              if (u.isPresent()) {
+                UserDTO user = u.get();
+                UserDTO updatedUser = new UserDTO(
+                  user.id(),
+                  user.username(),
+                  user.email(),
+                  userData.getString("password"),
+                  user.gender(),
+                  user.phone(),
+                  user.age(),
+                  user.createdAt(),
+                  new Date()
+                );
+
+                return userService.updateUser(updatedUser).map(updateResult -> {
+                  redisAPI.del(List.of(token))
+                    .onSuccess(r -> {
+                      context.response().setStatusCode(200).end("Password updated successfully, token deleted");
+                    })
+                    .onFailure(err -> {
+                      context.response().setStatusCode(500).end("Password updated, but failed to delete token");
+                    });
+
+                   return Future.succeededFuture();
+                });
+              } else {
+                context.response().setStatusCode(404).end("User not found");
+                return Future.succeededFuture();
+              }
+            });
+        } else {
+          context.response().setStatusCode(401).end("Token is invalid or has expired");
+          return Future.succeededFuture();
+        }
+      }).onFailure(err -> {
+        context.response().setStatusCode(500).end(err.toString());
+      });
+    });
+
+    router.get("/resumes/userId/:userId").handler(context -> {
       try {
         UUID userId = UUID.fromString(context.pathParam("userId"));
 
@@ -404,9 +514,6 @@ public class MainVerticle extends AbstractVerticle {
         });
     });
 
-
-
-    Dotenv dotenv = Dotenv.load();
 		Integer port = Integer.parseInt(Objects.requireNonNull(dotenv.get("PORT")));
 
 		server.requestHandler(router).listen(port)
