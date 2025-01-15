@@ -1,9 +1,29 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import "../Style/ResumeStyle.css";
 import { ResumeData } from './ResumeInterface';
 import { AppContext } from "../../context";
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { ResumeUserData } from './ResumeUserData';
+
+const fallbackData: ResumeUserData = {
+  id: "example",
+  template: 0,
+  fullName: "John Doe",
+  position: "Software Engineer",
+  objective: "Passionate software engineer with 5+ years of experience in full-stack development. Seeking a challenging role in a dynamic team.",
+  education: "B.S. in Computer Science, University of Tech, 2018",
+  workExperience: "Software Developer at Tech Solutions Inc. (2018–2023). Developed and maintained web applications using JavaScript, React, and Node.js.",
+  skillsAndAwards: "Skills: JavaScript, React, Node.js, MongoDB. Award: Employee of the Year 2022.",
+  languages: "English (Fluent), Spanish (Intermediate)",
+  recommendations: "Highly recommended for his exceptional problem-solving skills and strong team collaboration.",
+  hobbiesAndInterests: "Hiking, Traveling, Playing Chess",
+  user: {
+    age: 29,
+    gender: "Male",
+    email: "johndoe@example.com",
+    phone: "+1234567890"
+  }
+};
 
 const ResumeForm: React.FC = () => {
   const [formData, setFormData] = useState<ResumeData>({
@@ -18,27 +38,18 @@ const ResumeForm: React.FC = () => {
     hobbiesAndInterests: ''
   });
   const [template, setTemplate] = useState<number>(1);
-  const { id } = useParams();  // Получаем id из URL
   const navigate = useNavigate();
-  
+
   const context = useContext(AppContext);
   const userId = context?.userId;
+  if (!userId) {
+    console.error("User ID not found in context");
+  }
 
-  // Загружаем данные резюме при редактировании
-  useEffect(() => {
-    if (id) {
-      axios
-        .get(`http://localhost:8080/resumes/${id}`)
-        .then(response => {
-          setFormData(response.data);  // Заполняем форму загруженными данными
-        })
-        .catch(error => {
-          console.error("Error fetching resume data:", error);
-        });
-    }
-  }, [id]);
+  const handleViewTemplate = (template: number) => {
+    navigate(`/template${template}`, { state: { data: fallbackData } });
+  };
 
-  // Обработка изменений в форме
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -47,52 +58,50 @@ const ResumeForm: React.FC = () => {
     }));
   };
 
-  // Обработка выбора шаблона
   const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setTemplate(Number(e.target.value));
   };
 
-  // // Отправка формы для создания/редактирования резюме
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   const payload = { ...formData, userId, template };
-  //   const url = id ? `http://localhost:8080/resumes/${id}` : 'http://localhost:8080/resumes';  // URL для редактирования или создания
-  //   const method = id ? 'PUT' : 'POST';  // Метод зависит от наличия id
 
-  //   try {
-  //     const response = await fetch(url, {
-  //       method,
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(payload),
-  //     });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = { ...formData, userId, template };
+    try {
+      const response = await fetch('http://localhost:8080/resumes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       console.error('Error:', errorData);
-  //       alert(`Error: ${errorData.message}`);
-  //     } else {
-  //       const responseData = await response.json();
-  //       console.log('Resume saved successfully:', responseData);
-  //       alert('Resume saved successfully!');
-  //       navigate('/profile');  // Перенаправление на страницу профиля
-  //     }
-  //   } catch (error) {
-  //     console.error('Error submitting form:', error);
-  //     alert('Failed to submit resume.');
-  //   }
-  // };
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error:', errorData);
+        alert(`Error: ${errorData.message}`);
+      } else {
+        const responseData = await response.json();
+        console.log('Resume created successfully:', responseData);
+        alert('Resume created successfully!');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Failed to submit resume.');
+    }
+  };
 
   return (
-    <form className="resume-form" >   {/* onSubmit={handleSubmit} */} 
-      <h2 className="title">{id ? "Edit Resume" : "Create Resume"}</h2>  {/* Заголовок формы */}
+    <form className="resume-form" onSubmit={handleSubmit}>
+      <h2 className="title">Create resume</h2>
       <div className="form-group">
         <label>Review available templates:</label>
         <div className='templates-container'>
-          <Link to="/template1" className='btn-template'>Template 1</Link>
-          <Link to="/template2" className='btn-template'>Template 2</Link>
-          <Link to="/template3" className='btn-template'>Template 3</Link>
+          <button className='btn-template'
+                  onClick={() => handleViewTemplate(1)}>Template 1</button>
+          <button className='btn-template'
+                  onClick={() => handleViewTemplate(2)}>Template 2</button>
+          <button className='btn-template'
+                  onClick={() => handleViewTemplate(3)}>Template 3</button>
         </div>
       </div>
       <div className="form-group">
