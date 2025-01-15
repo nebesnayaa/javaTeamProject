@@ -80,6 +80,10 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
       .catch((error) => console.error("Error updating profile:", error));
   };
 
+  const handleEditResume = (resume: ResumeUserData, template: number) => {
+    navigate(`/edit-resume`, { state: { data: resume, template: template } });
+  };
+
   const handleViewResume = (resume: ResumeUserData, template: number) => {
     navigate(`/template${template}`, { state: { data: resume } });
   };
@@ -190,10 +194,9 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
               <li key={resume.id} className="resume-item">
                 <span>{resume.position}</span>
                 <div>
-                  {/* Кнопка для переходу до редагування резюме */}
                   <button
                     className="btn-edit"
-                    onClick={() => navigate(`/edit-resume/${resume.id}`)} // Тут додається роути
+                    onClick={() => handleEditResume(resume, resume.template)}
                   >
                     Edit Resume
                   </button>
@@ -216,11 +219,6 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
           </div>
         )}
       </div>
-      <div className="buttons-box">
-        <button className="btn-edit-resume" onClick={() => navigate("/edit-resume/new")}>
-          Edit Resume
-        </button>
-    </div>
     </div>
   );
 };

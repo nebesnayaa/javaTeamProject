@@ -11,7 +11,7 @@ const EditResume: React.FC = () => {
   const context = useContext(AppContext);
   const userId = context?.userId;
 
-  const { id } = location.state || {}; // Убедитесь, что state передается при навигации
+  const { data } = location.state || {}; // Убедитесь, что state передается при навигации
 
   const [formData, setFormData] = useState<ResumeData>({
     fullName: '',
@@ -25,12 +25,18 @@ const EditResume: React.FC = () => {
     hobbiesAndInterests: '',
   });
 
-  const [template, setTemplate] = useState<number>(1);
+  const [id, setId] = useState<string>("");
+  const [templateid, setTemplate] = useState<number>(1);
 
-  // Получение данных резюме для редактирования
-  const { data } = location.state || {}; 
+  useEffect(() => {
+    if (data) {
+      console.log(data);
+      setFormData(data);
+      setTemplate(data.template || 1); // Встановлюємо шаблон, якщо є
+      setId(data.id);
+    }
+  }, [data]);
 
-  // Обработка изменений полей формы
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
@@ -41,18 +47,20 @@ const EditResume: React.FC = () => {
     }));
   };
 
-  // Выбор темлейта
   const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setTemplate(Number(e.target.value));
+    const { value } = e.target;
+  setFormData((prev) => ({
+    ...prev,
+    template: Number(value), // Змінюємо template всередині formData
+  }));
   };
 
-  // Обработка отправки формы для редактирования резюме
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = { ...formData, userId, template };
-
+    const payload = { ...formData, id, userId, templateid };
+    console.log('Payload:', payload);
     try {
-      const response = await axios.put(`http://localhost:8080/resumes/${id}`, payload, {
+      const response = await axios.put(`http://localhost:8080/resumes`, payload, {
         headers: { 'Content-Type': 'application/json' },
       });
       console.log('Resume updated successfully:', response.data);
@@ -64,12 +72,16 @@ const EditResume: React.FC = () => {
     }
   };
 
+  const handleBack = () => {
+    navigate(-1);
+  };
+
   return (
     <form className="resume-form" onSubmit={handleSubmit}>
       <h2 className="title">Edit Resume</h2>
       <div className="form-group">
         <label>Choose the template:</label>
-        <select value={template} onChange={handleTemplateChange}>
+        <select value={templateid} onChange={handleTemplateChange}>
           <option value={1}>Template 1</option>
           <option value={2}>Template 2</option>
           <option value={3}>Template 3</option>
@@ -111,7 +123,13 @@ const EditResume: React.FC = () => {
         <label>Hobbies and interests:</label>
         <textarea name="hobbiesAndInterests" value={formData.hobbiesAndInterests} onChange={handleChange}></textarea>
       </div>
+      <div>
+      <button onClick={handleBack} className="btn-back">
+            Back
+          </button>
       <button type="submit" className="btn-save-resume">Save Changes</button>
+
+      </div>
     </form>
   );
 };

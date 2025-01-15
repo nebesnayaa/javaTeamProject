@@ -12,7 +12,7 @@ import ResumeTemplate1 from "./components/templates/template1";
 import ResumeTemplate2 from "./components/templates/template2";
 import ResumeTemplate3 from "./components/templates/template3";
 import { ContextProvider } from "./context";
-import { ResumeData } from './components/create-resume/ResumeInterface';
+import EditResume from "./components/create-resume/Edit_Resume";
 
 
 const App = () => {
@@ -43,6 +43,7 @@ const App = () => {
           
           <Route path="/Users" element={<UserList />} />
           <Route path="/create-resume" element={<ResumeForm />} />
+          <Route path="/edit-resume" element={<EditResume />} />
           <Route path="/profile" element={<Profile onLogout={handleLogout} />} />
 
           <Route path="/template1" element={<ResumeTemplate1 />} />
