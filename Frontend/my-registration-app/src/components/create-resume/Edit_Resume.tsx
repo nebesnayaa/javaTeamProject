@@ -2,10 +2,17 @@ import React, { useState, useEffect, useContext } from 'react';
 import "../Style/ResumeStyle.css";
 import { ResumeData } from './ResumeInterface';
 import { AppContext } from "../../context";
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 const EditResume: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const context = useContext(AppContext);
+  const userId = context?.userId;
+
+  const { id } = location.state || {}; // Убедитесь, что state передается при навигации
+
   const [formData, setFormData] = useState<ResumeData>({
     fullName: '',
     position: '',
@@ -15,35 +22,20 @@ const EditResume: React.FC = () => {
     skillsAndAwards: '',
     languages: '',
     recommendations: '',
-    hobbiesAndInterests: ''
+    hobbiesAndInterests: '',
   });
 
   const [template, setTemplate] = useState<number>(1);
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const context = useContext(AppContext);
-  const userId = context?.userId;
 
   // Получение данных резюме для редактирования
-  useEffect(() => {
-    if (id) {
-      axios
-        .get(`http://localhost:8080/resumes/${id}`)
-        .then(response => {
-          const { template, ...rest } = response.data;
-          setTemplate(template || 1);
-          setFormData(rest);
-        })
-        .catch(error => {
-          console.error("Error fetching resume data:", error);
-        });
-    }
-  }, [id]);
+  const { data } = location.state || {}; 
 
   // Обработка изменений полей формы
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -61,7 +53,7 @@ const EditResume: React.FC = () => {
 
     try {
       const response = await axios.put(`http://localhost:8080/resumes/${id}`, payload, {
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
       console.log('Resume updated successfully:', response.data);
       alert('Resume updated successfully!');
