@@ -77,6 +77,8 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
         criteriaUpdate.set("template", resume.template());
         criteriaUpdate.set("updatedAt", new Date());
 
+
+        criteriaUpdate.where(predicate);
         CompletionStage<Integer> result = sessionFactory.withTransaction((s, t) -> s.createQuery(criteriaUpdate).executeUpdate());
 
         Future<ResumeDTO> future = Future.fromCompletionStage(result).map(r -> resume);
@@ -141,5 +143,5 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
 }
 
 // // Для запуска javadoc -d docs ResumeRepository.java
-//gradle javadoc - для запуска через gradle 
+//gradle javadoc - для запуска через gradle
 //mvn javadoc:javadoc - для запуска через maven
