@@ -57,7 +57,10 @@ public record UserRepository(SessionFactory sessionFactory) implements IUserRepo
         Predicate predicate = criteriaBuilder.equal(root.get("id"), user.id());
 
         criteriaUpdate.set("email", user.email());
-        criteriaUpdate.set("password", user.password());
+        if(user.password() != null){
+          criteriaUpdate.set("password", user.password());
+          System.out.println("Password was changed");
+        }
         criteriaUpdate.set("gender", user.gender());
         criteriaUpdate.set("phone", user.phone());
         criteriaUpdate.set("age", user.age());
@@ -124,5 +127,5 @@ public record UserRepository(SessionFactory sessionFactory) implements IUserRepo
 }
 
 // Для запуска javadoc -d docs UserRepository.java
-//gradle javadoc - для запуска через gradle 
+//gradle javadoc - для запуска через gradle
 //mvn javadoc:javadoc - для запуска через maven

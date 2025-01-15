@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
 import Navbar from "./components/Navbar";
 import Main from "./components/Main";
@@ -13,15 +13,19 @@ import ResumeTemplate2 from "./components/templates/template2";
 import ResumeTemplate3 from "./components/templates/template3";
 import { ContextProvider } from "./context";
 import EditResume from "./components/create-resume/Edit_Resume";
+import { AppContext } from "./context";
 
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
+  const context = useContext(AppContext);
+
   const handleLogout = async () => { // Логика выхода
     try {
       await axios.post("http://localhost:8080/users/logout", {}, { withCredentials: true });
       window.location.href = "/login";
+      context?.setUserId("");
       setIsAuthenticated(false);
     } catch (error) {
       console.error("Error during logout:", error);

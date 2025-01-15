@@ -69,6 +69,8 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
   };
   
   const handleSave = () => {
+    formData.password = "";
+    console.log(formData);
     axios
       .put(`http://localhost:8080/users`, formData, {
         withCredentials: true,

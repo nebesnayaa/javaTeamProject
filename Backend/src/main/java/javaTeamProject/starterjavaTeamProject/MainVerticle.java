@@ -147,12 +147,14 @@ public class MainVerticle extends AbstractVerticle {
           String username = body.getString("username");
           String email = body.getString("email");
           String password = body.getString("password");
+
+          System.out.println(password);
           password = Hasher.getHash(password,10);
           String gender = body.getString("gender");
           String phone = body.getString("phone");
           Integer age = Integer.parseInt(body.getString("age"));
           body.putNull("password");
-          UserDTO user = new UserDTO(UUID.fromString(id), username, email, password,gender, phone, age, new Date(), new Date());
+          UserDTO user = new UserDTO(UUID.fromString(id), username, email, null ,gender, phone, age, new Date(), new Date());
           userService.updateUser(new Principal(UUID.fromString(id)), user)
             .onSuccess(result -> {
               String cookieHeader = context.request().getHeader("Cookie");
@@ -228,7 +230,7 @@ public class MainVerticle extends AbstractVerticle {
       try {
         JsonObject body = context.getBodyAsJson();
         if (body == null || body.isEmpty()) {
-          context.response().setStatusCode(400).end("Bad request");
+          context.response().setStatusCode(400).end("Bad request. Body is empty");
           return;
         }
 
