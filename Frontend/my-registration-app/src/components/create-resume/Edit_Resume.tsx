@@ -2,10 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import "../Style/ResumeStyle.css";
 import { ResumeData } from './ResumeInterface';
 import { AppContext } from "../../context";
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
-const ResumeForm: React.FC = () => {
+const EditResume: React.FC = () => {
   const [formData, setFormData] = useState<ResumeData>({
     fullName: '',
     position: '',
@@ -17,20 +17,22 @@ const ResumeForm: React.FC = () => {
     recommendations: '',
     hobbiesAndInterests: ''
   });
+
   const [template, setTemplate] = useState<number>(1);
-  const { id } = useParams();  // Получаем id из URL
+  const { id } = useParams();
   const navigate = useNavigate();
-  
   const context = useContext(AppContext);
   const userId = context?.userId;
 
-  // Загружаем данные резюме при редактировании
+  // Получение данных резюме для редактирования
   useEffect(() => {
     if (id) {
       axios
         .get(`http://localhost:8080/resumes/${id}`)
         .then(response => {
-          setFormData(response.data);  // Заполняем форму загруженными данными
+          const { template, ...rest } = response.data;
+          setTemplate(template || 1);
+          setFormData(rest);
         })
         .catch(error => {
           console.error("Error fetching resume data:", error);
@@ -38,63 +40,41 @@ const ResumeForm: React.FC = () => {
     }
   }, [id]);
 
-  // Обработка изменений в форме
+  // Обработка изменений полей формы
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  // Обработка выбора шаблона
+  // Выбор темлейта
   const handleTemplateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setTemplate(Number(e.target.value));
   };
 
-  // // Отправка формы для создания/редактирования резюме
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   const payload = { ...formData, userId, template };
-  //   const url = id ? `http://localhost:8080/resumes/${id}` : 'http://localhost:8080/resumes';  // URL для редактирования или создания
-  //   const method = id ? 'PUT' : 'POST';  // Метод зависит от наличия id
+  // Обработка отправки формы для редактирования резюме
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = { ...formData, userId, template };
 
-  //   try {
-  //     const response = await fetch(url, {
-  //       method,
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(payload),
-  //     });
-
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       console.error('Error:', errorData);
-  //       alert(`Error: ${errorData.message}`);
-  //     } else {
-  //       const responseData = await response.json();
-  //       console.log('Resume saved successfully:', responseData);
-  //       alert('Resume saved successfully!');
-  //       navigate('/profile');  // Перенаправление на страницу профиля
-  //     }
-  //   } catch (error) {
-  //     console.error('Error submitting form:', error);
-  //     alert('Failed to submit resume.');
-  //   }
-  // };
+    try {
+      const response = await axios.put(`http://localhost:8080/resumes/${id}`, payload, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      console.log('Resume updated successfully:', response.data);
+      alert('Resume updated successfully!');
+      navigate('/profile');
+    } catch (error) {
+      console.error('Error updating resume:', error);
+      alert('Failed to update the resume.');
+    }
+  };
 
   return (
-    <form className="resume-form" >   {/* onSubmit={handleSubmit} */} 
-      <h2 className="title">{id ? "Edit Resume" : "Create Resume"}</h2>  {/* Заголовок формы */}
-      <div className="form-group">
-        <label>Review available templates:</label>
-        <div className='templates-container'>
-          <Link to="/template1" className='btn-template'>Template 1</Link>
-          <Link to="/template2" className='btn-template'>Template 2</Link>
-          <Link to="/template3" className='btn-template'>Template 3</Link>
-        </div>
-      </div>
+    <form className="resume-form" onSubmit={handleSubmit}>
+      <h2 className="title">Edit Resume</h2>
       <div className="form-group">
         <label>Choose the template:</label>
         <select value={template} onChange={handleTemplateChange}>
@@ -139,10 +119,9 @@ const ResumeForm: React.FC = () => {
         <label>Hobbies and interests:</label>
         <textarea name="hobbiesAndInterests" value={formData.hobbiesAndInterests} onChange={handleChange}></textarea>
       </div>
-      
-      <button type="submit" className="btn-save-resume">Save</button>
+      <button type="submit" className="btn-save-resume">Save Changes</button>
     </form>
   );
 };
 
-export default ResumeForm;
+export default EditResume;
