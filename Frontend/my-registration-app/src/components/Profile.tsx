@@ -216,6 +216,11 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
           </div>
         )}
       </div>
+      <div className="buttons-box">
+        <button className="btn-edit-resume" onClick={() => navigate("/edit-resume/new")}>
+          Edit Resume
+        </button>
+    </div>
     </div>
   );
 };
