@@ -125,3 +125,8 @@ public record UserService(UserRepository repository) implements IUserService {
     }
 
 }
+
+
+// Для запуска javadoc -d docs UserService.java
+//gradle javadoc - для запуска через gradle 
+//mvn javadoc:javadoc - для запуска через maven

@@ -140,6 +140,6 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
 
 }
 
-// Для запуска javadoc -d docs -sourcepath src -subpackages services
+// // Для запуска javadoc -d docs ResumeRepository.java
 //gradle javadoc - для запуска через gradle 
 //mvn javadoc:javadoc - для запуска через maven

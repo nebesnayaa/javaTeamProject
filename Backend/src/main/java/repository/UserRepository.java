@@ -122,3 +122,7 @@ public record UserRepository(SessionFactory sessionFactory) implements IUserRepo
     }
 
 }
+
+// Для запуска javadoc -d docs UserRepository.java
+//gradle javadoc - для запуска через gradle 
+//mvn javadoc:javadoc - для запуска через maven

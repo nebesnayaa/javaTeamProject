@@ -79,6 +79,6 @@ public final class Hasher {
 }
 
 
-// Для запуска javadoc -d docs -sourcepath src -subpackages services
+// Для запуска javadoc -d docs Hasher.java
 //gradle javadoc - для запуска через gradle 
 //mvn javadoc:javadoc - для запуска через maven
