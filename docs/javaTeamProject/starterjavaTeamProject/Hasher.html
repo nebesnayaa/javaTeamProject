@@ -1,3 +1,4 @@
+@ -1,99 +1,99 @@
 <!DOCTYPE HTML>
 <html lang>
 <head>
@@ -92,27 +93,12 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">Hasher</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
-<div class="block">Утилитный класс для хеширования данных и генерации соли с использованием алгоритмов SHA-256.</div>
+<div class="block">Utility class for hashing data and generating salt using SHA-256 algorithms.</div>
 </div>
 </section>
 <section class="summary">
 <ul class="summary-list">
-<!-- ======== CONSTRUCTOR SUMMARY ======== -->
-<li>
-<section class="constructor-summary" id="constructor-summary">
-<h2>Constructor Summary</h2>
-<div class="caption"><span>Constructors</span></div>
-<div class="summary-table two-column-summary">
-<div class="table-header col-first">Constructor</div>
-<div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">Hasher</a>()</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-</div>
-</section>
-</li>
-<!-- ========== METHOD SUMMARY =========== -->
-<li>
-<section class="method-summary" id="method-summary">
+@ -116,29 +116,29 @@ loadScripts(document, 'script');</script>
 <h2>Method Summary</h2>
 <div id="method-summary-table">
 <div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
@@ -125,7 +111,7 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#compareHash(java.lang.String,java.lang.String)" class="member-name-link">compareHash</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;originalHash,
  <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;notHashedValue)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Сравнивает оригинальный хеш с хешированным значением строки.</div>
+<div class="block">Compares the original hash to the hashed value of the string.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getHash(java.lang.String)" class="member-name-link">getHash</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;input)</code></div>
@@ -136,14 +122,13 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getHash(java.lang.String,int)" class="member-name-link">getHash</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;input,
  int&nbsp;saltRounds)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Генерирует хеш строки с добавлением соли.</div>
+<div class="block">Generates a hash of the string with a grain of salt.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getSalt(int)" class="member-name-link">getSalt</a><wbr>(int&nbsp;rounds)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Генерирует соль случайным образом для использования в хешировании.</div>
-</div>
-</div>
+<div class="block">Generates a salt randomly for use in hashing.</div>
+@ -147,8 +147,8 @@ loadScripts(document, 'script');</script>
 </div>
 </div>
 <div class="inherited-list">
@@ -152,14 +137,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 </ul>
-</section>
-<section class="details">
-<ul class="details-list">
-<!-- ========= CONSTRUCTOR DETAIL ======== -->
-<li>
-<section class="constructor-details" id="constructor-detail">
-<h2>Constructor Details</h2>
-<ul class="member-list">
+@ -163,7 +163,9 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="&lt;init&gt;()">
 <h3>Hasher</h3>
@@ -169,25 +147,19 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 </ul>
-</section>
-</li>
-<!-- ============ METHOD DETAIL ========== -->
-<li>
-<section class="method-details" id="method-detail">
-<h2>Method Details</h2>
-<ul class="member-list">
+@ -177,8 +179,9 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getHash(java.lang.String)">
 <h3>getHash</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getHash</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;input)</span>
                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/security/NoSuchAlgorithmException.html" title="class or interface in java.security" class="external-link">NoSuchAlgorithmException</a></span></div>
-<div class="block">Генерирует хеш строки с использованием алгоритма SHA-256.</div>
+<div class="block">Generates a hash of a string using the SHA-256 algorithm.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>input</code> - строка для хеширования.</dd>
+@ -186,14 +189,16 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
-<dd>хеш в виде строки в формате HEX.</dd>
+<dd>hash as a string in HEX format.</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/security/NoSuchAlgorithmException.html" title="class or interface in java.security" class="external-link">NoSuchAlgorithmException</a></code> - если алгоритм хеширования недоступен.</dd>
 </dl>
@@ -199,12 +171,12 @@ loadScripts(document, 'script');</script>
 <h3>getSalt</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getSalt</span><wbr><span class="parameters">(int&nbsp;rounds)</span></div>
-<div class="block">Генерирует соль случайным образом для использования в хешировании.</div>
+<div class="block">Generates a salt randomly for use in hashing.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>rounds</code> - количество раундов для генерации соли.</dd>
+@ -201,14 +206,16 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
-<dd>строка, представляющая соль в формате Base64.</dd>
+<dd>A string representing the salt in Base64 format.</dd>
 </dl>
 </div>
 </section>
@@ -216,13 +188,12 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getHash</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;input,
  int&nbsp;saltRounds)</span>
                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/security/NoSuchAlgorithmException.html" title="class or interface in java.security" class="external-link">NoSuchAlgorithmException</a></span></div>
-<div class="block">Генерирует хеш строки с добавлением соли.</div>
+<div class="block">Generates a hash of the string with a grain of salt.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>input</code> - строка для хеширования.</dd>
-<dd><code>saltRounds</code> - количество раундов для генерации соли.</dd>
+@ -217,16 +224,18 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
-<dd>хеш строки, дополненной солью, в формате "хеш:соль".</dd>
+<dd>hash of the string augmented with salt, in the format “hash:salt”.</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/security/NoSuchAlgorithmException.html" title="class or interface in java.security" class="external-link">NoSuchAlgorithmException</a></code> - если алгоритм хеширования недоступен.</dd>
 </dl>
@@ -239,10 +210,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Сравнивает оригинальный хеш с хешированным значением строки.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>originalHash</code> - оригинальный хеш.</dd>
-<dd><code>notHashedValue</code> - строка для проверки.</dd>
+@ -235,8 +244,9 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
-<dd>true, если хеши совпадают, иначе false.</dd>
+<dd>true, if the hashes match, otherwise false.</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/security/NoSuchAlgorithmException.html" title="class or interface in java.security" class="external-link">NoSuchAlgorithmException</a></code> - если алгоритм хеширования недоступен.</dd>
 </dl>
@@ -250,8 +220,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 </ul>
-</section>
-</li>
+@ -245,12 +255,11 @@ loadScripts(document, 'script');</script>
 </ul>
 </section>
 <!-- ========= END OF CLASS DATA ========= -->
