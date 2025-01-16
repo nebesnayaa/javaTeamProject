@@ -21,16 +21,16 @@ import model.UserEntityMapper;
 import javax.swing.text.html.Option;
 
 /**
- * Репозиторий для работы с пользователями.
- * Реализует интерфейс {@link IUserRepository} и предоставляет методы для создания, обновления, удаления и поиска пользователей.
+ * Repository for managing users.
+ * Implements the {@link IUserRepository} interface and provides methods for creating, updating, deleting, and finding users.
  */
 public record UserRepository(SessionFactory sessionFactory) implements IUserRepository {
 
     /**
-     * Создает нового пользователя.
+     * Creates a new user.
      *
-     * @param user объект {@link UserDTO}, содержащий данные пользователя.
-     * @return объект {@link Future}, содержащий созданного пользователя.
+     * @param user {@link UserDTO} object containing user data.
+     * @return {@link Future} containing the created user.
      */
     @Override
     public Future<UserDTO> createUser(UserDTO user) {
@@ -44,10 +44,10 @@ public record UserRepository(SessionFactory sessionFactory) implements IUserRepo
     }
 
     /**
-     * Обновляет данные пользователя.
+     * Updates the user data.
      *
-     * @param user объект {@link UserDTO}, содержащий обновленные данные пользователя.
-     * @return объект {@link Future}, содержащий обновленные данные пользователя.
+     * @param user {@link UserDTO} object containing updated user data.
+     * @return {@link Future} containing the updated user.
      */
     @Override
     public Future<UserDTO> updateUser(UserDTO user) {
@@ -73,10 +73,10 @@ public record UserRepository(SessionFactory sessionFactory) implements IUserRepo
     }
 
     /**
-     * Удаляет пользователя по идентификатору.
+     * Removes a user by its ID.
      *
-     * @param id уникальный идентификатор пользователя.
-     * @return объект {@link Future}, сигнализирующий об успешном удалении пользователя.
+     * @param id the unique identifier of the user.
+     * @return {@link Future} indicating successful removal of the user.
      */
     @Override
     public Future<Void> removeUser(UUID id) {
@@ -92,10 +92,10 @@ public record UserRepository(SessionFactory sessionFactory) implements IUserRepo
     }
 
     /**
-     * Находит пользователя по идентификатору.
+     * Finds a user by its ID.
      *
-     * @param id уникальный идентификатор пользователя.
-     * @return объект {@link Future}, содержащий {@link Optional} с найденным пользователем или пустое значение.
+     * @param id the unique identifier of the user.
+     * @return {@link Future} containing an {@link Optional} with the found user or an empty value.
      */
     @Override
     public Future<Optional<UserDTO>> findUserById(UUID id) {
@@ -106,10 +106,10 @@ public record UserRepository(SessionFactory sessionFactory) implements IUserRepo
     }
 
     /**
-     * Находит пользователя по адресу электронной почты.
+     * Finds a user by email address.
      *
-     * @param email адрес электронной почты пользователя.
-     * @return объект {@link Future}, содержащий {@link Optional} с найденным пользователем или пустое значение.
+     * @param email the email address of the user.
+     * @return {@link Future} containing an {@link Optional} with the found user or an empty value.
      */
     @Override
     public Future<Optional<UserDTO>> findUserByEmail(String email) {
@@ -125,7 +125,3 @@ public record UserRepository(SessionFactory sessionFactory) implements IUserRepo
     }
 
 }
-
-// Для запуска javadoc -d docs UserRepository.java
-//gradle javadoc - для запуска через gradle
-//mvn javadoc:javadoc - для запуска через maven

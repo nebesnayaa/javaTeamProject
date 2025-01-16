@@ -10,20 +10,20 @@ import model.UserDTO;
 import repository.UserRepository;
 
 /**
- * Сервис для управления пользователями.
- * Реализует интерфейс {@link IUserService} и предоставляет методы для работы с репозиторием пользователей.
+ * Service for managing users.
+ * Implements the {@link IUserService} interface and provides methods to interact with the user repository.
  */
 public record UserService(UserRepository repository) implements IUserService {
 
     /**
-     * Обновляет информацию о пользователе.
-     * Проверяет, является ли текущий пользователь владельцем обновляемого аккаунта.
+     * Updates user information.
+     * Checks if the current user is the owner of the account being updated.
      *
-     * @param principal объект {@link Principal}, представляющий текущего пользователя.
-     * @param userDTO объект {@link UserDTO}, содержащий обновленные данные пользователя.
-     * @return объект {@link Future}, содержащий обновленные данные пользователя.
-     * @throws RuntimeException если пользователь не найден.
-     * @throws NotOwnerException если текущий пользователь не является владельцем обновляемого аккаунта.
+     * @param principal {@link Principal} object representing the current user.
+     * @param userDTO {@link UserDTO} object containing the updated user data.
+     * @return {@link Future} containing the updated user data.
+     * @throws RuntimeException if the user is not found.
+     * @throws NotOwnerException if the current user is not the owner of the account being updated.
      */
     @Override
     public Future<UserDTO> updateUser(Principal principal, UserDTO userDTO) {
@@ -43,14 +43,14 @@ public record UserService(UserRepository repository) implements IUserService {
     }
 
     /**
-     * Удаляет пользователя по идентификатору.
-     * Проверяет, является ли текущий пользователь владельцем удаляемого аккаунта.
+     * Removes a user by their ID.
+     * Checks if the current user is the owner of the account being deleted.
      *
-     * @param principal объект {@link Principal}, представляющий текущего пользователя.
-     * @param id уникальный идентификатор пользователя, которого нужно удалить.
-     * @return объект {@link Future}, сигнализирующий об успешном удалении пользователя.
-     * @throws RuntimeException если пользователь не найден.
-     * @throws NotOwnerException если текущий пользователь не является владельцем удаляемого аккаунта.
+     * @param principal {@link Principal} object representing the current user.
+     * @param id the unique identifier of the user to be deleted.
+     * @return {@link Future} indicating successful user deletion.
+     * @throws RuntimeException if the user is not found.
+     * @throws NotOwnerException if the current user is not the owner of the account being deleted.
      */
     @Override
     public Future<Void> removeUser(Principal principal, UUID id) {
@@ -70,10 +70,10 @@ public record UserService(UserRepository repository) implements IUserService {
     }
 
     /**
-     * Создает нового пользователя.
+     * Creates a new user.
      *
-     * @param user объект {@link UserDTO}, содержащий данные для создания нового пользователя.
-     * @return объект {@link Future}, содержащий созданного пользователя.
+     * @param user {@link UserDTO} object containing the data to create a new user.
+     * @return {@link Future} containing the created user.
      */
     @Override
     public Future<UserDTO> createUser(UserDTO user) {
@@ -81,10 +81,10 @@ public record UserService(UserRepository repository) implements IUserService {
     }
 
     /**
-     * Находит пользователя по идентификатору.
+     * Finds a user by their ID.
      *
-     * @param id уникальный идентификатор пользователя.
-     * @return объект {@link Future}, содержащий {@link Optional} с найденным пользователем или пустое значение.
+     * @param id the unique identifier of the user.
+     * @return {@link Future} containing an {@link Optional} with the found user or an empty value.
      */
     @Override
     public Future<Optional<UserDTO>> findUserById(UUID id) {
@@ -92,10 +92,10 @@ public record UserService(UserRepository repository) implements IUserService {
     }
 
     /**
-     * Обновляет информацию о пользователе.
+     * Updates user information.
      *
-     * @param user объект {@link UserDTO}, содержащий обновленные данные пользователя.
-     * @return объект {@link Future}, содержащий обновленные данные пользователя.
+     * @param user {@link UserDTO} object containing the updated user data.
+     * @return {@link Future} containing the updated user data.
      */
     @Override
     public Future<UserDTO> updateUser(UserDTO user) {
@@ -103,10 +103,10 @@ public record UserService(UserRepository repository) implements IUserService {
     }
 
     /**
-     * Удаляет пользователя по идентификатору.
+     * Removes a user by their ID.
      *
-     * @param id уникальный идентификатор пользователя, которого нужно удалить.
-     * @return объект {@link Future}, сигнализирующий об успешном удалении пользователя.
+     * @param id the unique identifier of the user to be deleted.
+     * @return {@link Future} indicating successful user deletion.
      */
     @Override
     public Future<Void> removeUser(UUID id) {
@@ -114,10 +114,10 @@ public record UserService(UserRepository repository) implements IUserService {
     }
 
     /**
-     * Находит пользователя по email.
+     * Finds a user by their email address.
      *
-     * @param email адрес электронной почты пользователя.
-     * @return объект {@link Future}, содержащий {@link Optional} с найденным пользователем или пустое значение.
+     * @param email the email address of the user.
+     * @return {@link Future} containing an {@link Optional} with the found user or an empty value.
      */
     @Override
     public Future<Optional<UserDTO>> findUserByEmail(String email) {
@@ -125,8 +125,3 @@ public record UserService(UserRepository repository) implements IUserService {
     }
 
 }
-
-
-// Для запуска javadoc -d docs UserService.java
-//gradle javadoc - для запуска через gradle 
-//mvn javadoc:javadoc - для запуска через maven

@@ -8,50 +8,65 @@ import io.vertx.core.Future;
 import model.ResumeDTO;
 import model.ResumesList;
 import repository.ResumeRepository;
-import model.ResumesList;
 
+/**
+ * Service for managing resumes.
+ * Implements the {@link IResumeService} interface and provides methods to interact with the resume repository.
+ */
 public record ResumeService(ResumeRepository repository) implements IResumeService {
 
-	/*@Override
-	public Future<ResumeDTO> updateResume(Principal principal, ResumeDTO Resume) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    /**
+     * Creates a new resume.
+     *
+     * @param resume {@link ResumeDTO} object containing the resume data.
+     * @return {@link Future} containing the created resume.
+     */
+    @Override
+    public Future<ResumeDTO> createResume(ResumeDTO resume) {
+        return repository.createResume(resume);
+    }
 
-	@Override
-	public Future<Void> removeResume(Principal principal, UUID id) {
-		// TODO Auto-generated method stub
-		return null;
-	}*/
+    /**
+     * Finds a resume by its ID.
+     *
+     * @param id the unique identifier of the resume.
+     * @return {@link Future} containing an {@link Optional} with the found resume or an empty value.
+     */
+    @Override
+    public Future<Optional<ResumeDTO>> findResumeById(UUID id) {
+        return repository.findResumeById(id);
+    }
 
-	@Override
-	public Future<ResumeDTO> createResume(ResumeDTO Resume) {
-		// TODO Auto-generated method stub
-		return repository.createResume(Resume);
-	}
+    /**
+     * Updates an existing resume.
+     *
+     * @param resume {@link ResumeDTO} object containing the updated resume data.
+     * @return {@link Future} containing the updated resume.
+     */
+    @Override
+    public Future<ResumeDTO> updateResume(ResumeDTO resume) {
+        return repository.updateResume(resume);
+    }
 
-	@Override
-	public Future<Optional<ResumeDTO>> findResumeById(UUID id) {
-		// TODO Auto-generated method stub
-		return repository.findResumeById(id);
-	}
+    /**
+     * Removes a resume by its ID.
+     *
+     * @param id the unique identifier of the resume.
+     * @return {@link Future} indicating successful removal of the resume.
+     */
+    @Override
+    public Future<Void> removeResume(UUID id) {
+        return repository.removeResume(id);
+    }
 
-	@Override
-	public Future<ResumeDTO> updateResume(ResumeDTO Resume) {
-		// TODO Auto-generated method stub
-		return repository.updateResume(Resume);
-	}
-
-	@Override
-	public Future<Void> removeResume(UUID id) {
-		// TODO Auto-generated method stub
-		return repository.removeResume(id);
-	}
-
-	@Override
-	public Future<ResumesList> findResumeByUserId(UUID userId) {
-		// TODO Auto-generated method stub
-		return repository.findResumeByUserId(userId);
-	}
-
+    /**
+     * Finds all resumes associated with a user by their ID.
+     *
+     * @param userId the unique identifier of the user.
+     * @return {@link Future} containing a list of resumes {@link ResumesList}.
+     */
+    @Override
+    public Future<ResumesList> findResumeByUserId(UUID userId) {
+        return repository.findResumeByUserId(userId);
+    }
 }
