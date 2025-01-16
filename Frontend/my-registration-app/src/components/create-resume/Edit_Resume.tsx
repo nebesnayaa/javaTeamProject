@@ -148,11 +148,12 @@ const EditResume: React.FC = () => {
         <textarea name="hobbiesAndInterests" value={formData.hobbiesAndInterests} onChange={handleChange}></textarea>
       </div>
       <div>
-      <button onClick={handleBack} className="btn-back">
+      <div className='btn-box'>
+        <button onClick={handleBack} className="btn-back">
             Back
-          </button>
-      <button type="submit" className="btn-save-resume">Save Changes</button>
-
+        </button>
+        <button type="submit" className="btn-save-resume">Save Changes</button>
+      </div>
       </div>
     </form>
   );

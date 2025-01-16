@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./ResumeTemplate2.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import html2pdf from 'html2pdf.js';
@@ -6,9 +6,11 @@ import html2pdf from 'html2pdf.js';
 const ResumeTemplate2: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate(); 
-  const { data } = location.state || {};
+  const { data } = location.state || {}; 
 
+  const [isDataSent, setIsDataSent] = useState<boolean>(true);
   if (!data) {
+    setIsDataSent(false);
     return <p>Loading...</p>; // Можна відобразити повідомлення, якщо дані ще не завантажені
   }
   
@@ -44,7 +46,7 @@ const ResumeTemplate2: React.FC = () => {
 
         <div className="resume-section2">
           <h3>Personal information</h3>
-          <p>Age: {data.user.age}, Gender: {data.user.gender === "male" ? "Male" : data.user.gender === "female" ? "Female" : "Other"}</p>
+          <p>Age: {data.user.age}, Gender: {data.user.gender === "Male" ? "Male" : data.user.gender === "Female" ? "Female" : "Other"}</p>
         </div>
 
         <div className="resume-section2">
@@ -76,9 +78,13 @@ const ResumeTemplate2: React.FC = () => {
         </div>
 
         <div className="resume-download-button">
-          <button onClick={handleDownloadPDF} className="btn-download">
-            Download as PDF
-          </button>
+          {isDataSent ? (
+            <button onClick={handleDownloadPDF} className="btn-download">
+              Download as PDF
+            </button>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
     </div>

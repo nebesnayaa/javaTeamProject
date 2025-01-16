@@ -259,7 +259,7 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
           </ul>
         ) : (
           <div className="create-resume">
-            <p className="text">You haven't created any resumes yet.</p>
+            <p className="no-resume">You haven't created any resumes yet.</p>
             <button className="btn-add" onClick={() => navigate("/create-resume")}>
               Create now
             </button>

@@ -75,11 +75,14 @@
   background: #d3a524;
 }
 
-/* .create-resume {
+.btn-box{
   display: flex;
   align-items: center;
   justify-content: space-between;
-} */
+}
+.btn-box .btn-save-resume{
+  margin: 0;
+}
 
 
 
