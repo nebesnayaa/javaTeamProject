@@ -14,6 +14,7 @@ import ResumeTemplate3 from "./components/templates/template3";
 import { ContextProvider } from "./context";
 import EditResume from "./components/create-resume/Edit_Resume";
 import { AppContext } from "./context";
+import PasswordRecoveryPage from "./components/PasswordRecoveryPage";
 
 
 const App = () => {
@@ -49,7 +50,8 @@ const App = () => {
           <Route path="/create-resume" element={<ResumeForm />} />
           <Route path="/edit-resume" element={<EditResume />} />
           <Route path="/profile" element={<Profile onLogout={handleLogout} />} />
-
+          <Route path="/password-recovery/:token" element={<PasswordRecoveryPage />} />
+          
           <Route path="/template1" element={<ResumeTemplate1 />} />
           <Route path="/template2" element={<ResumeTemplate2 />} />
           <Route path="/template3" element={<ResumeTemplate3 />} />

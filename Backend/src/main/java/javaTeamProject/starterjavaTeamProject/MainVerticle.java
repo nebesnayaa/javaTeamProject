@@ -363,7 +363,7 @@ public class MainVerticle extends AbstractVerticle {
 
     router.post("/users/password-token-validation").handler(context -> {
       String token = context.getBodyAsJson().getString("token");
-
+      
       redisAPI.get(token).compose(res -> {
         if (res != null) {
           JsonObject userData = new JsonObject(res.toString());

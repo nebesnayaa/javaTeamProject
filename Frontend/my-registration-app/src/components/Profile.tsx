@@ -25,6 +25,9 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
 
   const context = useContext(AppContext);
 
+  const [newPassword, setNewPassword ] = useState<string>("");
+  const [isEmailSent, setIsMailSent] = useState<boolean>(false);
+
   const [resumes, setResumes] = useState<ResumeUserData[]>([]);
   const [resumeAvailable, setResumeAvailable] = useState(true);
 
@@ -67,6 +70,11 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+
+  const handleInputPassChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setNewPassword(value);
+  };
   
   const handleSave = () => {
     formData.password = "";
@@ -81,6 +89,24 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
       })
       .catch((error) => console.error("Error updating profile:", error));
   };
+
+  const handlePasswordChange = () => {
+    const { username, email } = formData;
+    const payload = {
+      username, email, newPassword
+    }
+    console.log(newPassword);
+    axios
+      .post("http://localhost:8080/users/reset-password", payload, {
+        withCredentials: true
+      })
+      .then(async (response) => {
+        const token = response.data.token;
+        setIsMailSent(true);
+        console.log(token);
+      })
+      .catch((error) => console.error("Error sending email:", error));
+  }
 
   const handleEditResume = (resume: ResumeUserData, template: number) => {
     navigate(`/edit-resume`, { state: { data: resume, template: template } });
@@ -185,6 +211,25 @@ const Profile: React.FC<ProfileProps> = ({ onLogout }) => {
               </div>
             </div>
           )}
+        </div>
+      </div>
+      <div className="pass-change-container">
+        <h3>Change password</h3>
+        {isEmailSent ? (
+          <p className="email-sent-confirm">Email with an activate link sent successfully</p>
+        ) : (
+          <></>
+        )}
+        <div className="pass-box">
+          <input
+            type="password"
+            name="password"
+            onChange={handleInputPassChange}
+            placeholder="Password"
+          />
+          <button className="btn-pass-change" onClick={handlePasswordChange}>
+            Save
+          </button>
         </div>
       </div>
       <div className="resume-profile-container">

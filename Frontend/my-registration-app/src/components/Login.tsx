@@ -2,17 +2,20 @@ import React, { useContext, useState } from 'react';
 import "./Style/SignInRegister.css";
 import { validateEmail, validatePassword } from '../validation';
 import { AppContext } from '../context';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginFormProps {
   onSuccess: () => void;
 } 
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
-  const [email, setEmail] = useState<string>('');
+  const [email, setEmail] = useState<string>(''); 
   const [password, setPassword] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   const context = useContext(AppContext);
+
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,8 +43,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
           console.log("UserId was set to the context: " + context.userId);
         }
         setErrorMessage('');
-        alert("User login successfully!");
+        alert("Welcome, " + data.username);
         onSuccess();
+        navigate("/profile");
       } else{
         const errorData = await response.json();
         setErrorMessage(errorData.message || 'Failed to log in. Please try again.');

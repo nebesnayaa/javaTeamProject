@@ -59,8 +59,8 @@ const Main: React.FC = () => {
         </div>
       </div>
 
-      {/* Ссылка на создание резюме */}
-      <Link to="/create-resume">Create first resume</Link>
+      <p className='text'>You should login or sign up to start creating your perfect resume.</p>
+
       <div className='tmp-container'>
         <h3>Here you can view different templates:</h3>
         <div className='template-box'>

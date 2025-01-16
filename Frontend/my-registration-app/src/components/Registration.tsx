@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import "./Style/SignInRegister.css";
 import { validateEmail, validatePassword } from "../validation";
 import { AppContext } from "../context";
+import { useNavigate } from "react-router-dom";
 
 interface RegistrationFormProps {
   onSuccess: () => void;
@@ -18,6 +19,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess }) => {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const context = useContext(AppContext);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +54,7 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSuccess }) => {
         setErrorMessage("");
         alert("Welcome, " + data.username);
         onSuccess();
+        navigate("/profile");
       } else{
         const errorData = await response.json();
         setErrorMessage(errorData.message || "Registration failed");

@@ -47,7 +47,7 @@
   margin-top: 30px;
 }
 
-.infoFields input, select {
+.infoFields input, select, .pass-change-container input {
   width: 100%;
   padding: 12px;
   border: 1px solid #828282;
@@ -100,6 +100,34 @@
 
 .btn-cancel:hover {
   background: #a8a291;
+}
+
+.pass-box{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0 10px;
+}
+
+.pass-change-container input{
+  width: 50%;
+  margin: 0;
+}
+
+.btn-pass-change{
+  width: 30%;
+  height: 40px;
+  border-radius: 5px;
+  background: #e6b333;
+  border: none;
+  color: white;
+  text-align: center;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
+.email-sent-confirm{
+color: #c9c9c9;
 }
 
 .resume-list {
@@ -157,6 +185,6 @@
 }
 
 
-.btn-add:hover{
+.btn-add:hover, .btn-pass-change:hover{
   background: #d3a524;
 }
