@@ -8,16 +8,16 @@ import java.util.Arrays;
 import java.util.Base64;
 
 /**
- * Утилитный класс для хеширования данных и генерации соли с использованием алгоритмов SHA-256.
+ * Utility class for hashing data and generating salts using SHA-256 algorithms.
  */
 public final class Hasher {
 
   /**
-   * Генерирует хеш строки с использованием алгоритма SHA-256.
+   * Generates a hash of the string using the SHA-256 algorithm.
    *
-   * @param input строка для хеширования.
-   * @return хеш в виде строки в формате HEX.
-   * @throws NoSuchAlgorithmException если алгоритм хеширования недоступен.
+   * @param input the string to hash.
+   * @return the hash as a HEX string.
+   * @throws NoSuchAlgorithmException if the hashing algorithm is not available.
    */
   public static String getHash(String input) throws NoSuchAlgorithmException {
     MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -36,10 +36,10 @@ public final class Hasher {
   }
 
   /**
-   * Генерирует соль случайным образом для использования в хешировании.
+   * Generates a salt randomly for use in hashing.
    *
-   * @param rounds количество раундов для генерации соли.
-   * @return строка, представляющая соль в формате Base64.
+   * @param rounds the number of rounds to generate the salt.
+   * @return the salt as a Base64 string.
    */
   public static String getSalt(int rounds) {
     byte[] salt = new byte[rounds];
@@ -49,24 +49,24 @@ public final class Hasher {
   }
 
   /**
-   * Генерирует хеш строки с добавлением соли.
+   * Generates a hash of the string with the addition of salt.
    *
-   * @param input строка для хеширования.
-   * @param saltRounds количество раундов для генерации соли.
-   * @return хеш строки, дополненной солью, в формате "хеш:соль".
-   * @throws NoSuchAlgorithmException если алгоритм хеширования недоступен.
+   * @param input the string to hash.
+   * @param saltRounds the number of rounds to generate the salt.
+   * @return the hash of the string with salt in the format "hash:salt".
+   * @throws NoSuchAlgorithmException if the hashing algorithm is not available.
    */
   public static String getHash(String input, int saltRounds) throws NoSuchAlgorithmException {
     return Hasher.getHash(input) + ":" + Hasher.getSalt(saltRounds);
   }
 
   /**
-   * Сравнивает оригинальный хеш с хешированным значением строки.
+   * Compares the original hash with the hashed value of a string.
    *
-   * @param originalHash оригинальный хеш.
-   * @param notHashedValue строка для проверки.
-   * @return true, если хеши совпадают, иначе false.
-   * @throws NoSuchAlgorithmException если алгоритм хеширования недоступен.
+   * @param originalHash the original hash.
+   * @param notHashedValue the string to check.
+   * @return true if the hashes match, false otherwise.
+   * @throws NoSuchAlgorithmException if the hashing algorithm is not available.
    */
   public static boolean compareHash(String originalHash, String notHashedValue) throws NoSuchAlgorithmException {
     String[] parts = originalHash.split(":");
@@ -77,8 +77,3 @@ public final class Hasher {
     return hash.equals(Hasher.getHash(notHashedValue));
   }
 }
-
-
-// Для запуска javadoc -d docs Hasher.java
-//gradle javadoc - для запуска через gradle 
-//mvn javadoc:javadoc - для запуска через maven
