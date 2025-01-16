@@ -20,7 +20,7 @@
   margin: 10px auto;
 }
 
-.profile-container, .resume-profile-container{
+.profile-container, .resume-profile-container, .pass-change-container{
   width: 600px;
   margin: 50px auto;
   background-color: #2c2f34;
@@ -29,7 +29,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.profile-container h2, .resume-profile-container h3{
+.profile-container h2, .resume-profile-container h3, .pass-change-container h3{
   color: #eee;
   margin: 20px 0px;
 }
