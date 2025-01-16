@@ -25,16 +25,16 @@ import model.ResumeEntityMapper;
 import model.ResumesList;
 
 /**
- * Репозиторий для работы с резюме.
- * Реализует интерфейс {@link IResumeRepository} и предоставляет методы для создания, обновления, удаления и поиска резюме.
+ * Repository for working with resumes.
+ * Implements the {@link IResumeRepository} interface and provides methods for creating, updating, deleting, and retrieving resumes.
  */
 public record ResumeRepository (Stage.SessionFactory sessionFactory) implements IResumeRepository {
 
     /**
-     * Создает новое резюме.
+     * Creates a new resume.
      *
-     * @param resume объект {@link ResumeDTO}, содержащий данные резюме.
-     * @return объект {@link Future}, содержащий созданное резюме.
+     * @param resume the {@link ResumeDTO} object containing resume data.
+     * @return a {@link Future} containing the created resume.
      */
     @Override
     public Future<ResumeDTO> createResume(ResumeDTO resume) {
@@ -44,17 +44,17 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
         return Future.fromCompletionStage(
             sessionFactory.withTransaction((s, t) -> s.persist(entity))
                 .exceptionally(ex -> {
-                    ex.printStackTrace();  // Друк винятку для налагодження
+                    ex.printStackTrace();  // Print exception for debugging
                     throw new RuntimeException("Error saving resume", ex);
                 })
         ).map(v -> new ResumeDtoMapper().apply(entity));
     }
 
     /**
-     * Обновляет резюме.
+     * Updates a resume.
      *
-     * @param resume объект {@link ResumeDTO}, содержащий обновленные данные резюме.
-     * @return объект {@link Future}, содержащий обновленные данные резюме.
+     * @param resume the {@link ResumeDTO} object containing the updated resume data.
+     * @return a {@link Future} containing the updated resume data.
      */
     @Override
     public Future<ResumeDTO> updateResume(ResumeDTO resume) {
@@ -64,7 +64,7 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
 
         Predicate predicate = criteriaBuilder.equal(root.get("id"), resume.id());
 
-        // Оновлення необхідних полів
+        // Update necessary fields
         criteriaUpdate.set("fullName", resume.fullName());
         criteriaUpdate.set("position", resume.position());
         criteriaUpdate.set("objective", resume.objective());
@@ -77,7 +77,6 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
         criteriaUpdate.set("template", resume.template());
         criteriaUpdate.set("updatedAt", new Date());
 
-
         criteriaUpdate.where(predicate);
         CompletionStage<Integer> result = sessionFactory.withTransaction((s, t) -> s.createQuery(criteriaUpdate).executeUpdate());
 
@@ -86,10 +85,10 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
     }
 
     /**
-     * Удаляет резюме по идентификатору.
+     * Deletes a resume by its ID.
      *
-     * @param id уникальный идентификатор резюме.
-     * @return объект {@link Future}, сигнализирующий об успешном удалении резюме.
+     * @param id the unique identifier of the resume.
+     * @return a {@link Future} indicating successful deletion of the resume.
      */
     @Override
     public Future<Void> removeResume(UUID id) {
@@ -105,10 +104,10 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
     }
 
     /**
-     * Находит резюме по идентификатору.
+     * Finds a resume by its ID.
      *
-     * @param id уникальный идентификатор резюме.
-     * @return объект {@link Future}, содержащий {@link Optional} с найденным резюме или пустое значение.
+     * @param id the unique identifier of the resume.
+     * @return a {@link Future} containing an {@link Optional} with the found resume or an empty value.
      */
     @Override
     public Future<Optional<ResumeDTO>> findResumeById(UUID id) {
@@ -121,10 +120,10 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
     }
 
     /**
-     * Находит все резюме пользователя по его идентификатору.
+     * Finds all resumes for a user by their ID.
      *
-     * @param userId уникальный идентификатор пользователя.
-     * @return объект {@link Future}, содержащий список резюме {@link ResumesList}.
+     * @param userId the unique identifier of the user.
+     * @return a {@link Future} containing a list of resumes {@link ResumesList}.
      */
     @Override
     public Future<ResumesList> findResumeByUserId(UUID userId) {
@@ -141,7 +140,3 @@ public record ResumeRepository (Stage.SessionFactory sessionFactory) implements 
     }
 
 }
-
-// // Для запуска javadoc -d docs ResumeRepository.java
-//gradle javadoc - для запуска через gradle
-//mvn javadoc:javadoc - для запуска через maven

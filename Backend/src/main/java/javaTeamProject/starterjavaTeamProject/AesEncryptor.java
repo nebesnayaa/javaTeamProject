@@ -9,32 +9,32 @@ import java.util.Base64;
 import java.util.Objects;
 
 /**
- * Утилитный класс для шифрования и расшифровки данных с использованием алгоритма AES.
- * Ключ шифрования загружается из переменных окружения с помощью библиотеки dotenv.
+ * Utility class for encrypting and decrypting data using the AES algorithm.
+ * The encryption key is loaded from environment variables using the dotenv library.
  */
 public class AesEncryptor {
 
   /**
-   * Алгоритм шифрования AES.
+   * AES encryption algorithm.
    */
   private static final String ALGORITHM = "AES";
 
   /**
-   * Экземпляр dotenv для загрузки переменных окружения.
+   * Dotenv instance for loading environment variables.
    */
   private static final Dotenv dotenv = Dotenv.load();
 
   /**
-   * Ключ шифрования AES, загружаемый из переменной окружения "AES_KEY".
+   * AES encryption key, loaded from the environment variable "AES_KEY".
    */
   private static final byte[] KEY = Objects.requireNonNull(dotenv.get("AES_KEY")).getBytes();
 
   /**
-   * Шифрует переданные данные с использованием AES.
+   * Encrypts the provided data using AES.
    *
-   * @param data строка с данными, которые необходимо зашифровать.
-   * @return зашифрованные данные в формате Base64.
-   * @throws Exception если произошла ошибка при шифровании.
+   * @param data the string containing the data to be encrypted.
+   * @return the encrypted data in Base64 format.
+   * @throws Exception if an error occurs during encryption.
    */
   public static String encrypt(String data) throws Exception {
     SecretKeySpec secretKey = new SecretKeySpec(KEY, ALGORITHM);
@@ -45,11 +45,11 @@ public class AesEncryptor {
   }
 
   /**
-   * Расшифровывает переданные зашифрованные данные с использованием AES.
+   * Decrypts the provided encrypted data using AES.
    *
-   * @param encryptedData зашифрованные данные в формате Base64.
-   * @return расшифрованные данные в виде строки.
-   * @throws Exception если произошла ошибка при расшифровке.
+   * @param encryptedData the encrypted data in Base64 format.
+   * @return the decrypted data as a string.
+   * @throws Exception if an error occurs during decryption.
    */
   public static String decrypt(String encryptedData) throws Exception {
     SecretKeySpec secretKey = new SecretKeySpec(KEY, ALGORITHM);
@@ -60,7 +60,3 @@ public class AesEncryptor {
     return new String(decryptedBytes);
   }
 }
-
-// Для запуска javadoc -d docs AesEncryptor.java
-//gradle javadoc - для запуска через gradle 
-//mvn javadoc:javadoc - для запуска через maven
