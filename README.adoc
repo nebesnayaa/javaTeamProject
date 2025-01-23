@@ -7,6 +7,9 @@ https://nebesnayaa.github.io/javaTeamProject/[Click the link]
 
 
 == Building
+Due to the outdated instructions for running the backend server, it is recommended to run it using the built-in tools of IntelliJ IDEA, as this is the only known method for the developers of this project.
+
+=== Outdated building instructions
 
 To launch your tests:
 ```
